@@ -1,0 +1,216 @@
+/* ============================================================
+   TABULATOR CUSTOM OVERRIDE — EMPLOYEE PANEL (Light Theme)
+   Strips ALL Tabulator defaults and inherits employee-style.css
+   table styles so there is zero visual change.
+   ============================================================ */
+
+/* --- Reset Tabulator container --- */
+.tabulator {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 13.5px !important;
+    color: var(--text-2) !important;
+    width: 100% !important;
+    overflow: visible !important;
+}
+
+/* --- Header row — matches .task-table th / .data-table th / .history-table th --- */
+.tabulator .tabulator-header {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
+}
+
+.tabulator .tabulator-col {
+    background: transparent !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    padding: 12px 22px !important;
+    height: auto !important;
+    min-height: unset !important;
+}
+
+.tabulator .tabulator-col-content {
+    padding: 0 !important;
+}
+
+.tabulator .tabulator-col-title {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--text-3) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+/* Sort arrows — completely hidden; only tiny CSS text indicator */
+.tabulator .tabulator-col .tabulator-col-sorter {
+    display: none !important;
+}
+
+.tabulator .tabulator-col.tabulator-sortable[aria-sort="ascending"] .tabulator-col-title::after {
+    content: ' ↑';
+    font-size: 10px;
+    opacity: 0.5;
+}
+
+.tabulator .tabulator-col.tabulator-sortable[aria-sort="descending"] .tabulator-col-title::after {
+    content: ' ↓';
+    font-size: 10px;
+    opacity: 0.5;
+}
+
+.tabulator .tabulator-col.tabulator-sortable .tabulator-col-title:hover {
+    cursor: pointer;
+    color: var(--text-1) !important;
+}
+
+/* --- Column resize handle --- */
+.tabulator .tabulator-col .tabulator-col-resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    background: transparent !important;
+    border-right: none !important;
+}
+
+.tabulator .tabulator-col .tabulator-col-resize-handle:hover {
+    background: rgba(45, 106, 79, 0.2) !important;
+}
+
+/* --- Table body --- */
+.tabulator .tabulator-tableholder {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    background: transparent !important;
+}
+
+.tabulator .tabulator-table {
+    background: transparent !important;
+    width: 100% !important;
+}
+
+/* --- Rows --- */
+.tabulator-row {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+    border-top: none !important;
+    min-height: unset !important;
+}
+
+.tabulator-row:last-child {
+    border-bottom: none !important;
+}
+
+.tabulator-row:hover,
+.tabulator-row.tabulator-row-even:hover,
+.tabulator-row.tabulator-row-odd:hover {
+    background: var(--surface-2) !important;
+}
+
+/* Strip zebra striping */
+.tabulator-row.tabulator-row-even,
+.tabulator-row.tabulator-row-odd {
+    background: transparent !important;
+}
+
+/* --- Cells — matches .task-table td / .data-table td / .history-table td --- */
+.tabulator-row .tabulator-cell {
+    padding: 16px 22px !important;
+    font-size: 13.5px !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    color: var(--text-2) !important;
+    vertical-align: middle !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    transition: background 0.2s !important;
+}
+
+/* Checkbox cell — zero padding, narrow width */
+.tabulator-row .tabulator-cell[tabulator-field=""] {
+    padding-left: 22px !important;
+    padding-right: 0 !important;
+    width: 40px !important;
+    overflow: visible !important;
+}
+
+/* --- Footer / Pagination --- */
+.tabulator .tabulator-footer {
+    background: transparent !important;
+    border-top: 1px solid var(--border) !important;
+    border-bottom: none !important;
+    padding: 8px 16px !important;
+}
+
+.tabulator .tabulator-paginator {
+    font-size: 12px !important;
+    color: var(--text-2) !important;
+}
+
+.tabulator .tabulator-page {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
+    color: var(--text-2) !important;
+    padding: 4px 9px !important;
+    font-size: 12px !important;
+    font-family: 'DM Sans', sans-serif !important;
+    cursor: pointer !important;
+}
+
+.tabulator .tabulator-page.active {
+    background: var(--accent-lt) !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+.tabulator .tabulator-page:hover:not(.active):not([disabled]) {
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+/* --- Column drag placeholder --- */
+.tabulator .tabulator-col.tabulator-moving {
+    background: var(--surface-2) !important;
+    border: 1px dashed var(--border-2) !important;
+    opacity: 0.85 !important;
+}
+
+/* --- Scrollbar --- */
+.tabulator .tabulator-tableholder::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.tabulator .tabulator-tableholder::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tabulator .tabulator-tableholder::-webkit-scrollbar-thumb {
+    background: var(--border-2);
+    border-radius: 3px;
+}
+
+/* --- Containers — match table-container and overflow-x: auto wrappers --- */
+.table-container .tabulator,
+[style*="overflow-x"] .tabulator {
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+/* history-table: last row should have no border (replicate CSS rule) */
+.tabulator[data-id="tbl-emp-dailylogs"] .tabulator-row:last-child {
+    border-bottom: none !important;
+}
