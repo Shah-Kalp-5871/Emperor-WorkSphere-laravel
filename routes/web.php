@@ -114,10 +114,13 @@ Route::prefix('admin')->group(function () {
         return view('admin.anonymous-chat');
     })->name('admin.anonymous-chat');
 
-    // Support Tickets
     Route::get('/tickets', function () {
         return view('admin.tickets.index');
     })->name('admin.tickets.index');
+
+    Route::get('/login', function () {
+        return view('admin.login');
+    })->name('admin.login');
 });
 
 /*
@@ -129,6 +132,10 @@ Route::prefix('employee')->group(function () {
     Route::get('/dashboard', function () {
         return view('employee.dashboard.index');
     });
+
+    Route::get('/login', function () {
+        return view('employee.login');
+    })->name('employee.login');
 
     // Projects
     Route::get('/projects', function () {
