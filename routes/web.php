@@ -40,7 +40,7 @@ Route::get('/', function () {
 */
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        return view('admin.dashboard.index');
     });
 
     // Employees
@@ -95,18 +95,18 @@ Route::prefix('admin')->group(function () {
 
     // Others
     Route::get('/calendar', function () {
-        return view('admin.calendar');
+        return view('admin.calendar.index');
     });
     Route::get('/timeline', function () {
-        return view('admin.timeline');
+        return view('admin.timeline.index');
     });
     Route::get('/archived', function () {
-        return view('admin.archived');
+        return view('admin.archived.index');
     });
 
     // Profile
     Route::get('/profile/my-profile', function () {
-        return view('admin.profile.my-profile');
+        return view('admin.profile.index');
     });
 });
 
@@ -117,7 +117,7 @@ Route::prefix('admin')->group(function () {
 */
 Route::prefix('employee')->group(function () {
     Route::get('/dashboard', function () {
-        return view('employee.dashboard');
+        return view('employee.dashboard.index');
     });
 
     // Projects
@@ -149,14 +149,14 @@ Route::prefix('employee')->group(function () {
 
     // Others
     Route::get('/calendar', function () {
-        return view('employee.calendar');
+        return view('employee.calendar.index');
     });
     Route::get('/team', function () {
-        return view('employee.team');
+        return view('employee.team.index');
     });
 
     // Profile
     Route::get('/profile/my-profile', function () {
-        return view('employee.profile.my-profile');
+        return view('employee.profile.index');
     });
 });
