@@ -1,0 +1,286 @@
+/* ============================================================
+   TABULATOR CUSTOM OVERRIDE — ADMIN PANEL (Dark Theme)
+   Strips ALL Tabulator defaults and inherits admin-style.css
+   table styles so there is zero visual change.
+   ============================================================ */
+
+/* ─── LAYOUT CONTAINMENT ──────────────────────────────────────
+   The admin layout uses a flex row: sidebar (240px fixed) + .main (flex:1).
+   Without min-width:0 on flex children, a growing Tabulator column
+   forces .main to expand, which drags the sticky topbar wider.
+   These rules CONTAIN the overflow to inside .table-wrap only.
+   None of these change any visual spacing, color, or font.
+   ──────────────────────────────────────────────────────────── */
+
+/* Flex containment: prevent .main from growing past the viewport */
+.main {
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+}
+
+/* Content area: same containment */
+.content {
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+}
+
+/* Topbar: pin its width so it never follows .main expansion.
+   sidebar = 240px, so topbar lives in the remaining space. */
+.topbar {
+    width: calc(100vw - 240px) !important;
+    max-width: calc(100vw - 240px) !important;
+    box-sizing: border-box !important;
+}
+
+/* .page wrapper: also must not overflow */
+.page {
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+}
+
+/* --- Reset Tabulator container to match our <table> wrapper --- */
+.tabulator {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 13.5px !important;
+    color: var(--text2) !important;
+    /* Fill container but NEVER grow wider than it */
+    width: 100% !important;
+    max-width: 100% !important;
+    /* Clip: only .tabulator-tableholder scrolls, not the page */
+    overflow: hidden !important;
+}
+
+/* --- Header row → matches thead th --- */
+.tabulator .tabulator-header {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
+    color: var(--text3) !important;
+    /* Header must NOT overflow its container */
+    overflow: hidden !important;
+    width: 100% !important;
+}
+
+.tabulator .tabulator-col {
+    background: transparent !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    padding: 10px 16px !important;
+    height: auto !important;
+    min-height: unset !important;
+}
+
+.tabulator .tabulator-col-content {
+    padding: 0 !important;
+}
+
+.tabulator .tabulator-col-title {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: var(--text3) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+/* Sort arrows — hide Tabulator's default arrow element completely */
+.tabulator .tabulator-col .tabulator-col-sorter {
+    display: none !important;
+}
+
+/* Show a tiny indicator via CSS when sorted */
+.tabulator .tabulator-col.tabulator-sortable[aria-sort="ascending"] .tabulator-col-title::after {
+    content: ' ↑';
+    font-size: 10px;
+    opacity: 0.6;
+}
+
+.tabulator .tabulator-col.tabulator-sortable[aria-sort="descending"] .tabulator-col-title::after {
+    content: ' ↓';
+    font-size: 10px;
+    opacity: 0.6;
+}
+
+.tabulator .tabulator-col.tabulator-sortable .tabulator-col-title:hover {
+    cursor: pointer;
+    color: var(--text) !important;
+}
+
+/* --- Column resize handle --- */
+.tabulator .tabulator-col .tabulator-col-resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    background: transparent !important;
+    border-right: none !important;
+}
+
+.tabulator .tabulator-col .tabulator-col-resize-handle:hover {
+    background: rgba(79, 142, 247, 0.25) !important;
+}
+
+/* --- Table body — this is the ONLY horizontal scroll zone --- */
+.tabulator .tabulator-tableholder {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    background: transparent !important;
+    /* Scrollbar sits inside the card, not on the page */
+    max-width: 100% !important;
+}
+
+.tabulator .tabulator-table {
+    background: transparent !important;
+    /* Let Tabulator set the natural width — do NOT force 100%
+       because that prevents the tableholder from scrolling correctly */
+    min-width: 100% !important;
+}
+
+/* --- Rows → matches tbody tr --- */
+.tabulator-row {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+    border-top: none !important;
+    min-height: unset !important;
+}
+
+.tabulator-row:last-child {
+    border-bottom: none !important;
+}
+
+.tabulator-row:hover,
+.tabulator-row.tabulator-row-even:hover,
+.tabulator-row.tabulator-row-odd:hover {
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Strip zebra striping */
+.tabulator-row.tabulator-row-even {
+    background: transparent !important;
+}
+
+.tabulator-row.tabulator-row-odd {
+    background: transparent !important;
+}
+
+/* Highlight / selected state */
+.tabulator-row.tabulator-selected {
+    background: rgba(79, 142, 247, 0.06) !important;
+}
+
+/* --- Cells → matches tbody td --- */
+.tabulator-row .tabulator-cell {
+    padding: 13px 16px !important;
+    font-size: 13.5px !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    color: var(--text2) !important;
+    vertical-align: middle !important;
+    overflow: visible !important;
+    white-space: normal !important;
+}
+
+/* Preserve .td-main styling inside Tabulator cells */
+.tabulator-row .tabulator-cell .td-main,
+.tabulator-row .tabulator-cell[tabulator-field="Employee"] .td-main {
+    color: var(--text) !important;
+    font-weight: 500 !important;
+}
+
+/* --- Footer / Pagination (if enabled) --- */
+.tabulator .tabulator-footer {
+    background: transparent !important;
+    border-top: 1px solid var(--border) !important;
+    border-bottom: none !important;
+    padding: 8px 16px !important;
+}
+
+.tabulator .tabulator-paginator {
+    font-size: 12px !important;
+    color: var(--text2) !important;
+}
+
+.tabulator .tabulator-page {
+    background: var(--surface2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
+    color: var(--text2) !important;
+    padding: 4px 9px !important;
+    font-size: 12px !important;
+    font-family: 'DM Sans', sans-serif !important;
+}
+
+.tabulator .tabulator-page.active {
+    background: rgba(79, 142, 247, 0.14) !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+.tabulator .tabulator-page:hover:not(.active):not([disabled]) {
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+/* --- Column drag placeholder --- */
+.tabulator-col-resize-guide,
+.tabulator-row-resize-guide {
+    background: var(--accent) !important;
+    opacity: 0.4 !important;
+}
+
+.tabulator .tabulator-col.tabulator-moving {
+    background: var(--surface2) !important;
+    border: 1px dashed var(--border2) !important;
+    opacity: 0.85 !important;
+}
+
+/* --- Scrollbar inside Tabulator tableholder --- */
+.tabulator .tabulator-tableholder::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.tabulator .tabulator-tableholder::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tabulator .tabulator-tableholder::-webkit-scrollbar-thumb {
+    background: var(--border2);
+    border-radius: 3px;
+}
+
+/* --- .table-wrap is the scroll boundary for admin tables --- */
+/* Tabulator must stay clipped within .table-wrap at all times */
+.table-wrap {
+    overflow-x: auto !important;
+    max-width: 100% !important;
+}
+
+.table-wrap .tabulator {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+
+/* The header must follow the tableholder scroll position */
+.table-wrap .tabulator .tabulator-header {
+    overflow: hidden !important;
+}
+
+/* archived.php uses .card-body as wrapper — same fix */
+.card-body .tabulator {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+}

@@ -184,4 +184,4 @@ function switchPanel() {
 }
 </script>
 <script src="https://unpkg.com/tabulator-tables@6.3.0/dist/js/tabulator.min.js"></script>
-<script src="{{ asset('js/tabulator-init.js') }}"></script>
+@vite('resources/js/admin/tabulator-init.js')

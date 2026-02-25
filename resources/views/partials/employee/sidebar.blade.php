@@ -6,7 +6,7 @@
     </div>
     <span class="brand-name">Work<span>Sphere</span></span>
   </div>
-  <div class="sidebar-user" onclick="window.location.href='/employee/profile/my-profile'" style="cursor: pointer;">
+  <div class="sidebar-user" onclick="window.location.href='{{ url('/employee/profile/my-profile') }}'" style="cursor: pointer;">
     <div class="avatar">AR</div>
     <div class="user-info">
       <div class="name">kalp Shah</div>
@@ -15,26 +15,26 @@
   </div>
   <nav class="sidebar-nav">
     <div class="nav-label">Main</div>
-    <a class="nav-item {{ request()->is('employee/dashboard*') ? 'active' : '' }}" href="/employee/dashboard">
+    <a class="nav-item {{ request()->is('employee/dashboard*') ? 'active' : '' }}" href="{{ url('/employee/dashboard') }}">
       <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard
     </a>
-    <a class="nav-item {{ request()->is('employee/tasks*') ? 'active' : '' }}" href="/employee/tasks">
+    <a class="nav-item {{ request()->is('employee/tasks*') ? 'active' : '' }}" href="{{ url('/employee/tasks') }}">
       <svg class="icon" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>My Tasks<span class="nav-badge">4</span>
     </a>
-    <a class="nav-item {{ request()->is('employee/projects*') ? 'active' : '' }}" href="/employee/projects">
+    <a class="nav-item {{ request()->is('employee/projects*') ? 'active' : '' }}" href="{{ url('/employee/projects') }}">
       <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Projects<span class="nav-badge warn">2</span>
     </a>
-    <a class="nav-item {{ request()->is('employee/dailylogs*') ? 'active' : '' }}" href="/employee/dailylogs">
+    <a class="nav-item {{ request()->is('employee/dailylogs*') ? 'active' : '' }}" href="{{ url('/employee/dailylogs') }}">
       <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Daily Log
     </a>
     <div class="nav-label" style="margin-top:10px">Workspace</div>
-    <a class="nav-item {{ request()->is('employee/team*') ? 'active' : '' }}" href="/employee/team">
+    <a class="nav-item {{ request()->is('employee/team*') ? 'active' : '' }}" href="{{ url('/employee/team') }}">
       <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Team Members
     </a>
-    <a class="nav-item {{ request()->is('employee/calendar*') ? 'active' : '' }}" href="/employee/calendar">
+    <a class="nav-item {{ request()->is('employee/calendar*') ? 'active' : '' }}" href="{{ url('/employee/calendar') }}">
       <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Office Calendar
     </a>
-    <a class="nav-item {{ request()->is('employee/profile*') ? 'active' : '' }}" href="/employee/profile/my-profile">
+    <a class="nav-item {{ request()->is('employee/profile*') ? 'active' : '' }}" href="{{ url('/employee/profile/my-profile') }}">
       <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>My Profile
     </a>
     <div class="nav-label" style="margin-top:10px">Account</div>
