@@ -108,6 +108,16 @@ Route::prefix('admin')->group(function () {
     Route::get('/profile/my-profile', function () {
         return view('admin.profile.index');
     });
+
+    // Anonymous Chat
+    Route::get('/anonymous-chat', function () {
+        return view('admin.anonymous-chat');
+    })->name('admin.anonymous-chat');
+
+    // Support Tickets
+    Route::get('/tickets', function () {
+        return view('admin.tickets.index');
+    })->name('admin.tickets.index');
 });
 
 /*
@@ -159,4 +169,22 @@ Route::prefix('employee')->group(function () {
     Route::get('/profile/my-profile', function () {
         return view('employee.profile.index');
     });
+
+    // Tickets
+    Route::get('/tickets', function () {
+        return view('employee.tickets.index');
+    })->name('employee.tickets.index');
+
+    Route::get('/tickets/create', function () {
+        return view('employee.tickets.create');
+    })->name('employee.tickets.create');
+
+    Route::post('/tickets', function () {
+        return redirect()->route('employee.tickets.index');
+    })->name('employee.tickets.store');
+
+    // Anonymous Chat
+    Route::get('/anonymous-chat', function () {
+        return view('employee.anonymous-chat');
+    })->name('employee.anonymous-chat');
 });

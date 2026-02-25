@@ -203,6 +203,26 @@
     border-radius: 3px;
 }
 
+/* --- Placeholder (Empty Table State) --- */
+.tabulator .tabulator-placeholder {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-height: 200px !important;
+    padding: 40px !important;
+    text-align: center !important;
+    background: transparent !important;
+}
+
+.tabulator .tabulator-placeholder span {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
 /* --- Containers — match table-container and overflow-x: auto wrappers --- */
 .table-container .tabulator,
 [style*="overflow-x"] .tabulator {

@@ -92,9 +92,22 @@
         const thead = table.querySelector('thead');
         const tbody = table.querySelector('tbody');
         const columns = buildColumns(thead);
+
+        // Detect placeholder row (e.g. "No tickets yet")
+        // If the first row has a single cell with colspan >= columns.length, treat as placeholder.
+        let placeholderHtml = '';
+        const firstRow = tbody.querySelector('tr');
+        if (firstRow) {
+            const firstCell = firstRow.querySelector('td');
+            if (firstCell && parseInt(firstCell.getAttribute('colspan') || '1', 10) >= columns.length) {
+                placeholderHtml = firstCell.innerHTML;
+                firstRow.remove(); // Remove it from the DOM so buildData ignores it
+            }
+        }
+
         const data = buildData(tbody, columns.length);
 
-        new Tabulator(table, {
+        const instance = new Tabulator(table, {
             data: data,
             columns: columns,
 
@@ -113,8 +126,14 @@
 
             headerSortElement: function () { return ''; },
 
-            placeholder: '',
+            placeholder: placeholderHtml,
         });
+
+        // Store instance for external access (e.g. filtering)
+        if (table.id) {
+            if (!window.TabulatorInstances) window.TabulatorInstances = {};
+            window.TabulatorInstances[table.id] = instance;
+        }
     }
 
     /**

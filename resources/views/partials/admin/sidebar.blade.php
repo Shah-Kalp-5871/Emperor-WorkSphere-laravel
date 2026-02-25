@@ -43,6 +43,14 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x1="1" y1="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
       Archived
     </a>
+    <a class="nav-item {{ request()->is('admin/anonymous-chat*') ? 'active' : '' }}" href="{{ url('/admin/anonymous-chat') }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M9 10h6"/><path d="M9 14h6"/></svg>
+      Anonymous Chat
+    </a>
+    <a class="nav-item {{ request()->is('admin/tickets*') ? 'active' : '' }}" href="{{ url('/admin/tickets') }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Support Tickets
+    </a>
   </nav>
   <div class="sidebar-user" onclick="window.location.href='{{ url('/admin/profile/my-profile') }}'" style="cursor: pointer;">
     <div class="user-avatar">A</div>
