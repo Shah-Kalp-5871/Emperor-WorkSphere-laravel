@@ -21,6 +21,11 @@
         <div id="setup-view">
             <form id="employee-form">
                 <div class="form-group">
+                    <label class="form-label">Full Name <span style="color:red">*</span></label>
+                    <input type="text" class="input" id="name" name="name" required placeholder="John Doe">
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Work Email <span style="color:red">*</span></label>
                     <input type="email" class="input" id="email" name="email" required placeholder="name@worksphere.com">
                 </div>

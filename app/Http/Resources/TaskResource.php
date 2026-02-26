@@ -27,7 +27,7 @@ class TaskResource extends JsonResource
                 return $this->assignees->map(function ($assignee) {
                     return [
                         'id' => $assignee->id,
-                        'name' => $assignee->first_name . ' ' . $assignee->last_name,
+                        'name' => $assignee->user?->name ?? 'N/A',
                     ];
                 });
             }),

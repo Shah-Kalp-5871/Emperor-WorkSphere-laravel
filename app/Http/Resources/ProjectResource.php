@@ -21,14 +21,18 @@ class ProjectResource extends JsonResource
             'start_date' => $this->start_date?->format('Y-m-d'),
             'end_date' => $this->end_date?->format('Y-m-d'),
             'status' => $this->status,
+            'priority' => $this->priority,
+            'creator_name' => $this->creator?->name ?? 'Admin',
             'members' => $this->whenLoaded('members', function () {
                 return $this->members->map(function ($member) {
                     return [
                         'id' => $member->id,
-                        'name' => $member->first_name . ' ' . $member->last_name,
+                        'name' => $member->user?->name ?? 'N/A',
                     ];
                 });
             }),
+            'tasks_count' => $this->whenLoaded('tasks', $this->tasks->count()),
+            'completed_tasks_count' => $this->whenLoaded('tasks', $this->tasks->where('status', 'completed')->count()),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

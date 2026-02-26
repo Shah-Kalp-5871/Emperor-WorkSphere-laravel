@@ -13,7 +13,7 @@ class ProjectRepository implements ProjectRepositoryInterface
 
     public function getAll(int $perPage = 15)
     {
-        return $this->model->with(['members:id,first_name,last_name,department_id,designation_id'])->latest()->paginate($perPage);
+        return $this->model->with(['creator', 'members.user', 'tasks'])->latest()->paginate($perPage);
     }
 
     public function findById(int $id)

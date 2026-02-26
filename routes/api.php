@@ -41,6 +41,12 @@ Route::middleware('auth:api,admin')->group(function () {
             Route::post('tasks/{task}/assign-employees', [\App\Http\Controllers\Admin\TaskController::class, 'assignEmployees']);
         });
 
+        Route::middleware('permission:manage_support')->group(function() {
+            Route::apiResource('daily-logs', \App\Http\Controllers\Admin\DailyLogController::class)->only(['index', 'show', 'update', 'destroy']);
+            Route::apiResource('support-tickets', \App\Http\Controllers\Admin\SupportTicketController::class)->only(['index', 'show', 'update']);
+            Route::post('support-tickets/{ticket}/reply', [\App\Http\Controllers\Admin\SupportTicketController::class, 'reply']);
+        });
+
         // Lookup Routes
         Route::get('departments', [\App\Http\Controllers\Api\Admin\DepartmentController::class, 'index']);
         Route::get('designations', [\App\Http\Controllers\Api\Admin\DesignationController::class, 'index']);

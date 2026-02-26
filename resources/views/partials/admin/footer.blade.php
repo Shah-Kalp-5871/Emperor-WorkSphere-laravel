@@ -47,76 +47,9 @@
   </div>
 </div>
 
-<!-- Create Project Modal -->
-<div class="modal-overlay" id="create-proj-modal">
-  <div class="modal">
-    <div class="modal-close" onclick="closeModal('create-proj-modal')">✕</div>
-    <div class="modal-title">New Project</div>
-    <div class="modal-sub">You will be automatically added as a member</div>
-    <div class="form-group">
-      <label class="form-label">Project Name</label>
-      <input class="form-input" placeholder="e.g. Customer Portal v3">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <input class="form-input" placeholder="Brief description…">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Add Members</label>
-      <select class="form-select" multiple style="height:90px">
-        <option>Priya Sharma (@priya_s)</option>
-        <option>Ravi Kumar (@ravi_k)</option>
-        <option>Ankit Mehta (@ankit_m)</option>
-        <option>Sara Joshi (@sara_j)</option>
-      </select>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('create-proj-modal')">Cancel</button>
-      <button class="btn btn-primary">Create Project</button>
-    </div>
-  </div>
-</div>
 
-<!-- Create Task Modal -->
-<div class="modal-overlay" id="create-task-modal">
-  <div class="modal">
-    <div class="modal-close" onclick="closeModal('create-task-modal')">✕</div>
-    <div class="modal-title">New Task</div>
-    <div class="modal-sub">Tasks are always created inside a project</div>
-    <div class="form-group">
-      <label class="form-label">Task Title</label>
-      <input class="form-input" placeholder="e.g. Fix mobile navigation bug">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Project</label>
-      <select class="form-select">
-        <option>Website Redesign</option>
-        <option>Mobile App v2</option>
-        <option>API Integration</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Assign To</label>
-      <select class="form-select">
-        <option>Priya Sharma</option><option>Ravi Kumar</option><option>Ankit Mehta</option><option>Sara Joshi</option>
-      </select>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group">
-        <label class="form-label">Priority</label>
-        <select class="form-select"><option>Low</option><option>Medium</option><option>High</option></select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Due Date</label>
-        <input class="form-input" type="date">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('create-task-modal')">Cancel</button>
-      <button class="btn btn-primary">Create Task</button>
-    </div>
-  </div>
-</div>
+
+
 
 <!-- Mark Day Modal -->
 <div class="modal-overlay" id="mark-day-modal">

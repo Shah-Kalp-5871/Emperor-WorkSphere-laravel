@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
             $table->enum('role', ['lead', 'member', 'reviewer'])->default('member');
             $table->timestamp('joined_at')->useCurrent();
+            $table->timestamps();
             
             $table->unique(['project_id', 'employee_id']);
             $table->index('employee_id');

@@ -13,7 +13,7 @@ class TaskRepository implements TaskRepositoryInterface
 
     public function getAll(int $perPage = 15)
     {
-        return $this->model->with(['project:id,name', 'assignees:id,first_name,last_name'])->latest()->paginate($perPage);
+        return $this->model->with(['project:id,name', 'assignees.user'])->latest()->paginate($perPage);
     }
 
     public function findById(int $id)

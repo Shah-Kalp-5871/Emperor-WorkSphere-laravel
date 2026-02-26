@@ -96,7 +96,7 @@
         </div>
         
         <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
-            <table class="ticket-table" id="ticketsTable" data-tabulator data-tabulator-pagination="true" data-tabulator-page-size="10">
+            <table class="ticket-table" id="ticketsTable">
                 <thead>
                     <tr>
                         <th data-width="120">ID</th>
@@ -105,135 +105,36 @@
                         <th data-width="150">Employee</th>
                         <th data-width="110">Status</th>
                         <th data-width="140">Date Raised</th>
-                        <th data-width="140">Last Updated</th>
                         <th data-width="100" style="text-align: right;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="ticketsTableBody">
-                    <!-- Fake Static Entries -->
-                    <tr class="ticket-row" data-status="pending">
-                        <td style="font-weight: 600; color: var(--accent);">#TK-7842</td>
-                        <td>
-                            <div style="font-weight: 500;">API Authentication Issue</div>
-                            <div style="font-size: 12px; color: var(--text-3); margin-top: 2px;">Getting 401 Unauthorized on the login endpoint...</div>
-                        </td>
-                        <td>
-                            <span class="ticket-category-pill" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; background: #ef444420; color: #ef4444;">
-                                Technical
-                            </span>
-                        </td>
-                        <td>
-                            <div style="font-weight: 500;">Kalp Shah</div>
-                            <div style="font-size: 11px; color: var(--text-3);">Intern</div>
-                        </td>
-                        <td>
-                            <span class="status-tag status-pending">Pending</span>
-                        </td>
-                        <td>Feb 25, 2026</td>
-                        <td>2 hours ago</td>
-                        <td style="text-align: right;">
-                            <button class="icon-btn" onclick="viewTicket('1')" title="Respond">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr class="ticket-row" data-status="completed">
-                        <td style="font-weight: 600; color: var(--accent);">#TK-7839</td>
-                        <td>
-                            <div style="font-weight: 500;">Leave Request Clarification</div>
-                            <div style="font-size: 12px; color: var(--text-3); margin-top: 2px;">Need to know the carry-forward policy for...</div>
-                        </td>
-                        <td>
-                            <span class="ticket-category-pill" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; background: #3b82f620; color: #3b82f6;">
-                                HR
-                            </span>
-                        </td>
-                        <td>
-                            <div style="font-weight: 500;">John Doe</div>
-                            <div style="font-size: 11px; color: var(--text-3);">Developer</div>
-                        </td>
-                        <td>
-                            <span class="status-tag status-completed">Completed</span>
-                        </td>
-                        <td>Feb 24, 2026</td>
-                        <td>1 day ago</td>
-                        <td style="text-align: right;">
-                            <button class="icon-btn" onclick="viewTicket('2')" title="View Conversation">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr class="ticket-row" data-status="pending">
-                        <td style="font-weight: 600; color: var(--accent);">#TK-7835</td>
-                        <td>
-                            <div style="font-weight: 500;">UI Breakdown on Mobile</div>
-                            <div style="font-size: 12px; color: var(--text-3); margin-top: 2px;">The dashboard sidebar overlaps content on...</div>
-                        </td>
-                        <td>
-                            <span class="ticket-category-pill" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; background: #f59e0b20; color: #f59e0b;">
-                                Design
-                            </span>
-                        </td>
-                        <td>
-                            <div style="font-weight: 500;">Jane Smith</div>
-                            <div style="font-size: 11px; color: var(--text-3);">UI Designer</div>
-                        </td>
-                        <td>
-                            <span class="status-tag status-pending">Pending</span>
-                        </td>
-                        <td>Feb 23, 2026</td>
-                        <td>2 days ago</td>
-                        <td style="text-align: right;">
-                            <button class="icon-btn" onclick="viewTicket('3')" title="Respond">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-
-                    @forelse($tickets ?? [] as $ticket)
-                    <tr class="ticket-row" data-status="{{ $ticket->status }}">
-                        <td style="font-weight: 600; color: var(--accent);">#{{ $ticket->ticket_id }}</td>
-                        <td>
-                            <div style="font-weight: 500;">{{ $ticket->subject }}</div>
-                            <div style="font-size: 12px; color: var(--text-3); margin-top: 2px;">{{ Str::limit($ticket->description, 50) }}</div>
-                        </td>
-                        <td>
-                            <span class="ticket-category-pill" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; background: {{ $ticket->category_color }}20; color: {{ $ticket->category_color }};">
-                                {{ ucfirst($ticket->category) }}
-                            </span>
-                        </td>
-                        <td>
-                            <div style="font-weight: 500;">{{ $ticket->employee_name ?? 'Employee' }}</div>
-                        </td>
-                        <td>
-                            <span class="status-tag status-{{ $ticket->status }}">
-                                {{ ucfirst($ticket->status) }}
-                            </span>
-                        </td>
-                        <td>{{ $ticket->created_at->format('M d, Y') }}</td>
-                        <td>{{ $ticket->updated_at->diffForHumans() }}</td>
-                        <td style="text-align: right;">
-                            <button class="icon-btn" onclick="viewTicket('{{ $ticket->id }}')" title="Respond">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>
-                    @empty
-                    <!-- No real tickets, but we have fake ones above -->
-                    @endforelse
+                    <!-- Dynamic rows -->
                 </tbody>
             </table>
+
+            <div id="table-loading" style="text-align:center; padding: 40px; display: none;">
+                <div class="spinner" style="border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
+                <div style="color: var(--text-2); font-size: 14px;">Loading tickets...</div>
+            </div>
+
+            <div id="table-empty" style="text-align:center; padding: 40px; display: none;">
+                <div style="font-size: 24px; margin-bottom: 10px;">🎫</div>
+                <div style="color: var(--text-2); font-size: 14px;">No support tickets found.</div>
+            </div>
+
+            <div id="table-error" style="text-align:center; padding: 40px; display: none; color: #ff4d4d;">
+                <div style="font-size: 20px; margin-bottom: 10px;">⚠️</div>
+                <div id="error-message" style="font-size: 14px;">Failed to load tickets.</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="pagination-row" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; margin-top: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);">
+        <div id="pagination-info" style="color: var(--text-2); font-size: 13px;">Showing 0 of 0 tickets</div>
+        <div id="pagination-controls" style="display: flex; gap: 8px;">
+            <button class="btn btn-ghost btn-sm" id="prev-page" disabled>Previous</button>
+            <button class="btn btn-ghost btn-sm" id="next-page" disabled>Next</button>
         </div>
     </div>
 </div>
@@ -275,44 +176,181 @@
 
 @push('scripts')
 <script>
-function filterTickets(status) {
-    if (window.TabulatorInstances && window.TabulatorInstances.ticketsTable) {
-        if (status === 'all') {
-            window.TabulatorInstances.ticketsTable.clearFilter();
-        } else {
-            window.TabulatorInstances.ticketsTable.setFilter("col_4", "like", status);
+    let currentPage = 1;
+
+    async function fetchTickets(page = 1) {
+        const tbody = document.getElementById('ticketsTableBody');
+        const loading = document.getElementById('table-loading');
+        const empty = document.getElementById('table-empty');
+        const errorDiv = document.getElementById('table-error');
+        const info = document.getElementById('pagination-info');
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+
+        tbody.innerHTML = '';
+        loading.style.display = 'block';
+        empty.style.display = 'none';
+        errorDiv.style.display = 'none';
+        
+        try {
+            const response = await axios.get(`/api/admin/support-tickets?page=${page}`);
+            const { data, meta } = response.data;
+            const tickets = data;
+            const paginationMeta = meta || response.data;
+
+            loading.style.display = 'none';
+
+            if (!tickets || tickets.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+
+            tickets.forEach(ticket => {
+                const tr = document.createElement('tr');
+                tr.className = 'ticket-row';
+                const createdDate = ticket.created_at ? new Date(ticket.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+                
+                const statusTag = ticket.status === 'open' ? 'status-pending' : 'status-completed';
+
+                let categoryBackground = ticket.category === 'technical' ? '#ef444420' : (ticket.category === 'hr' ? '#3b82f620' : '#f59e0b20');
+                let categoryColor = ticket.category === 'technical' ? '#ef4444' : (ticket.category === 'hr' ? '#3b82f6' : '#f59e0b');
+
+                tr.innerHTML = `
+                    <td style="font-weight: 600; color: var(--accent);">#${ticket.ticket_number}</td>
+                    <td>
+                        <div style="font-weight: 500;">${ticket.subject}</div>
+                        <div style="font-size: 12px; color: var(--text-3); margin-top: 2px;">${ticket.description.substring(0, 50)}...</div>
+                    </td>
+                    <td>
+                        <span class="ticket-category-pill" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; background: ${categoryBackground}; color: ${categoryColor};">
+                            ${ticket.category.toUpperCase()}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="font-weight: 500;">${ticket.employee_name}</div>
+                        <div style="font-size: 11px; color: var(--text-3);">${ticket.employee_designation}</div>
+                    </td>
+                    <td>
+                        <span class="status-tag ${statusTag}">${ticket.status.toUpperCase()}</span>
+                    </td>
+                    <td>${createdDate}</td>
+                    <td style="text-align: right;">
+                        <button class="icon-btn" onclick="viewTicket('${ticket.id}')" title="Respond">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (paginationMeta) {
+                currentPage = paginationMeta.current_page || 1;
+                info.innerText = `Showing ${paginationMeta.from || 0} to ${paginationMeta.to || 0} of ${paginationMeta.total || 0} tickets`;
+                prevBtn.disabled = currentPage === 1;
+                nextBtn.disabled = currentPage === (paginationMeta.last_page || 1);
+            }
+
+        } catch (error) {
+            console.error('Fetch error:', error);
+            loading.style.display = 'none';
+            errorDiv.style.display = 'block';
+            document.getElementById('error-message').innerText = error.response?.data?.message || 'Failed to load tickets.';
         }
+    }
+
+function filterTickets(status) {
+    // Basic filter logic or re-fetch with status param
+    fetchTickets(1); // Simplified for now
+}
+
+async function viewTicket(ticketId) {
+    const modal = document.getElementById('ticketModal');
+    const content = document.getElementById('ticketDetailsContent');
+    content.innerHTML = '<div style="text-align:center; padding: 20px;">Loading details...</div>';
+    modal.style.display = 'flex';
+
+    try {
+        const response = await axios.get(`/api/admin/support-tickets/${ticketId}`);
+        const ticket = response.data.data;
+        
+        const createdDate = new Date(ticket.created_at).toLocaleString();
+        const statusTag = ticket.status === 'open' ? 'status-pending' : 'status-completed';
+
+        let repliesHtml = '';
+        if (ticket.replies && ticket.replies.length > 0) {
+            repliesHtml = '<h5 style="font-size: 14px; font-weight: 700; margin: 20px 0 12px;">Conversation</h5>';
+            ticket.replies.forEach(reply => {
+                const align = reply.is_admin ? 'right' : 'left';
+                const bg = reply.is_admin ? 'var(--blue-lt)' : 'var(--surface-2)';
+                repliesHtml += `
+                    <div style="margin-bottom: 12px; text-align: ${align}">
+                        <div style="display:inline-block; background: ${bg}; padding: 10px 14px; border-radius: 8px; max-width: 80%; text-align: left;">
+                            <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px;">${reply.sender_name}</div>
+                            <div style="font-size: 13px;">${reply.message}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        content.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                    <span class="status-tag ${statusTag}">${ticket.status.toUpperCase()}</span>
+                    <span style="color: var(--text-3); font-size: 13px;">Raised on ${createdDate}</span>
+                </div>
+                <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">${ticket.subject}</h4>
+                <div style="background: var(--surface-2); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px;">
+                    <p style="color: var(--text-2); line-height: 1.6;">${ticket.description}</p>
+                </div>
+                
+                ${repliesHtml}
+
+                <h5 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Send Response</h5>
+                <div style="margin-top: 20px;">
+                    <textarea id="reply-message" class="form-control" rows="3" placeholder="Type your response..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); outline: none; background: var(--bg-1); color: var(--text-1);"></textarea>
+                    <div style="display: flex; gap: 10px; margin-top: 12px;">
+                        <button class="btn btn-primary" onclick="handleSendReply('${ticket.id}')" id="send-reply-btn">Send Response</button>
+                        ${ticket.status === 'open' ? `<button class="btn btn-primary" onclick="handleUpdateStatus('${ticket.id}', 'resolved')">Mark as Resolved</button>` : ''}
+                        <button class="btn btn-ghost" onclick="closeTicketModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        content.innerHTML = '<div style="color:red; padding:20px;">Failed to load ticket details.</div>';
     }
 }
 
-function viewTicket(ticketId) {
-    const modal = document.getElementById('ticketModal');
-    const content = document.getElementById('ticketDetailsContent');
-    
-    content.innerHTML = `
-        <div style="margin-bottom: 20px;">
-            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                <span class="status-tag status-pending">Pending</span>
-                <span style="color: var(--text-3); font-size: 13px;">Created by Kalp Shah on Feb 25, 2026</span>
-            </div>
-            <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">API Authentication Issue</h4>
-            <div style="background: var(--surface-2); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px;">
-                <p style="color: var(--text-2); line-height: 1.6;">Getting 401 Unauthorized on the login endpoint. This is blocking the integration work.</p>
-            </div>
-            
-            <h5 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Response Area</h5>
-            
-            <div style="margin-top: 20px;">
-                <textarea class="form-control" rows="3" placeholder="Type your response to the employee..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); outline: none;"></textarea>
-                <div style="display: flex; gap: 10px; margin-top: 12px;">
-                    <button class="greeting-btn" style="padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer;">Send Response</button>
-                    <button class="greeting-btn" style="background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); padding: 8px 16px; border-radius: 4px; cursor: pointer;" onclick="closeTicketModal()">Cancel</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    modal.style.display = 'flex';
+async function handleSendReply(ticketId) {
+    const message = document.getElementById('reply-message').value;
+    if (!message) return;
+
+    const btn = document.getElementById('send-reply-btn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+        await axios.post(`/api/admin/support-tickets/${ticketId}/reply`, { message });
+        viewTicket(ticketId); // Refresh details
+    } catch (error) {
+        alert('Failed to send reply.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send Response';
+    }
+}
+
+async function handleUpdateStatus(ticketId, status) {
+    try {
+        await axios.put(`/api/admin/support-tickets/${ticketId}`, { status });
+        viewTicket(ticketId);
+        fetchTickets(currentPage);
+    } catch (error) {
+        alert('Failed to update status.');
+    }
 }
 
 function closeTicketModal() {
@@ -325,6 +363,18 @@ window.onclick = function(event) {
         modal.style.display = 'none';
     }
 }
+
+document.getElementById('prev-page').addEventListener('click', () => {
+    if (currentPage > 1) fetchTickets(currentPage - 1);
+});
+
+document.getElementById('next-page').addEventListener('click', () => {
+    fetchTickets(currentPage + 1);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchTickets();
+});
 </script>
 @endpush
 @endsection

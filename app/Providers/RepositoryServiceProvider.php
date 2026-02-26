@@ -23,6 +23,14 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Contracts\TaskRepositoryInterface::class,
             \App\Repositories\Eloquent\TaskRepository::class
         );
+        $this->app->bind(
+            \App\Repositories\Contracts\DailyLogRepositoryInterface::class,
+            \App\Repositories\Eloquent\DailyLogRepository::class
+        );
+        $this->app->bind(
+            \App\Repositories\Contracts\SupportTicketRepositoryInterface::class,
+            \App\Repositories\Eloquent\SupportTicketRepository::class
+        );
     }
 
     /**

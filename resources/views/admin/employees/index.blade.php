@@ -94,17 +94,18 @@
 
             data.forEach(employee => {
                 const tr = document.createElement('tr');
-                const initial = employee.first_name ? employee.first_name[0].toUpperCase() : '?';
-                const fullName = `${employee.first_name || ''} ${employee.last_name || ''}`.trim();
+                const fullName = employee.user ? employee.user.name : 'N/A';
+                const initial = fullName !== 'N/A' ? fullName[0].toUpperCase() : '?';
+                const email = employee.user ? employee.user.email : 'N/A';
                 const joinedDate = employee.created_at ? new Date(employee.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
-                const privacyClass = employee.privacy_profile === 'private' ? 'privacy-private' : 'privacy-public';
-                const privacyIcon = employee.privacy_profile === 'private' ? '🔒' : '🌍';
-                const privacyText = employee.privacy_profile === 'private' ? 'Private' : 'Public';
+                const privacyClass = employee.profile_visibility === 'private' ? 'privacy-private' : 'privacy-public';
+                const privacyIcon = employee.profile_visibility === 'private' ? '🔒' : '🌍';
+                const privacyText = employee.profile_visibility === 'private' ? 'Private' : 'Public';
 
                 tr.innerHTML = `
                     <td><div style="display:flex;align-items:center;gap:10px"><div class="av" style="margin:0;width:32px;height:32px">${initial}</div><span class="td-main">${fullName}</span></div></td>
-                    <td>${employee.username || 'N/A'}</td>
-                    <td>${employee.email}</td>
+                    <td>${employee.employee_code || 'N/A'}</td>
+                    <td>${email}</td>
                     <td>${employee.phone || 'N/A'}</td>
                     <td><span class="privacy-pill ${privacyClass}">${privacyIcon} ${privacyText}</span></td>
                     <td>${joinedDate}</td>
