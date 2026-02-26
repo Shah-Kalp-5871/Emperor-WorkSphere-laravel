@@ -1,14 +1,32 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Resources\TaskResource;
+use App\Services\Admin\DashboardService;
+use Illuminate\Http\JsonResponse;
 
-class dashboardController extends Controller
+class DashboardController extends Controller
 {
-    public function index()
+    public function __construct(
+        protected DashboardService $dashboardService
+    ) {}
+
+    /**
+     * GET /api/admin/dashboard/stats
+     */
+    public function stats(): JsonResponse
     {
-        return view('admin.dashboard.index');
+        return response()->json([
+            'success' => true,
+            'message' => 'Dashboard statistics retrieved successfully.',
+            'data'    => [
+                'stats'           => $this->dashboardService->getStats(),
+                'active_projects' => $this->dashboardService->getActiveProjects(5),
+                'recent_activity' => $this->dashboardService->getRecentActivity(10),
+                'overdue_tasks'   => TaskResource::collection($this->dashboardService->getOverdueTasks(5)),
+            ],
+        ]);
     }
 }

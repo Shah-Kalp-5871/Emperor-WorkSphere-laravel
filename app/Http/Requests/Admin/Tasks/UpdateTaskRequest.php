@@ -14,12 +14,14 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => ['sometimes', 'required', 'exists:projects,id'],
-            'title' => ['sometimes', 'required', 'string', 'max:150'],
-            'description' => ['nullable', 'string'],
-            'status' => ['sometimes', 'required', 'in:pending,in_progress,completed,on_hold'],
-            'priority' => ['sometimes', 'required', 'in:low,medium,high,urgent'],
-            'due_date' => ['nullable', 'date'],
+            'project_id'   => ['sometimes', 'required', 'exists:projects,id'],
+            'title'        => ['sometimes', 'required', 'string', 'max:150'],
+            'description'  => ['nullable', 'string'],
+            'status'       => ['sometimes', 'required', 'in:pending,in_progress,completed,on_hold'],
+            'priority'     => ['sometimes', 'required', 'in:low,medium,high,urgent'],
+            'due_date'     => ['nullable', 'date'],
+            'assignee_ids' => ['nullable', 'array'],
+            'assignee_ids.*' => ['integer', 'exists:employees,id'],
         ];
     }
 }

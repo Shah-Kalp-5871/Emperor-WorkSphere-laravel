@@ -109,7 +109,7 @@
                     <td>${employee.phone || 'N/A'}</td>
                     <td><span class="privacy-pill ${privacyClass}">${privacyIcon} ${privacyText}</span></td>
                     <td>${joinedDate}</td>
-                    <td><button class="btn btn-ghost btn-sm" onclick="alert('Viewing employee ID: ${employee.id}')">View</button></td>
+                    <td><button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/employees/${employee.id}'">View</button></td>
                 `;
                 tbody.appendChild(tr);
             });

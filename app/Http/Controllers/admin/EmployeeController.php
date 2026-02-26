@@ -41,6 +41,25 @@ class EmployeeController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $this->employeeService->deleteEmployee($id);
-        return response()->json(['message' => 'Employee deleted successfully']);
+        return response()->json(['message' => 'Employee deleted (archived) successfully']);
+    }
+
+    public function archived(): JsonResponse
+    {
+        $employees = $this->employeeService->getArchivedEmployees();
+        return response()->json([
+            'success' => true,
+            'data' => $employees,
+        ]);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $employee = $this->employeeService->restoreEmployee($id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Employee restored successfully',
+            'data' => $employee
+        ]);
     }
 }

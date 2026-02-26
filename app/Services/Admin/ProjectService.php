@@ -4,6 +4,8 @@ namespace App\Services\Admin;
 
 use App\Repositories\Contracts\ProjectRepositoryInterface;
 use Exception;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ProjectService
@@ -12,11 +14,15 @@ class ProjectService
         protected ProjectRepositoryInterface $projectRepository
     ) {}
 
-    public function listProjects(int $perPage = 15)
+    public function listProjects(array $filters = [], int $perPage = 15)
     {
-        return \Illuminate\Support\Facades\Cache::remember('projects.list.page.' . request('page', 1), 300, function () use ($perPage) {
-            return $this->projectRepository->getAll($perPage);
-        });
+        // Status filter pushed down to query level
+        return $this->projectRepository->getAll($perPage, $filters);
+    }
+
+    public function getArchivedProjects(int $perPage = 15)
+    {
+        return $this->projectRepository->getArchived($perPage);
     }
 
     public function getProjectById(int $id)
@@ -24,51 +30,59 @@ class ProjectService
         return $this->projectRepository->findById($id);
     }
 
-    public function createProject(array $data)
+    public function createProject(array $data): array
     {
-        try {
+        return DB::transaction(function () use ($data) {
             $project = $this->projectRepository->create($data);
-            \Illuminate\Support\Facades\Cache::tags(['projects'])->flush();
-            return $project;
-        } catch (Exception $e) {
-            Log::error('Failed to create project: ' . $e->getMessage());
-            throw $e;
-        }
+
+            // Assign members if provided
+            if (!empty($data['employee_ids'])) {
+                $project = $this->projectRepository->assignEmployees($project->id, $data['employee_ids']);
+            }
+
+            Cache::forget('projects.list.all');
+            return ['project' => $project, 'members_assigned' => !empty($data['employee_ids'])];
+        });
     }
 
-    public function updateProject(int $id, array $data)
+    public function updateProject(int $id, array $data): array
     {
-        try {
+        return DB::transaction(function () use ($id, $data) {
             $project = $this->projectRepository->update($id, $data);
-            \Illuminate\Support\Facades\Cache::tags(['projects'])->flush();
-            return $project;
-        } catch (Exception $e) {
-            Log::error("Failed to update project {$id}: " . $e->getMessage());
-            throw $e;
-        }
+
+            // Re-sync members if sent
+            if (isset($data['employee_ids'])) {
+                $project = $this->projectRepository->assignEmployees($id, $data['employee_ids']);
+            }
+
+            Cache::forget('projects.list.all');
+            return ['project' => $project];
+        });
     }
 
-    public function deleteProject(int $id)
+    public function archiveProject(int $id): bool
     {
-        try {
-            $deleted = $this->projectRepository->delete($id);
-            \Illuminate\Support\Facades\Cache::tags(['projects'])->flush();
-            return $deleted;
-        } catch (Exception $e) {
-            Log::error("Failed to delete project {$id}: " . $e->getMessage());
-            throw $e;
-        }
+        return DB::transaction(function () use ($id) {
+            $result = $this->projectRepository->delete($id);
+            Cache::forget('projects.list.all');
+            return $result;
+        });
     }
 
-    public function assignEmployees(int $projectId, array $employeeIds)
+    public function restoreProject(int $id): mixed
     {
-        try {
-            $project = $this->projectRepository->assignEmployees($projectId, $employeeIds);
-            \Illuminate\Support\Facades\Cache::tags(['projects'])->flush();
+        return DB::transaction(function () use ($id) {
+            $project = $this->projectRepository->restore($id);
+            Cache::forget('projects.list.all');
             return $project;
-        } catch (Exception $e) {
-            Log::error("Failed to assign employees to project {$projectId}: " . $e->getMessage());
-            throw $e;
-        }
+        });
+    }
+
+    public function assignEmployees(int $projectId, array $employeeIds): mixed
+    {
+        return DB::transaction(function () use ($projectId, $employeeIds) {
+            return $this->projectRepository->assignEmployees($projectId, $employeeIds);
+        });
     }
 }
+

@@ -15,4 +15,10 @@ interface EmployeeRepositoryInterface
     public function delete(int $id);
     
     public function findByCode(string $code);
+
+    public function getArchived(int $perPage = 15);
+
+    public function restore(int $id);
+
+    public function forceDelete(int $id);
 }

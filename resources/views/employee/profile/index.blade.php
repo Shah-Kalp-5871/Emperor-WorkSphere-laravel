@@ -10,20 +10,23 @@
     <div class="panel" style="margin-bottom: 24px;">
     <div style="padding: 24px 28px;">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
-        <div class="profile-header" style="margin-bottom: 0;">
-            <div class="profile-avatar-lg">KS</div>
+        <div class="profile-header" style="margin-bottom: 0;" id="profile-header-info">
+            <div class="profile-avatar-lg skeleton" style="width:80px;height:80px"></div>
             <div>
-            <div class="profile-name">Kalp Shah</div>
-            <div class="profile-role-text">
-                <span>Full Stack Developer Intern</span>
-                <span class="privacy-pill privacy-public">Public Profile</span>
-            </div>
+                <div class="profile-name skeleton" style="width:180px;height:28px;margin-bottom:8px"></div>
+                <div class="profile-role-text skeleton" style="width:120px;height:18px"></div>
             </div>
         </div>
-        <button class="greeting-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Edit My Profile
-        </button>
+        <div style="display:flex; gap:12px">
+            <button class="greeting-btn" onclick="showEditProfile()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit Profile
+            </button>
+            <button class="greeting-btn" style="background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)" onclick="showChangePassword()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                Security
+            </button>
+        </div>
         </div>
     </div>
     </div>
@@ -77,31 +80,10 @@
         </div>
         </div>
         <div style="padding: 22px;">
-        <div class="detail-grid">
-            <div class="detail-item">
-            <div class="detail-label">Full Name</div>
-            <div class="detail-value">Kalp Shah</div>
-            </div>
-            <div class="detail-item">
-            <div class="detail-label">Email Address</div>
-            <div class="detail-value">kalp.shah@emperor.com</div>
-            </div>
-            <div class="detail-item">
-            <div class="detail-label">Mobile Number</div>
-            <div class="detail-value">+91 99887 76655</div>
-            </div>
-            <div class="detail-item">
-            <div class="detail-label">Department</div>
-            <div class="detail-value">Development Team</div>
-            </div>
-            <div class="detail-item">
-            <div class="detail-label">Current Designation</div>
-            <div class="detail-value">Intern</div>
-            </div>
-            <div class="detail-item">
-            <div class="detail-label">Primary Location</div>
-            <div class="detail-value">Surat Office</div>
-            </div>
+        <div class="detail-grid" id="personal-info-grid">
+            <div class="detail-item"><div class="detail-label">Full Name</div><div class="detail-value skeleton" style="width:120px;height:20px"></div></div>
+            <div class="detail-item"><div class="detail-label">Email Address</div><div class="detail-value skeleton" style="width:180px;height:20px"></div></div>
+            <div class="detail-item"><div class="detail-label">Mobile Number</div><div class="detail-value skeleton" style="width:100px;height:20px"></div></div>
         </div>
         </div>
     </div>
@@ -117,37 +99,60 @@
         <div style="padding: 22px;">
         <div class="detail-grid" style="grid-template-columns: 1fr;">
             <div class="detail-item">
-            <div class="detail-label">Username</div>
-            <div class="detail-value">@kalp_shah</div>
+            <div class="detail-label">Department</div>
+            <div class="detail-value" id="department-display">-</div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <div class="detail-item">
                 <div class="detail-label">Joined On</div>
-                <div class="detail-value">Feb 01, 2026</div>
+                <div class="detail-value" id="joined-display">-</div>
             </div>
             <div class="detail-item">
-                <div class="detail-label">Last Login</div>
-                <div class="detail-value">Today, 9:15 AM</div>
-            </div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-            <div class="detail-item" style="text-align: center;">
-                <div class="detail-label">Projects</div>
-                <div class="detail-value">3</div>
-            </div>
-            <div class="detail-item" style="text-align: center;">
-                <div class="detail-label">Tasks</div>
-                <div class="detail-value">24</div>
-            </div>
-            <div class="detail-item" style="text-align: center;">
-                <div class="detail-label">Done</div>
-                <div class="detail-value">20</div>
+                <div class="detail-label">Designation</div>
+                <div class="detail-value" id="designation-display">-</div>
             </div>
             </div>
         </div>
         </div>
     </div>
     </div>
+
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="modal-overlay" style="display:none">
+    <div class="modal-content">
+        <div class="modal-header"><h3>Edit Personal Information</h3><button class="close-btn" onclick="closeModals()">&times;</button></div>
+        <div class="modal-body">
+            <form id="editProfileForm">
+                <div class="form-group"><label>Full Name</label><input type="text" id="edit-name" class="form-control" required></div>
+                <div class="form-group"><label>Email Address</label><input type="email" id="edit-email" class="form-control" required></div>
+                <div class="form-group"><label>Phone Number</label><input type="text" id="edit-phone" class="form-control"></div>
+                <div class="form-group" style="margin-top:10px"><label>Address</label><textarea id="edit-address" class="form-control" rows="3"></textarea></div>
+                <div style="display:flex; gap:10px; margin-top:20px">
+                    <button type="submit" class="greeting-btn" id="save-profile-btn" style="flex:1; justify-content:center">Save Changes</button>
+                    <button type="button" class="greeting-btn" style="background:var(--surface-2);color:var(--text-2);flex:1;justify-content:center" onclick="closeModals()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div id="changePasswordModal" class="modal-overlay" style="display:none">
+    <div class="modal-content">
+        <div class="modal-header"><h3>Security Settings</h3><button class="close-btn" onclick="closeModals()">&times;</button></div>
+        <div class="modal-body">
+            <form id="changePasswordForm">
+                <div class="form-group"><label>Current Password</label><input type="password" id="current_password" class="form-control" required></div>
+                <div class="form-group"><label>New Password</label><input type="password" id="password" class="form-control" required></div>
+                <div class="form-group"><label>Confirm New Password</label><input type="password" id="password_confirmation" class="form-control" required></div>
+                <div style="display:flex; gap:10px; margin-top:20px">
+                    <button type="submit" class="greeting-btn" id="save-password-btn" style="flex:1; justify-content:center">Update Password</button>
+                    <button type="button" class="greeting-btn" style="background:var(--surface-2);color:var(--text-2);flex:1;justify-content:center" onclick="closeModals()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
     <div class="two-col" style="grid-template-columns: 0.8fr 1.2fr; margin-top: 20px;">
     <!-- PRIVACY SETTINGS -->
@@ -242,22 +247,125 @@
 
 </div>
 
-@push('styles')
 <style>
-    /* Inline styles to verify parsing */
-    .profile-header { display: flex; align-items: center; gap: 24px; margin-bottom: 28px; }
-    .profile-avatar-lg { width: 80px; height: 80px; border-radius: 50%; background: var(--accent-lt); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--accent); flex-shrink: 0; border: 1px solid var(--border); }
-    .profile-name { font-family: 'Instrument Serif', serif; font-size: 26px; font-weight: 400; }
-    .profile-role-text { font-size: 14px; color: var(--text-3); margin-top: 4px; display: flex; align-items: center; gap: 10px; }
-
-    .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-    .detail-item { padding: 16px 18px; background: var(--surface-2); border-radius: var(--radius-sm); border: 1px solid var(--border); }
-    .detail-label { font-size: 11px; color: var(--text-3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-    .detail-value { font-size: 14.5px; color: var(--text-1); font-weight: 500; }
-
-    .privacy-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-    .privacy-public { background: var(--accent-lt); color: var(--accent); }
-    .privacy-private { background: var(--red-lt); color: var(--red); }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1100; animation: fadeIn 0.2s; }
+    .modal-content { background: var(--surface); width: 100%; max-width: 450px; border-radius: 12px; box-shadow: var(--shadow-lg); overflow: hidden; animation: slideUp 0.3s; }
+    .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { padding: 20px; }
+    .close-btn { background: none; border: none; font-size: 24px; color: var(--text-3); cursor: pointer; }
+    .skeleton { background: var(--surface-2); border-radius: 4px; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
+    .form-control { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-1); font-size: 14px; transition: border-color 0.2s; }
+    .form-control:focus { outline: none; border-color: var(--accent); }
 </style>
+
+<script>
+    let currentUser = null;
+
+    async function fetchMe() {
+        try {
+            const res = await axios.get('/api/me');
+            currentUser = res.data;
+            renderProfile();
+        } catch (err) { console.error('Fetch Me error:', err); }
+    }
+
+    function renderProfile() {
+        if (!currentUser) return;
+
+        // Header
+        const avatar = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('profile-header-info').innerHTML = `
+            <div class="profile-avatar-lg">${avatar}</div>
+            <div>
+                <div class="profile-name">${currentUser.name}</div>
+                <div class="profile-role-text">
+                    <span>${currentUser.employee?.designation?.name || 'Employee'}</span>
+                    <span class="privacy-pill privacy-public">Active</span>
+                </div>
+            </div>
+        `;
+
+        // Personal Info
+        document.getElementById('personal-info-grid').innerHTML = `
+            <div class="detail-item"><div class="detail-label">Full Name</div><div class="detail-value">${currentUser.name}</div></div>
+            <div class="detail-item"><div class="detail-label">Email Address</div><div class="detail-value">${currentUser.email}</div></div>
+            <div class="detail-item"><div class="detail-label">Mobile Number</div><div class="detail-value">${currentUser.employee?.phone || 'N/A'}</div></div>
+            <div class="detail-item"><div class="detail-label">Employee Code</div><div class="detail-value">${currentUser.employee?.employee_code || 'N/A'}</div></div>
+            <div class="detail-item" style="grid-column: span 2"><div class="detail-label">Address</div><div class="detail-value">${currentUser.employee?.address || 'N/A'}</div></div>
+        `;
+
+        document.getElementById('department-display').textContent = currentUser.employee?.department?.name || 'N/A';
+        document.getElementById('designation-display').textContent = currentUser.employee?.designation?.name || 'N/A';
+        document.getElementById('joined-display').textContent = currentUser.employee?.date_of_joining ? new Date(currentUser.employee.date_of_joining).toLocaleDateString() : 'N/A';
+    }
+
+    function showEditProfile() {
+        if (!currentUser) return;
+        document.getElementById('edit-name').value = currentUser.name;
+        document.getElementById('edit-email').value = currentUser.email;
+        document.getElementById('edit-phone').value = currentUser.employee?.phone || '';
+        document.getElementById('edit-address').value = currentUser.employee?.address || '';
+        document.getElementById('editProfileModal').style.display = 'flex';
+    }
+
+    function showChangePassword() {
+        document.getElementById('changePasswordForm').reset();
+        document.getElementById('changePasswordModal').style.display = 'flex';
+    }
+
+    function closeModals() {
+        document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+    }
+
+    document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('save-profile-btn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        try {
+            await axios.put('/api/profile', {
+                name: document.getElementById('edit-name').value,
+                email: document.getElementById('edit-email').value,
+                phone: document.getElementById('edit-phone').value,
+                address: document.getElementById('edit-address').value,
+            });
+            await fetchMe();
+            closeModals();
+        } catch (err) {
+            alert('Update failed: ' + (err.response?.data?.message || 'Error occurred'));
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Save Changes';
+        }
+    });
+
+    document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('save-password-btn');
+        btn.disabled = true;
+        btn.textContent = 'Updating...';
+
+        try {
+            await axios.put('/api/password', {
+                current_password: document.getElementById('current_password').value,
+                password: document.getElementById('password').value,
+                password_confirmation: document.getElementById('password_confirmation').value,
+            });
+            alert('Password updated successfully.');
+            closeModals();
+        } catch (err) {
+            alert('Password update failed: ' + (err.response?.data?.message || 'Check your fields'));
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Update Password';
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', fetchMe);
+</script>
 @endpush
 @endsection

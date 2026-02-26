@@ -3,9 +3,10 @@
 namespace App\Services\Admin;
 
 use App\Events\TaskAssigned;
+use App\Events\TaskStatusUpdated;
 use App\Repositories\Contracts\TaskRepositoryInterface;
-use Exception;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class TaskService
 {
@@ -13,9 +14,14 @@ class TaskService
         protected TaskRepositoryInterface $taskRepository
     ) {}
 
-    public function listTasks(int $perPage = 15)
+    public function listTasks(array $filters = [], int $perPage = 15)
     {
-        return $this->taskRepository->getAll($perPage);
+        return $this->taskRepository->getAll($perPage, $filters);
+    }
+
+    public function getArchivedTasks(int $perPage = 15)
+    {
+        return $this->taskRepository->getArchived($perPage);
     }
 
     public function getTaskById(int $id)
@@ -23,62 +29,76 @@ class TaskService
         return $this->taskRepository->findById($id);
     }
 
-    public function createTask(array $data)
+    public function createTask(array $data): array
     {
-        try {
+        return DB::transaction(function () use ($data) {
             $task = $this->taskRepository->create($data);
-            return $task;
-        } catch (Exception $e) {
-            Log::error('Failed to create task: ' . $e->getMessage());
-            throw $e;
-        }
-    }
 
-    public function updateTask(int $id, array $data)
-    {
-        try {
-            return $this->taskRepository->update($id, $data);
-        } catch (Exception $e) {
-            Log::error("Failed to update task {$id}: " . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function deleteTask(int $id)
-    {
-        try {
-            return $this->taskRepository->delete($id);
-        } catch (Exception $e) {
-            Log::error("Failed to delete task {$id}: " . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function assignEmployees(int $taskId, array $employeeIds)
-    {
-        try {
-            $task = $this->taskRepository->assignEmployees($taskId, $employeeIds);
-            
-            // Trigger Application Event
-            TaskAssigned::dispatch($task, $employeeIds);
-            Log::info("Triggered TaskAssigned event for Task ID: {$taskId}");
-
-            // Trigger Push Notification Job
-            $userIds = \App\Models\Employee::whereIn('id', $employeeIds)->pluck('user_id')->toArray();
-            if (!empty($userIds)) {
-                $payload = [
-                    'title' => 'New Task Assigned',
-                    'message' => 'You have been assigned to: ' . $task->title,
-                    'url' => '/employee/tasks/' . $task->id,
-                    'icon' => '/favicon.ico'
-                ];
-                \App\Jobs\PushNotificationJob::dispatch($userIds, $payload);
+            if (!empty($data['assignee_ids'])) {
+                $task = $this->taskRepository->assignEmployees($task->id, $data['assignee_ids']);
+                event(new TaskAssigned($task, $data['assignee_ids']));
             }
+
+            Cache::forget('tasks.list.all');
+            return ['task' => $task];
+        });
+    }
+
+    public function updateTask(int $id, array $data): array
+    {
+        return DB::transaction(function () use ($id, $data) {
+            $task = $this->taskRepository->update($id, $data);
+
+            if (isset($data['assignee_ids'])) {
+                $task = $this->taskRepository->assignEmployees($id, $data['assignee_ids']);
+                event(new TaskAssigned($task, $data['assignee_ids']));
+            }
+
+            Cache::forget('tasks.list.all');
+            return ['task' => $task];
+        });
+    }
+
+    public function updateTaskStatus(int $id, string $status): array
+    {
+        return DB::transaction(function () use ($id, $status) {
+            $task = $this->taskRepository->findById($id);
+            $oldStatus = $task->status;
             
+            if ($oldStatus !== $status) {
+                $task = $this->taskRepository->updateStatus($id, $status);
+                event(new TaskStatusUpdated($task, $oldStatus, $status));
+            }
+
+            Cache::forget('tasks.list.all');
+            return ['task' => $task];
+        });
+    }
+
+    public function archiveTask(int $id): bool
+    {
+        return DB::transaction(function () use ($id) {
+            $result = $this->taskRepository->delete($id);
+            Cache::forget('tasks.list.all');
+            return $result;
+        });
+    }
+
+    public function restoreTask(int $id): mixed
+    {
+        return DB::transaction(function () use ($id) {
+            $task = $this->taskRepository->restore($id);
+            Cache::forget('tasks.list.all');
             return $task;
-        } catch (Exception $e) {
-            Log::error("Failed to assign employees to task {$taskId}: " . $e->getMessage());
-            throw $e;
-        }
+        });
+    }
+
+    public function assignEmployees(int $taskId, array $employeeIds): mixed
+    {
+        return DB::transaction(function () use ($taskId, $employeeIds) {
+            $task = $this->taskRepository->assignEmployees($taskId, $employeeIds);
+            event(new TaskAssigned($task, $employeeIds));
+            return $task;
+        });
     }
 }

@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AssignEmployeesRequest;
 use App\Http\Requests\Admin\Projects\StoreProjectRequest;
 use App\Http\Requests\Admin\Projects\UpdateProjectRequest;
+use App\Http\Resources\ProjectResource;
 use App\Services\Admin\ProjectService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
@@ -15,37 +17,120 @@ class ProjectController extends Controller
         protected ProjectService $projectService
     ) {}
 
-    public function index()
+    /**
+     * GET /api/admin/projects
+     * List all active (non-archived) projects with optional status filter.
+     */
+    public function index(Request $request): JsonResponse
     {
-        return \App\Http\Resources\ProjectResource::collection($this->projectService->listProjects());
+        $filters = $request->only(['status']);
+        $perPage = (int) $request->get('per_page', 15);
+
+        $paginator = $this->projectService->listProjects($filters, $perPage);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Projects retrieved successfully.',
+            'data'    => ProjectResource::collection($paginator)->response()->getData(true),
+        ]);
     }
 
-    public function store(StoreProjectRequest $request)
+    /**
+     * POST /api/admin/projects
+     */
+    public function store(StoreProjectRequest $request): JsonResponse
     {
-        $project = $this->projectService->createProject($request->validated());
-        return new \App\Http\Resources\ProjectResource($project);
+        $result = $this->projectService->createProject($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Project created successfully.',
+            'data'    => new ProjectResource($result['project']),
+        ], 201);
     }
 
-    public function show(int $id)
+    /**
+     * GET /api/admin/projects/{id}
+     */
+    public function show(int $id): JsonResponse
     {
-        return new \App\Http\Resources\ProjectResource($this->projectService->getProjectById($id));
+        $project = $this->projectService->getProjectById($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Project detail retrieved.',
+            'data'    => new ProjectResource($project),
+        ]);
     }
 
+    /**
+     * PUT /api/admin/projects/{id}
+     */
     public function update(UpdateProjectRequest $request, int $id): JsonResponse
     {
-        $project = $this->projectService->updateProject($id, $request->validated());
-        return response()->json(['message' => 'Project updated successfully', 'data' => $project]);
+        $result = $this->projectService->updateProject($id, $request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Project updated successfully.',
+            'data'    => new ProjectResource($result['project']),
+        ]);
     }
 
+    /**
+     * DELETE /api/admin/projects/{id}  — Soft delete (archive).
+     */
     public function destroy(int $id): JsonResponse
     {
-        $this->projectService->deleteProject($id);
-        return response()->json(['message' => 'Project deleted successfully']);
+        $this->projectService->archiveProject($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Project archived successfully.',
+            'data'    => null,
+        ]);
     }
 
+    /**
+     * GET /api/admin/projects/archived
+     */
+    public function archived(Request $request): JsonResponse
+    {
+        $perPage  = (int) $request->get('per_page', 15);
+        $paginator = $this->projectService->getArchivedProjects($perPage);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Archived projects retrieved.',
+            'data'    => ProjectResource::collection($paginator)->response()->getData(true),
+        ]);
+    }
+
+    /**
+     * POST /api/admin/projects/{id}/restore
+     */
+    public function restore(int $id): JsonResponse
+    {
+        $project = $this->projectService->restoreProject($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Project restored successfully.',
+            'data'    => new ProjectResource($project),
+        ]);
+    }
+
+    /**
+     * POST /api/admin/projects/{id}/assign-employees
+     */
     public function assignEmployees(AssignEmployeesRequest $request, int $id): JsonResponse
     {
         $project = $this->projectService->assignEmployees($id, $request->validated('employee_ids'));
-        return response()->json(['message' => 'Employees assigned to project successfully', 'data' => $project]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Employees assigned to project successfully.',
+            'data'    => new ProjectResource($project),
+        ]);
     }
 }

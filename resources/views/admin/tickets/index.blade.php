@@ -13,64 +13,10 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="stats-row" style="margin-bottom: 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
-        <div class="stat-card">
-            <div class="stat-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <div class="stat-icon blue" style="width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--blue-lt); color: var(--blue);">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                </div>
-                <span class="stat-badge info" style="font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 20px; background: var(--blue-lt); color: var(--blue);">Total</span>
-            </div>
-            <div class="stat-value" style="font-size: 28px; font-weight: 600; letter-spacing: -.5px;">{{ $totalTickets ?? 3 }}</div>
-            <div class="stat-label" style="font-size: 12px; color: var(--text-3); margin-top: 3px;">All Tickets</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <div class="stat-icon amber" style="width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--amber-lt); color: var(--amber);">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="12"/>
-                        <line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                </div>
-                <span class="stat-badge warn" style="font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 20px; background: var(--amber-lt); color: var(--amber);">Active</span>
-            </div>
-            <div class="stat-value" style="font-size: 28px; font-weight: 600; letter-spacing: -.5px;">{{ $pendingTickets ?? 2 }}</div>
-            <div class="stat-label" style="font-size: 12px; color: var(--text-3); margin-top: 3px;">Awaiting Response</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <div class="stat-icon green" style="width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--accent-lt); color: var(--accent);">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 6L9 17L4 12"/>
-                    </svg>
-                </div>
-                <span class="stat-badge up" style="font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 20px; background: var(--accent-lt); color: var(--accent);">Resolved</span>
-            </div>
-            <div class="stat-value" style="font-size: 28px; font-weight: 600; letter-spacing: -.5px;">{{ $completedTickets ?? 1 }}</div>
-            <div class="stat-label" style="font-size: 12px; color: var(--text-3); margin-top: 3px;">Completed</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <div class="stat-icon" style="width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--text-2);">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v6l4 2"/>
-                    </svg>
-                </div>
-                <span class="stat-badge" style="font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 20px; background: var(--surface-2); color: var(--text-3);">Avg</span>
-            </div>
-            <div class="stat-value" style="font-size: 28px; font-weight: 600; letter-spacing: -.5px;">1.8h</div>
-            <div class="stat-label" style="font-size: 12px; color: var(--text-3); margin-top: 3px;">Response Time</div>
-        </div>
+    <div class="stats-row" id="ticket-stats-container" style="margin-bottom: 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
+        @foreach(range(1, 4) as $i)
+        <div class="stat-card skeleton-card" style="height: 100px;"></div>
+        @endforeach
     </div>
 
     <!-- Tickets Table -->
@@ -87,10 +33,12 @@
                 <span class="count" style="background: var(--bg); border: 1px solid var(--border); font-size: 11px; font-weight: 500; color: var(--text-3); padding: 1px 7px; border-radius: 20px;">{{ count($tickets ?? []) + 3 }}</span>
             </div>
             <div style="display: flex; gap: 8px;">
-                <select class="filter-select" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); font-size: 12px;" onchange="filterTickets(this.value)">
-                    <option value="all">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
+                <select class="filter-select" id="statusFilter" style="padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); font-size: 12px;" onchange="currentPage=1; fetchTickets();">
+                    <option value="">All Statuses</option>
+                    <option value="open">Open</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="closed">Closed</option>
                 </select>
             </div>
         </div>
@@ -160,23 +108,51 @@
 @push('styles')
 <style>
     .status-tag {
-        font-size: 11px;
-        font-weight: 600;
+        font-size: 10px;
+        font-weight: 700;
         padding: 2px 8px;
-        border-radius: 20px;
+        border-radius: 4px;
         text-transform: uppercase;
-        letter-spacing: 0.02em;
     }
-    .status-pending { background: var(--amber-lt); color: var(--amber); }
-    .status-completed { background: var(--accent-lt); color: var(--accent); }
+    .status-open { background: #fef3c7; color: #d97706; }
+    .status-in_progress { background: #dbeafe; color: #2563eb; }
+    .status-resolved { background: #d1fae5; color: #059669; }
+    .status-closed { background: #f3f4f6; color: #6b7280; }
     
     .ticket-row:hover { background: var(--surface-2); }
+    .skeleton-card { background: var(--bg-1); border: 1px solid var(--border); border-radius: 12px; animation: skeleton-shimmer 2s infinite; }
+    @keyframes skeleton-shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 </style>
 @endpush
 
 @push('scripts')
 <script>
     let currentPage = 1;
+
+    async function fetchStats() {
+        try {
+            const res = await axios.get('/api/admin/support-tickets/stats');
+            const s = res.data.data;
+            document.getElementById('ticket-stats-container').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-header"><div class="stat-icon blue"><span>#</span></div><span class="stat-badge info">Total</span></div>
+                    <div class="stat-value">${s.total}</div><div class="stat-label">All Tickets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header"><div class="stat-icon amber"><span>!</span></div><span class="stat-badge warn">Open</span></div>
+                    <div class="stat-value">${s.open}</div><div class="stat-label">Awaiting Response</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header"><div class="stat-icon blue"><span>⏳</span></div><span class="stat-badge info">Active</span></div>
+                    <div class="stat-value">${s.in_progress}</div><div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header"><div class="stat-icon green"><span>✓</span></div><span class="stat-badge up">Resolved</span></div>
+                    <div class="stat-value">${s.resolved + s.closed}</div><div class="stat-label">Resolved/Closed</div>
+                </div>
+            `;
+        } catch (err) { console.error('Stats Error:', err); }
+    }
 
     async function fetchTickets(page = 1) {
         const tbody = document.getElementById('ticketsTableBody');
@@ -186,6 +162,7 @@
         const info = document.getElementById('pagination-info');
         const prevBtn = document.getElementById('prev-page');
         const nextBtn = document.getElementById('next-page');
+        const status = document.getElementById('statusFilter').value;
 
         tbody.innerHTML = '';
         loading.style.display = 'block';
@@ -193,10 +170,9 @@
         errorDiv.style.display = 'none';
         
         try {
-            const response = await axios.get(`/api/admin/support-tickets?page=${page}`);
+            const response = await axios.get(`/api/admin/support-tickets`, { params: { page, status } });
             const { data, meta } = response.data;
             const tickets = data;
-            const paginationMeta = meta || response.data;
 
             loading.style.display = 'none';
 
@@ -208,49 +184,35 @@
             tickets.forEach(ticket => {
                 const tr = document.createElement('tr');
                 tr.className = 'ticket-row';
-                const createdDate = ticket.created_at ? new Date(ticket.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+                const createdDate = ticket.created_at ? new Date(ticket.created_at).toLocaleDateString() : 'N/A';
                 
-                const statusTag = ticket.status === 'open' ? 'status-pending' : 'status-completed';
-
-                let categoryBackground = ticket.category === 'technical' ? '#ef444420' : (ticket.category === 'hr' ? '#3b82f620' : '#f59e0b20');
-                let categoryColor = ticket.category === 'technical' ? '#ef4444' : (ticket.category === 'hr' ? '#3b82f6' : '#f59e0b');
-
                 tr.innerHTML = `
                     <td style="font-weight: 600; color: var(--accent);">#${ticket.ticket_number}</td>
                     <td>
                         <div style="font-weight: 500;">${ticket.subject}</div>
                         <div style="font-size: 12px; color: var(--text-3); margin-top: 2px;">${ticket.description.substring(0, 50)}...</div>
                     </td>
-                    <td>
-                        <span class="ticket-category-pill" style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; background: ${categoryBackground}; color: ${categoryColor};">
-                            ${ticket.category.toUpperCase()}
-                        </span>
-                    </td>
+                    <td><span class="ticket-category-pill" style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;background:var(--bg-1);border:1px solid var(--border)">${ticket.category.toUpperCase()}</span></td>
                     <td>
                         <div style="font-weight: 500;">${ticket.employee_name}</div>
                         <div style="font-size: 11px; color: var(--text-3);">${ticket.employee_designation}</div>
                     </td>
-                    <td>
-                        <span class="status-tag ${statusTag}">${ticket.status.toUpperCase()}</span>
-                    </td>
+                    <td><span class="status-tag status-${ticket.status}">${ticket.status.replace('_', ' ').toUpperCase()}</span></td>
                     <td>${createdDate}</td>
                     <td style="text-align: right;">
-                        <button class="icon-btn" onclick="viewTicket('${ticket.id}')" title="Respond">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                            </svg>
-                        </button>
+                        <button class="icon-btn" onclick="viewTicket('${ticket.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            if (paginationMeta) {
-                currentPage = paginationMeta.current_page || 1;
-                info.innerText = `Showing ${paginationMeta.from || 0} to ${paginationMeta.to || 0} of ${paginationMeta.total || 0} tickets`;
+            if (meta) {
+                currentPage = meta.current_page;
+                info.innerText = `Showing ${meta.from || 0} to ${meta.to || 0} of ${meta.total || 0} tickets`;
                 prevBtn.disabled = currentPage === 1;
-                nextBtn.disabled = currentPage === (paginationMeta.last_page || 1);
+                nextBtn.disabled = currentPage === meta.last_page;
             }
+
 
         } catch (error) {
             console.error('Fetch error:', error);
@@ -276,18 +238,19 @@ async function viewTicket(ticketId) {
         const ticket = response.data.data;
         
         const createdDate = new Date(ticket.created_at).toLocaleString();
-        const statusTag = ticket.status === 'open' ? 'status-pending' : 'status-completed';
+        const statusTag = `status-${ticket.status}`;
 
         let repliesHtml = '';
         if (ticket.replies && ticket.replies.length > 0) {
             repliesHtml = '<h5 style="font-size: 14px; font-weight: 700; margin: 20px 0 12px;">Conversation</h5>';
             ticket.replies.forEach(reply => {
                 const align = reply.is_admin ? 'right' : 'left';
-                const bg = reply.is_admin ? 'var(--blue-lt)' : 'var(--surface-2)';
+                const bg = reply.is_admin ? 'var(--blue-lt)' : 'var(--bg-1)';
+                const border = reply.is_admin ? '1px solid #bfdbfe' : '1px solid var(--border)';
                 repliesHtml += `
                     <div style="margin-bottom: 12px; text-align: ${align}">
-                        <div style="display:inline-block; background: ${bg}; padding: 10px 14px; border-radius: 8px; max-width: 80%; text-align: left;">
-                            <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px;">${reply.sender_name}</div>
+                        <div style="display:inline-block; background: ${bg}; border: ${border}; padding: 10px 14px; border-radius: 12px; max-width: 85%; text-align: left;">
+                            <div style="font-size: 11px; font-weight: 700; margin-bottom: 4px; color: var(--text-3)">${reply.sender_name}</div>
                             <div style="font-size: 13px;">${reply.message}</div>
                         </div>
                     </div>
@@ -297,23 +260,38 @@ async function viewTicket(ticketId) {
 
         content.innerHTML = `
             <div style="margin-bottom: 20px;">
-                <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items:center">
                     <span class="status-tag ${statusTag}">${ticket.status.toUpperCase()}</span>
-                    <span style="color: var(--text-3); font-size: 13px;">Raised on ${createdDate}</span>
+                    <span style="color: var(--text-3); font-size: 12px;">Raised on ${createdDate}</span>
                 </div>
                 <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">${ticket.subject}</h4>
-                <div style="background: var(--surface-2); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px;">
-                    <p style="color: var(--text-2); line-height: 1.6;">${ticket.description}</p>
+                <div style="background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px;">
+                    <p style="color: var(--text-2); line-height: 1.6; font-size:14px;">${ticket.description}</p>
                 </div>
                 
-                ${repliesHtml}
+                <div id="modal-replies-container" style="max-height: 300px; overflow-y: auto; padding: 10px 0;">
+                    ${repliesHtml}
+                </div>
 
-                <h5 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Send Response</h5>
-                <div style="margin-top: 20px;">
-                    <textarea id="reply-message" class="form-control" rows="3" placeholder="Type your response..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); outline: none; background: var(--bg-1); color: var(--text-1);"></textarea>
-                    <div style="display: flex; gap: 10px; margin-top: 12px;">
-                        <button class="btn btn-primary" onclick="handleSendReply('${ticket.id}')" id="send-reply-btn">Send Response</button>
-                        ${ticket.status === 'open' ? `<button class="btn btn-primary" onclick="handleUpdateStatus('${ticket.id}', 'resolved')">Mark as Resolved</button>` : ''}
+                <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+                    <h5 style="font-size: 13px; font-weight: 700; margin-bottom: 8px;">Update Ticket Status</h5>
+                    <select id="update-status-select" class="form-control" style="width: 100%; margin-bottom: 16px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-1); color: var(--text-1);">
+                        <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>Open</option>
+                        <option value="in_progress" ${ticket.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                        <option value="resolved" ${ticket.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                        <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>Closed</option>
+                    </select>
+
+                    <h5 style="font-size: 13px; font-weight: 700; margin-bottom: 8px;">Post Internal/External Reply</h5>
+                    <textarea id="reply-message" class="form-control" rows="3" placeholder="Type your response..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; outline: none; background: var(--bg-1); color: var(--text-1); font-size:14px;"></textarea>
+                    
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px;">
+                        <input type="checkbox" id="is-internal-note" style="cursor:pointer">
+                        <label for="is-internal-note" style="font-size: 12px; color: var(--text-3); cursor:pointer">Internal Private Note</label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="handleUpdateTicket('${ticket.id}')" id="update-ticket-btn" style="flex:1">Update Ticket</button>
                         <button class="btn btn-ghost" onclick="closeTicketModal()">Close</button>
                     </div>
                 </div>
@@ -324,32 +302,35 @@ async function viewTicket(ticketId) {
     }
 }
 
-async function handleSendReply(ticketId) {
+async function handleUpdateTicket(ticketId) {
+    const status = document.getElementById('update-status-select').value;
     const message = document.getElementById('reply-message').value;
-    if (!message) return;
+    const isInternal = document.getElementById('is-internal-note').checked;
+    const btn = document.getElementById('update-ticket-btn');
 
-    const btn = document.getElementById('send-reply-btn');
     btn.disabled = true;
-    btn.textContent = 'Sending...';
+    btn.textContent = 'Updating...';
 
     try {
-        await axios.post(`/api/admin/support-tickets/${ticketId}/reply`, { message });
-        viewTicket(ticketId); // Refresh details
-    } catch (error) {
-        alert('Failed to send reply.');
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Send Response';
-    }
-}
-
-async function handleUpdateStatus(ticketId, status) {
-    try {
+        // 1. Update Status
         await axios.put(`/api/admin/support-tickets/${ticketId}`, { status });
-        viewTicket(ticketId);
+        
+        // 2. Post Reply if exists
+        if (message.trim()) {
+            await axios.post(`/api/admin/support-tickets/${ticketId}/reply`, { 
+                message, 
+                is_internal: isInternal 
+            });
+        }
+
+        closeTicketModal();
+        fetchStats();
         fetchTickets(currentPage);
     } catch (error) {
-        alert('Failed to update status.');
+        alert('Failed to update ticket: ' + (error.response?.data?.message || 'Error occurred'));
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Update Ticket';
     }
 }
 
@@ -373,6 +354,7 @@ document.getElementById('next-page').addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    fetchStats();
     fetchTickets();
 });
 </script>

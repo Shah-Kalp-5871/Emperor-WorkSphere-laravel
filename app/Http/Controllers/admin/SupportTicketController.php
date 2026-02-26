@@ -30,7 +30,7 @@ class SupportTicketController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $validated = $request->validate([
-            'status' => 'required|in:open,resolved',
+            'status' => 'required|in:open,in_progress,resolved,closed',
         ]);
 
         $ticket = $this->ticketService->updateStatus($id, $validated['status']);
@@ -45,6 +45,15 @@ class SupportTicketController extends Controller
         ]);
 
         $reply = $this->ticketService->replyToTicket($id, $validated['message'], $validated['is_internal'] ?? false);
-        return response()->json(['message' => 'Reply added successfully', 'data' => $reply]);
+        return response()->json(['success' => true, 'message' => 'Reply added successfully', 'data' => $reply]);
+    }
+
+    public function stats(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Ticket statistics retrieved successfully.',
+            'data' => $this->ticketService->getTicketStats()
+        ]);
     }
 }

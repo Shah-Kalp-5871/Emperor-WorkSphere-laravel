@@ -7,9 +7,12 @@
     <div class="section-header">
     <div>
         <div class="section-title">Projects</div>
-        <div class="section-sub">5 active · 2 archived</div>
+        <div class="section-sub" id="projects-summary">Loading...</div>
     </div>
     <div class="section-actions">
+        <a href="{{ url('/admin/projects/archived') }}" class="btn btn-ghost btn-sm" style="margin-right:8px;">
+            🗃 Archived
+        </a>
         <button class="btn btn-primary" onclick="openCreateModal()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Project
@@ -17,73 +20,139 @@
     </div>
     </div>
 
-    <!-- Create Project Modal -->
+    {{-- Create Project Modal --}}
     <div class="modal-overlay" id="create-proj-modal">
         <div class="modal">
             <div class="modal-close" onclick="closeModal('create-proj-modal')">✕</div>
             <div class="modal-title">New Project</div>
             <div class="modal-sub">Create a new workspace for your team.</div>
-            
             <form id="create-project-form" onsubmit="handleCreateProject(event)">
                 <div class="form-group">
-                    <label class="form-label">Project Name</label>
+                    <label class="form-label">Project Name *</label>
                     <input class="form-input" id="proj-name" required placeholder="e.g. Customer Portal v3">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Description</label>
-                    <input class="form-input" id="proj-desc" placeholder="Brief description…">
+                    <textarea class="form-input" id="proj-desc" rows="2" placeholder="Brief description…" style="resize:vertical;"></textarea>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="proj-status" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                            <option value="planning">Planning</option>
+                            <option value="active">Active</option>
+                            <option value="on_hold">On Hold</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="proj-priority" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Add Members</label>
-                    <select class="form-select" id="project-members-select" multiple style="height:120px; width:100%; border:1px solid var(--border); border-radius:8px; background:var(--bg-1); color:var(--text-1); padding:8px;">
+                    <select class="form-select" id="project-members-select" multiple style="height:100px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
                         <!-- Options will be loaded via JS -->
                     </select>
-                    <small style="color:var(--text-3); font-size:11px; margin-top:4px; display:block;">Hold Ctrl/Cmd to select multiple</small>
+                    <small style="color:var(--text-3);font-size:11px;margin-top:4px;display:block;">Hold Ctrl/Cmd to select multiple</small>
                 </div>
-                
-                <div id="modal-error" style="color: #ef4444; font-size: 13px; margin-bottom: 16px; display: none;"></div>
-
-                <div class="modal-footer" style="padding:0; margin-top:24px;">
+                <div id="modal-error" style="color:#ef4444;font-size:13px;margin-bottom:16px;display:none;"></div>
+                <div class="modal-footer" style="padding:0;margin-top:24px;">
                     <button type="button" class="btn btn-ghost" onclick="closeModal('create-proj-modal')">Cancel</button>
                     <button type="submit" class="btn btn-primary" id="create-proj-btn">Create Project</button>
                 </div>
             </form>
         </div>
     </div>
+
+    {{-- Edit Project Modal --}}
+    <div class="modal-overlay" id="edit-proj-modal">
+        <div class="modal">
+            <div class="modal-close" onclick="closeModal('edit-proj-modal')">✕</div>
+            <div class="modal-title">Edit Project</div>
+            <div class="modal-sub">Update project details.</div>
+            <form id="edit-project-form" onsubmit="handleEditProject(event)">
+                <input type="hidden" id="edit-proj-id">
+                <div class="form-group">
+                    <label class="form-label">Project Name *</label>
+                    <input class="form-input" id="edit-proj-name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="edit-proj-desc" rows="2" style="resize:vertical;"></textarea>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="edit-proj-status" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                            <option value="planning">Planning</option>
+                            <option value="active">Active</option>
+                            <option value="on_hold">On Hold</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="edit-proj-priority" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="edit-modal-error" style="color:#ef4444;font-size:13px;margin-bottom:16px;display:none;"></div>
+                <div class="modal-footer" style="padding:0;margin-top:24px;">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('edit-proj-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="edit-proj-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="filter-bar">
-    <input class="filter-input" placeholder="Search projects…">
-    <select class="filter-select"><option>All Projects</option><option>My Projects</option></select>
+        <input class="filter-input" id="search-input" placeholder="Search projects…" oninput="debounceSearch()">
+        <select class="filter-select" id="status-filter" onchange="fetchProjects(1)">
+            <option value="">All Status</option>
+            <option value="planning">Planning</option>
+            <option value="active">Active</option>
+            <option value="on_hold">On Hold</option>
+            <option value="completed">Completed</option>
+        </select>
     </div>
     <div class="card">
     <div class="table-wrap">
     <table id="tbl-projects">
         <thead><tr>
-            <th>Project</th><th>Creator</th><th>Members</th><th>Tasks</th><th>Progress</th><th>Created</th><th>Actions</th>
+            <th>Project</th><th>Status</th><th>Priority</th><th>Creator</th><th>Members</th><th>Tasks</th><th>Progress</th><th>Created</th><th>Actions</th>
         </tr></thead>
         <tbody id="projects-tbody">
-            <!-- Dynamic rows will be inserted here -->
         </tbody>
     </table>
 
-    <div id="table-loading" style="text-align:center; padding: 40px; display: none;">
-        <div class="spinner" style="border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
-        <div style="color: var(--text-2); font-size: 14px;">Loading projects...</div>
+    <div id="table-loading" style="text-align:center;padding:40px;display:none;">
+        <div class="spinner" style="border:4px solid rgba(255,255,255,0.1);border-top:4px solid var(--accent);border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto 10px;"></div>
+        <div style="color:var(--text-2);font-size:14px;">Loading projects...</div>
     </div>
 
-    <div id="table-empty" style="text-align:center; padding: 40px; display: none;">
-        <div style="font-size: 24px; margin-bottom: 10px;">📁</div>
-        <div style="color: var(--text-2); font-size: 14px;">No projects found.</div>
+    <div id="table-empty" style="text-align:center;padding:40px;display:none;">
+        <div style="font-size:24px;margin-bottom:10px;">📁</div>
+        <div style="color:var(--text-2);font-size:14px;">No projects found.</div>
     </div>
 
-    <div id="table-error" style="text-align:center; padding: 40px; display: none; color: #ff4d4d;">
-        <div style="font-size: 20px; margin-bottom: 10px;">⚠️</div>
-        <div id="error-message" style="font-size: 14px;">Failed to load projects.</div>
+    <div id="table-error" style="text-align:center;padding:40px;display:none;color:#ff4d4d;">
+        <div style="font-size:20px;margin-bottom:10px;">⚠️</div>
+        <div id="error-message" style="font-size:14px;">Failed to load projects.</div>
     </div>
     </div>
 
-    <div class="pagination-row" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-top: 1px solid var(--border);">
-        <div id="pagination-info" style="color: var(--text-2); font-size: 13px;">Showing 0 of 0 projects</div>
-        <div id="pagination-controls" style="display: flex; gap: 8px;">
+    <div class="pagination-row" style="display:flex;justify-content:space-between;align-items:center;padding:16px;border-top:1px solid var(--border);">
+        <div id="pagination-info" style="color:var(--text-2);font-size:13px;">Showing 0 of 0 projects</div>
+        <div id="pagination-controls" style="display:flex;gap:8px;">
             <button class="btn btn-ghost btn-sm" id="prev-page" disabled>Previous</button>
             <button class="btn btn-ghost btn-sm" id="next-page" disabled>Next</button>
         </div>
@@ -93,77 +162,91 @@
 
 <style>
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .status-pill { display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em; }
+    .s-planning  { background:#3b82f620;color:#3b82f6; }
+    .s-active    { background:var(--accent-lt,#22c55e20);color:var(--accent,#22c55e); }
+    .s-on_hold   { background:#f59e0b20;color:#f59e0b; }
+    .s-completed { background:#6366f120;color:#6366f1; }
+    .p-high      { background:#ef444420;color:#ef4444; }
+    .p-medium    { background:#f59e0b20;color:#f59e0b; }
+    .p-low       { background:#6366f120;color:#6366f1; }
 </style>
 
 @push('scripts')
 <script>
     let currentPage = 1;
+    let searchTimeout = null;
 
-    function openCreateModal() {
-        openModal('create-proj-modal');
-        loadEmployeesForModal();
+    // ── Helpers ──────────────────────────────────────────────────────────
+    function debounceSearch() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => fetchProjects(1), 400);
     }
 
-    async function loadEmployeesForModal() {
-        const select = document.getElementById('project-members-select');
-        if (select.options.length > 0) return; // Already loaded
+    function statusClass(s) {
+        const map = { planning:'s-planning', active:'s-active', on_hold:'s-on_hold', completed:'s-completed' };
+        return map[s] || 's-planning';
+    }
 
+    function priorityClass(p) {
+        const map = { high:'p-high', medium:'p-medium', low:'p-low' };
+        return map[p] || 'p-medium';
+    }
+
+    // ── Load employees for modals ─────────────────────────────────────────
+    async function loadEmployeesForModal(selectId) {
+        const select = document.getElementById(selectId);
+        if (select.options.length > 0) return;
         try {
-            const response = await axios.get('/api/admin/employees?per_page=100');
-            const employees = response.data.data;
-            
+            const res = await axios.get('/api/admin/employees?per_page=200');
+            const employees = res.data.data?.data ?? res.data.data ?? [];
             employees.forEach(emp => {
                 const opt = document.createElement('option');
                 opt.value = emp.id;
-                opt.textContent = `${emp.user.name} (${emp.employee_code})`;
+                opt.textContent = `${emp.user?.name ?? 'Unknown'} (${emp.employee_code})`;
                 select.appendChild(opt);
             });
-        } catch (error) {
-            console.error('Failed to load employees for modal:', error);
+        } catch (e) {
+            console.error('Failed to load employees:', e);
         }
+    }
+
+    // ── CREATE ─────────────────────────────────────────────────────────────
+    function openCreateModal() {
+        openModal('create-proj-modal');
+        loadEmployeesForModal('project-members-select');
     }
 
     async function handleCreateProject(e) {
         e.preventDefault();
         const btn = document.getElementById('create-proj-btn');
         const errorDiv = document.getElementById('modal-error');
-        
-        const name = document.getElementById('proj-name').value;
-        const description = document.getElementById('proj-desc').value;
-        const members = Array.from(document.getElementById('project-members-select').selectedOptions).map(option => option.value);
-
-        btn.disabled = true;
-        btn.textContent = 'Creating...';
         errorDiv.style.display = 'none';
+        btn.disabled = true;
+        btn.textContent = 'Creating…';
+
+        const employee_ids = Array.from(
+            document.getElementById('project-members-select').selectedOptions
+        ).map(o => parseInt(o.value));
 
         try {
-            const response = await axios.post('/api/admin/projects', {
-                name,
-                description,
-                status: 'planning', // default
-                priority: 'medium'   // default
+            await axios.post('/api/admin/projects', {
+                name:         document.getElementById('proj-name').value,
+                description:  document.getElementById('proj-desc').value,
+                status:       document.getElementById('proj-status').value,
+                priority:     document.getElementById('proj-priority').value,
+                employee_ids,
             });
-            
-            const projectId = response.data.data.id;
-
-            // Assign employees if any
-            if (members.length > 0) {
-                await axios.post(`/api/admin/projects/${projectId}/assign-employees`, {
-                    employee_ids: members
-                });
-            }
 
             closeModal('create-proj-modal');
-            fetchProjects(1); // Refresh list
-            
-            // Clear form
-            document.getElementById('proj-name').value = '';
-            document.getElementById('proj-desc').value = '';
-            document.getElementById('project-members-select').value = '';
-
-        } catch (error) {
-            console.error('Project creation failed:', error);
-            errorDiv.innerText = error.response?.data?.message || 'Failed to create project.';
+            document.getElementById('create-project-form').reset();
+            document.getElementById('project-members-select').innerHTML = '';
+            fetchProjects(1);
+        } catch (err) {
+            const msg = err.response?.data?.message
+                ?? err.response?.data?.errors
+                ?? 'Failed to create project.';
+            errorDiv.innerText = typeof msg === 'object' ? Object.values(msg).flat().join(' ') : msg;
             errorDiv.style.display = 'block';
         } finally {
             btn.disabled = false;
@@ -171,115 +254,166 @@
         }
     }
 
-    async function archiveProject(id) {
-        if (!confirm('Are you sure you want to archive this project?')) return;
+    // ── EDIT ──────────────────────────────────────────────────────────────
+    async function openEditModal(id) {
+        openModal('edit-proj-modal');
+        document.getElementById('edit-proj-id').value = id;
 
         try {
-            await axios.delete(`/api/admin/projects/${id}`);
-            fetchProjects(currentPage);
-        } catch (error) {
-            console.error('Archive failed:', error);
-            alert(error.response?.data?.message || 'Failed to archive project.');
+            const res = await axios.get(`/api/admin/projects/${id}`);
+            const p = res.data.data;
+            document.getElementById('edit-proj-name').value      = p.name;
+            document.getElementById('edit-proj-desc').value      = p.description ?? '';
+            document.getElementById('edit-proj-status').value    = p.status;
+            document.getElementById('edit-proj-priority').value  = p.priority ?? 'medium';
+        } catch (e) {
+            alert('Failed to load project data.');
+            closeModal('edit-proj-modal');
         }
     }
 
+    async function handleEditProject(e) {
+        e.preventDefault();
+        const id       = document.getElementById('edit-proj-id').value;
+        const btn      = document.getElementById('edit-proj-btn');
+        const errorDiv = document.getElementById('edit-modal-error');
+        errorDiv.style.display = 'none';
+        btn.disabled = true;
+        btn.textContent = 'Saving…';
+
+        try {
+            await axios.put(`/api/admin/projects/${id}`, {
+                name:        document.getElementById('edit-proj-name').value,
+                description: document.getElementById('edit-proj-desc').value,
+                status:      document.getElementById('edit-proj-status').value,
+                priority:    document.getElementById('edit-proj-priority').value,
+            });
+
+            closeModal('edit-proj-modal');
+            fetchProjects(currentPage);
+        } catch (err) {
+            const msg = err.response?.data?.message ?? 'Failed to update project.';
+            errorDiv.innerText = msg;
+            errorDiv.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Save Changes';
+        }
+    }
+
+    // ── ARCHIVE ────────────────────────────────────────────────────────────
+    async function archiveProject(id, name) {
+        if (!confirm(`Archive project "${name}"? It can be restored later.`)) return;
+        try {
+            const res = await axios.delete(`/api/admin/projects/${id}`);
+            if (res.data.success) fetchProjects(currentPage);
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to archive project.');
+        }
+    }
+
+    // ── FETCH LIST ─────────────────────────────────────────────────────────
     async function fetchProjects(page = 1) {
-        const tbody = document.getElementById('projects-tbody');
-        const loading = document.getElementById('table-loading');
-        const empty = document.getElementById('table-empty');
+        const tbody    = document.getElementById('projects-tbody');
+        const loading  = document.getElementById('table-loading');
+        const empty    = document.getElementById('table-empty');
         const errorDiv = document.getElementById('table-error');
-        const info = document.getElementById('pagination-info');
-        const prevBtn = document.getElementById('prev-page');
-        const nextBtn = document.getElementById('next-page');
+        const info     = document.getElementById('pagination-info');
+        const prevBtn  = document.getElementById('prev-page');
+        const nextBtn  = document.getElementById('next-page');
 
         tbody.innerHTML = '';
         loading.style.display = 'block';
-        empty.style.display = 'none';
+        empty.style.display   = 'none';
         errorDiv.style.display = 'none';
-        
+
+        const status = document.getElementById('status-filter').value;
+        const search = document.getElementById('search-input').value;
+
         try {
-            const response = await axios.get(`/api/admin/projects?page=${page}`);
-            const { data, meta } = response.data; // JsonResource collection returns data and links/meta
-            
-            // If the structure is wrapped in 'data' (common for Resources)
-            const projects = data;
-            const paginationMeta = meta || response.data;
+            const params = new URLSearchParams({ page });
+            if (status) params.append('status', status);
+            if (search) params.append('search', search);
+
+            const res   = await axios.get(`/api/admin/projects?${params}`);
+            const body  = res.data;
+
+            // Standardized response: { success, message, data: { data: [...], meta: {...} } }
+            const projects   = body.data?.data ?? [];
+            const meta       = body.data?.meta ?? {};
 
             loading.style.display = 'none';
 
-            if (!projects || projects.length === 0) {
-                empty.style.display = 'block';
-                return;
-            }
+            // Update summary badge
+            document.getElementById('projects-summary').textContent =
+                `${meta.total ?? projects.length} total`;
 
-            projects.forEach(project => {
-                const tr = document.createElement('tr');
-                const createdDate = project.created_at ? new Date(project.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'N/A';
-                
-                const progress = project.tasks_count > 0 ? Math.round((project.completed_tasks_count / project.tasks_count) * 100) : 0;
-                const progressColor = progress > 70 ? 'var(--accent)' : (progress > 30 ? 'var(--accent2)' : 'var(--accent3)');
+            if (projects.length === 0) { empty.style.display = 'block'; return; }
+
+            projects.forEach(p => {
+                const progress    = p.tasks_count > 0 ? Math.round((p.completed_tasks_count / p.tasks_count) * 100) : 0;
+                const progressColor = progress > 70 ? 'var(--accent)' : progress > 30 ? '#f59e0b' : '#ef4444';
+                const createdDate = p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : '—';
 
                 let avatarsHtml = '';
-                if (project.members && project.members.length > 0) {
-                    project.members.slice(0, 3).forEach((member, i) => {
-                        const initial = member.name[0].toUpperCase();
-                        avatarsHtml += `<div class="av ${i > 0 ? 'av' + (i+1) : ''}">${initial}</div>`;
-                    });
-                    if (project.members.length > 3) {
-                        avatarsHtml += `<div class="av av4">+${project.members.length - 3}</div>`;
-                    }
+                (p.members ?? []).slice(0, 3).forEach((m, i) => {
+                    avatarsHtml += `<div class="av${i>0?' av'+(i+1):''}">${(m.name[0]||'?').toUpperCase()}</div>`;
+                });
+                if ((p.members ?? []).length > 3) {
+                    avatarsHtml += `<div class="av av4">+${p.members.length - 3}</div>`;
                 }
 
+                const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="td-main">${project.name}</td>
-                    <td>${project.creator_name}</td>
-                    <td><div class="avatar-group">${avatarsHtml}</div></td>
-                    <td>${project.tasks_count} tasks · ${project.completed_tasks_count} done</td>
+                    <td class="td-main">
+                        <a href="/admin/projects/${p.id}" style="color:inherit;text-decoration:none;font-weight:600;">${p.name}</a>
+                        ${p.description ? `<div style="font-size:11px;color:var(--text-3);margin-top:2px;">${p.description.substring(0,50)}${p.description.length>50?'…':''}</div>` : ''}
+                    </td>
+                    <td><span class="status-pill ${statusClass(p.status)}">${(p.status||'').replace('_',' ')}</span></td>
+                    <td><span class="status-pill ${priorityClass(p.priority)}">${p.priority||'—'}</span></td>
+                    <td>${p.creator_name}</td>
+                    <td><div class="avatar-group">${avatarsHtml || '—'}</div></td>
+                    <td>${p.tasks_count} tasks · ${p.completed_tasks_count} done</td>
                     <td>
                         <div style="display:flex;align-items:center;gap:8px">
                             <div class="progress-bar-wrap" style="width:70px">
-                                <div class="progress-bar" style="width:${progress}%; background:${progressColor}"></div>
+                                <div class="progress-bar" style="width:${progress}%;background:${progressColor}"></div>
                             </div>
-                            <span style="font-size:12px;color:var(--text3)">${progress}%</span>
+                            <span style="font-size:12px;color:var(--text-3)">${progress}%</span>
                         </div>
                     </td>
                     <td>${createdDate}</td>
                     <td style="display:flex;gap:6px;padding-top:13px">
-                        <button class="btn btn-ghost btn-sm" onclick="alert('Viewing project ID: ${project.id}')">View</button>
-                        <button class="btn btn-danger btn-sm" onclick="archiveProject(${project.id})">Archive</button>
+                        <button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/projects/${p.id}'">View</button>
+                        <button class="btn btn-ghost btn-sm" onclick="openEditModal(${p.id})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="archiveProject(${p.id}, '${p.name.replace(/'/g,"\\'")}')">Archive</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            // Update Pagination
-            if (paginationMeta) {
-                currentPage = paginationMeta.current_page || 1;
-                info.innerText = `Showing ${paginationMeta.from || 0} to ${paginationMeta.to || 0} of ${paginationMeta.total || 0} projects`;
-                prevBtn.disabled = currentPage === 1;
-                nextBtn.disabled = currentPage === (paginationMeta.last_page || 1);
-            }
+            // Pagination
+            currentPage          = meta.current_page ?? 1;
+            info.innerText       = `Showing ${meta.from ?? 1} to ${meta.to ?? projects.length} of ${meta.total ?? projects.length} projects`;
+            prevBtn.disabled     = currentPage === 1;
+            nextBtn.disabled     = currentPage === (meta.last_page ?? 1);
 
-        } catch (error) {
-            console.error('Fetch error:', error);
+        } catch (err) {
             loading.style.display = 'none';
             errorDiv.style.display = 'block';
-            document.getElementById('error-message').innerText = error.response?.data?.message || 'Failed to load projects.';
+            document.getElementById('error-message').innerText =
+                err.response?.data?.message || 'Failed to load projects.';
         }
     }
 
     document.getElementById('prev-page').addEventListener('click', () => {
         if (currentPage > 1) fetchProjects(currentPage - 1);
     });
-
     document.getElementById('next-page').addEventListener('click', () => {
         fetchProjects(currentPage + 1);
     });
 
-    // Initial load
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchProjects();
-    });
+    document.addEventListener('DOMContentLoaded', () => fetchProjects());
 </script>
 @endpush
 @endsection

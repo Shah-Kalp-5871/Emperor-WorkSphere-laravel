@@ -33,4 +33,14 @@ class SupportTicketService
             'is_internal_note' => $isInternal
         ]);
     }
+    public function getTicketStats(): array
+    {
+        return [
+            'total' => \App\Models\SupportTicket::count(),
+            'open' => \App\Models\SupportTicket::where('status', 'open')->count(),
+            'in_progress' => \App\Models\SupportTicket::where('status', 'in_progress')->count(),
+            'resolved' => \App\Models\SupportTicket::where('status', 'resolved')->count(),
+            'closed' => \App\Models\SupportTicket::where('status', 'closed')->count(),
+        ];
+    }
 }

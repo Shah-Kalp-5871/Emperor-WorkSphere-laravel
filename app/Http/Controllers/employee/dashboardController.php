@@ -1,14 +1,35 @@
 <?php
 
-namespace App\Http\Controllers\employee;
+namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Services\Employee\DashboardService;
+use Illuminate\Http\JsonResponse;
 
-class dashboardController extends Controller
+class DashboardController extends Controller
 {
-    public function index()
+    public function __construct(
+        protected DashboardService $dashboardService
+    ) {}
+
+    /**
+     * GET /api/employee/dashboard
+     */
+    public function index(): JsonResponse
     {
-        return view('employee.dashboard.index');
+        $data = $this->dashboardService->getDashboardData();
+
+        if (isset($data['error'])) {
+            return response()->json([
+                'success' => false,
+                'message' => $data['error']
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Employee dashboard data retrieved successfully.',
+            'data' => $data
+        ]);
     }
 }

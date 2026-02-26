@@ -11,26 +11,43 @@ class TaskRepository implements TaskRepositoryInterface
         protected Task $model
     ) {}
 
-    public function getAll(int $perPage = 15)
+    public function getAll(int $perPage = 15, array $filters = [])
     {
-        return $this->model->with(['project:id,name', 'assignees.user'])->latest()->paginate($perPage);
+        $query = $this->model->with(['project', 'assignees.user', 'creator'])->latest();
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['project_id'])) {
+            $query->where('project_id', $filters['project_id']);
+        }
+
+        if (!empty($filters['search'])) {
+            $query->where('title', 'like', '%' . $filters['search'] . '%');
+        }
+
+        return $query->paginate($perPage);
+    }
+
+    public function getArchived(int $perPage = 15)
+    {
+        return $this->model->onlyTrashed()->with(['project', 'creator'])->latest('deleted_at')->paginate($perPage);
     }
 
     public function findById(int $id)
     {
-        return $this->model->with(['project', 'assignees'])->findOrFail($id);
+        return $this->model->with(['project', 'assignees.user', 'creator'])->findOrFail($id);
     }
 
     public function getByProjectId(int $projectId, int $perPage = 15)
     {
-        return $this->model->where('project_id', $projectId)
-            ->with('assignees')
-            ->paginate($perPage);
+        return $this->model->where('project_id', $projectId)->latest()->paginate($perPage);
     }
 
     public function create(array $data)
     {
-        $data['created_by'] = auth('api')->id();
+        $data['created_by'] = auth('api')->id() ?? auth('admin')->id();
         return $this->model->create($data);
     }
 
@@ -38,20 +55,33 @@ class TaskRepository implements TaskRepositoryInterface
     {
         $task = $this->findById($id);
         $task->update($data);
-        return $task;
+        return $task->fresh(['project', 'assignees.user', 'creator']);
+    }
+
+    public function updateStatus(int $id, string $status)
+    {
+        $task = $this->findById($id);
+        $task->update(['status' => $status]);
+        return $task->fresh(['project', 'assignees.user', 'creator']);
     }
 
     public function delete(int $id)
     {
         $task = $this->findById($id);
-        return $task->delete();
+        return $task->delete(); // soft delete
+    }
+
+    public function restore(int $id)
+    {
+        $task = $this->model->onlyTrashed()->findOrFail($id);
+        $task->restore();
+        return $task;
     }
 
     public function assignEmployees(int $taskId, array $employeeIds)
     {
         $task = $this->findById($taskId);
-        // Sync the pivot table
         $task->assignees()->sync($employeeIds);
-        return $task;
+        return $task->fresh(['project', 'assignees.user', 'creator']);
     }
 }

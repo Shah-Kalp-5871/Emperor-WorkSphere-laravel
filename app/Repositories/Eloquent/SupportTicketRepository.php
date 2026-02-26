@@ -12,6 +12,14 @@ class SupportTicketRepository implements SupportTicketRepositoryInterface
         protected SupportTicket $model
     ) {}
 
+    public function create(array $data)
+    {
+        if (empty($data['ticket_number'])) {
+            $data['ticket_number'] = 'TKT-' . strtoupper(bin2hex(random_bytes(3)));
+        }
+        return $this->model->create($data);
+    }
+
     public function getAll(int $perPage = 15, array $filters = [])
     {
         $query = $this->model->with(['employee.user', 'assignee'])->latest();

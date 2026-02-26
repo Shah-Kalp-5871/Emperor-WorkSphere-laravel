@@ -53,13 +53,16 @@ Route::prefix('admin')->group(function () {
     Route::get('/employees/edit', function () {
         return view('admin.employees.edit');
     });
-    Route::get('/employees/show', function () {
-        return view('admin.employees.show');
+    Route::get('/employees/{id}', function ($id) {
+        return view('admin.employees.show', ['employeeId' => $id]);
     });
 
     // Projects
     Route::get('/projects', function () {
         return view('admin.projects.index');
+    });
+    Route::get('/projects/archived', function () {
+        return view('admin.projects.archived');
     });
     Route::get('/projects/create', function () {
         return view('admin.projects.create');
@@ -67,13 +70,16 @@ Route::prefix('admin')->group(function () {
     Route::get('/projects/edit', function () {
         return view('admin.projects.edit');
     });
-    Route::get('/projects/show', function () {
-        return view('admin.projects.show');
+    Route::get('/projects/{id}', function ($id) {
+        return view('admin.projects.show', ['projectId' => $id]);
     });
 
     // Tasks
     Route::get('/tasks', function () {
         return view('admin.tasks.index');
+    });
+    Route::get('/tasks/archived', function () {
+        return view('admin.tasks.archived');
     });
     Route::get('/tasks/create', function () {
         return view('admin.tasks.create');
@@ -81,8 +87,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/tasks/edit', function () {
         return view('admin.tasks.edit');
     });
-    Route::get('/tasks/show', function () {
-        return view('admin.tasks.show');
+    Route::get('/tasks/{id}', function ($id) {
+        return view('admin.tasks.show', ['taskId' => $id]);
     });
 
     // Daily Logs

@@ -59,4 +59,19 @@ class EmployeeService
             throw $e;
         }
     }
+
+    public function getArchivedEmployees(int $perPage = 15)
+    {
+        return $this->employeeRepository->getArchived($perPage);
+    }
+
+    public function restoreEmployee(int $id)
+    {
+        return $this->employeeRepository->restore($id);
+    }
+
+    public function permanentlyDeleteEmployee(int $id)
+    {
+        return $this->employeeRepository->forceDelete($id);
+    }
 }

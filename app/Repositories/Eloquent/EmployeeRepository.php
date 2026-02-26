@@ -95,4 +95,22 @@ class EmployeeRepository implements EmployeeRepositoryInterface
     {
         return $this->model->with(['user', 'department', 'designation'])->where('employee_code', $code)->firstOrFail();
     }
+
+    public function getArchived(int $perPage = 15)
+    {
+        return $this->model->onlyTrashed()->with(['user', 'department', 'designation'])->paginate($perPage);
+    }
+
+    public function restore(int $id)
+    {
+        $employee = $this->model->onlyTrashed()->findOrFail($id);
+        $employee->restore();
+        return $employee;
+    }
+
+    public function forceDelete(int $id)
+    {
+        $employee = $this->model->onlyTrashed()->findOrFail($id);
+        return $employee->forceDelete();
+    }
 }
