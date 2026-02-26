@@ -10,107 +10,79 @@
         <p>Connect with your colleagues and see who's currently available.</p>
       </div>
       <div style="display: flex; gap: 10px;">
-        <div class="stat-badge up" style="padding: 8px 14px;">12 Online</div>
+        <div class="stat-badge up" id="online-count" style="padding: 8px 14px;">0 Online</div>
       </div>
     </div>
 
-    <div class="team-grid">
-      <!-- Member 1 -->
-      <div class="team-card">
-        <div class="status-indicator">
-          <div class="status-dot online"></div>
-          <span style="color: #22c55e;">Online</span>
-        </div>
-        <div class="team-avatar-lg">PS</div>
-        <h3 class="member-name">Priya Sharma</h3>
-        <p class="member-role">Product Designer</p>
-        <p class="member-email">priya.sharma@worksphere.com</p>
-        <div class="card-actions">
-          <button class="card-btn">View Profile</button>
-          <button class="card-btn">Message</button>
-        </div>
+    <div class="team-grid" id="team-grid">
+      <!-- Loading Skeletons -->
+      @for($i=0; $i<6; $i++)
+      <div class="team-card skeleton-card">
+        <div class="skeleton" style="width:80px;height:80px;border-radius:50%;margin-bottom:16px"></div>
+        <div class="skeleton" style="width:140px;height:20px;margin-bottom:8px"></div>
+        <div class="skeleton" style="width:100px;height:14px;margin-bottom:12px"></div>
+        <div class="skeleton" style="width:180px;height:14px;margin-bottom:20px"></div>
+        <div style="display:flex;gap:8px;width:100%"><div class="skeleton" style="flex:1;height:34px;border-radius:6px"></div><div class="skeleton" style="flex:1;height:34px;border-radius:6px"></div></div>
       </div>
-
-      <!-- Member 2 -->
-      <div class="team-card">
-        <div class="status-indicator">
-          <div class="status-dot online"></div>
-          <span style="color: #22c55e;">Online</span>
-        </div>
-        <div class="team-avatar-lg" style="background:var(--blue-lt); color:var(--blue);">RK</div>
-        <h3 class="member-name">Ravi Kumar</h3>
-        <p class="member-role">Full Stack Developer</p>
-        <p class="member-email">ravi.kumar@worksphere.com</p>
-        <div class="card-actions">
-          <button class="card-btn">View Profile</button>
-          <button class="card-btn">Message</button>
-        </div>
-      </div>
-
-      <!-- Member 3 -->
-      <div class="team-card">
-        <div class="status-indicator">
-          <div class="status-dot offline"></div>
-          <span style="color: var(--text-3);">Offline</span>
-        </div>
-        <div class="team-avatar-lg" style="background:var(--amber-lt); color:var(--amber);">AM</div>
-        <h3 class="member-name">Ankit Mehta</h3>
-        <p class="member-role">DevOps Engineer</p>
-        <p class="member-email">ankit.mehta@worksphere.com</p>
-        <div class="card-actions">
-          <button class="card-btn">View Profile</button>
-          <button class="card-btn">Message</button>
-        </div>
-      </div>
-
-      <!-- Member 4 -->
-      <div class="team-card">
-        <div class="status-indicator">
-          <div class="status-dot online"></div>
-          <span style="color: #22c55e;">Online</span>
-        </div>
-        <div class="team-avatar-lg" style="background:var(--red-lt); color:var(--red);">SJ</div>
-        <h3 class="member-name">Sara Joshi</h3>
-        <p class="member-role">QA Specialist</p>
-        <p class="member-email">sara.joshi@worksphere.com</p>
-        <div class="card-actions">
-          <button class="card-btn">View Profile</button>
-          <button class="card-btn">Message</button>
-        </div>
-      </div>
-
-      <!-- Member 5 -->
-      <div class="team-card">
-        <div class="status-indicator">
-          <div class="status-dot offline"></div>
-          <span style="color: var(--text-3);">Offline</span>
-        </div>
-        <div class="team-avatar-lg">MK</div>
-        <h3 class="member-name">Manoj Khan</h3>
-        <p class="member-role">Frontend Intern</p>
-        <p class="member-email">manoj.khan@worksphere.com</p>
-        <div class="card-actions">
-          <button class="card-btn">View Profile</button>
-          <button class="card-btn">Message</button>
-        </div>
-      </div>
-
-      <!-- Member 6 -->
-      <div class="team-card">
-        <div class="status-indicator">
-          <div class="status-dot online"></div>
-          <span style="color: #22c55e;">Online</span>
-        </div>
-        <div class="team-avatar-lg" style="background:var(--blue-lt); color:var(--blue);">KS</div>
-        <h3 class="member-name">Kalp Shah</h3>
-        <p class="member-role">Full Stack Intern</p>
-        <p class="member-email">kalp.shah@worksphere.com</p>
-        <div class="card-actions">
-          <button class="card-btn">View Profile</button>
-          <button class="card-btn">Message</button>
-        </div>
-      </div>
+      @endfor
     </div>
+
+    <div id="team-empty" style="display:none; padding:40px; text-align:center; color:var(--text-3);">
+        <p>No team members found.</p>
+    </div>
+@push('scripts')
+<script>
+async function fetchTeam() {
+    const grid = document.getElementById('team-grid');
+    const empty = document.getElementById('team-empty');
+    const onlineBadge = document.getElementById('online-count');
+
+    try {
+        const res = await axios.get('/api/employee/team');
+        const members = res.data.data.data || res.data.data;
+
+        if (members.length === 0) {
+            grid.innerHTML = '';
+            empty.style.display = 'block';
+            onlineBadge.textContent = '0 Online';
+            return;
+        }
+
+        empty.style.display = 'none';
+        onlineBadge.textContent = `${members.filter(m => m.is_active).length} Online`; // Simulation: all active are online
+
+        grid.innerHTML = members.map(m => {
+            const user = m.user || { name: 'Unknown', email: 'N/A' };
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            const role = m.designation?.name || 'Employee';
+            const isOnline = m.is_active; // Simulation
+
+            return `
+                <div class="team-card">
+                    <div class="status-indicator">
+                        <div class="status-dot ${isOnline ? 'online' : 'offline'}"></div>
+                        <span style="color: ${isOnline ? '#22c55e' : 'var(--text-3)'}">${isOnline ? 'Online' : 'Offline'}</span>
+                    </div>
+                    <div class="team-avatar-lg">${initials}</div>
+                    <h3 class="member-name">${user.name}</h3>
+                    <p class="member-role">${role}</p>
+                    <p class="member-email">${user.email}</p>
+                    <div class="card-actions">
+                        <button class="card-btn" onclick="window.location.href='/employee/profile/my-profile?id=${m.id}'">View Profile</button>
+                        <button class="card-btn" onclick="alert('Message feature coming soon!')">Message</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error('Fetch team error:', err);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', fetchTeam);
+</script>
+@endpush
 @endsection
 
 @push('styles')

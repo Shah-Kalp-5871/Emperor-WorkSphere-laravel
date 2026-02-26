@@ -80,6 +80,20 @@ Route::middleware('auth:api,admin')->group(function () {
         Route::get('tickets/{id}', [\App\Http\Controllers\Employee\SupportTicketController::class, 'show']);
         Route::post('tickets/{id}/reply', [\App\Http\Controllers\Employee\SupportTicketController::class, 'reply']);
 
+        Route::get('tasks', [\App\Http\Controllers\Employee\TaskController::class, 'index']);
+        Route::get('tasks/{id}', [\App\Http\Controllers\Employee\TaskController::class, 'show']);
+        Route::patch('tasks/{id}/status', [\App\Http\Controllers\Employee\TaskController::class, 'updateStatus']);
+
+        Route::get('projects', [\App\Http\Controllers\Employee\ProjectController::class, 'index']);
+        Route::get('projects/{id}', [\App\Http\Controllers\Employee\ProjectController::class, 'show']);
+
+        Route::get('daily-logs', [\App\Http\Controllers\Employee\DailyLogController::class, 'index']);
+        Route::post('daily-logs', [\App\Http\Controllers\Employee\DailyLogController::class, 'store']);
+        Route::get('daily-logs/{id}', [\App\Http\Controllers\Employee\DailyLogController::class, 'show']);
+        Route::put('daily-logs/{id}', [\App\Http\Controllers\Employee\DailyLogController::class, 'update']);
+
+        Route::get('team', [\App\Http\Controllers\Employee\TeamMemberController::class, 'index']);
+
         Route::prefix('anonymous-chat')->group(function () {
             Route::post('start', [\App\Http\Controllers\Api\Employee\AnonymousChatController::class, 'startSession']);
             // Rate limit sending messages: 10 per minute max to prevent spamming

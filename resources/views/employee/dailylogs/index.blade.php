@@ -13,29 +13,40 @@
         </div>
         <span id="log-status" style="font-size:11px;background:var(--amber-lt);color:var(--amber);padding:3px 9px;border-radius:20px;font-weight:500;border:1px solid #FDE68A">Draft</span>
       </div>
-      <div class="log-body">
+      <div class="log-body" style="padding: 24px;">
         <div class="log-date" style="font-size: 14px; font-weight: 500; color: var(--text-1);">📅 {{ date('l, d F Y') }}</div>
         <p style="font-size: 12px; color: var(--text-3); margin-bottom: 20px;">Please document your progress for today's tasks.</p>
         
-        <div class="log-grid">
-          <div class="log-sec">
-            <div class="log-sec-label">🌅 Morning Session (Before Lunch)</div>
-            <textarea class="lf" placeholder="What did you work on this morning? e.g. Design meeting, coding auth module..."></textarea>
-            <input class="lf" type="url" placeholder="🔗 Optional project/commit link" style="margin-top:8px;min-height:unset;padding:10px 12px"/>
-          </div>
-          <div class="log-sec">
-            <div class="log-sec-label">🌆 Afternoon Session (After Lunch)</div>
-            <textarea class="lf" placeholder="What did you finish this afternoon?"></textarea>
-            <input class="lf" type="url" placeholder="🔗 Optional project/commit link" style="margin-top:8px;min-height:unset;padding:10px 12px"/>
-          </div>
-        </div>
+        <form id="daily-log-form">
+            <div class="log-grid">
+              <div class="log-sec">
+                <div class="log-sec-label">🌅 Morning Session</div>
+                <textarea id="morning_summary" class="lf" placeholder="What did you work on this morning?" required></textarea>
+              </div>
+              <div class="log-sec">
+                <div class="log-sec-label">🌆 Afternoon Session</div>
+                <textarea id="afternoon_summary" class="lf" placeholder="What did you finish this afternoon?" required></textarea>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <div class="log-sec-label">How's your mood today?</div>
+                <div style="display:flex; gap:12px; margin-top:8px;">
+                    <label class="mood-opt"><input type="radio" name="mood" value="happy" required> <span>😊 Happy</span></label>
+                    <label class="mood-opt"><input type="radio" name="mood" value="good" checked> <span>🙂 Good</span></label>
+                    <label class="mood-opt"><input type="radio" name="mood" value="neutral"> <span>😐 Neutral</span></label>
+                    <label class="mood-opt"><input type="radio" name="mood" value="bad"> <span>😔 Bad</span></label>
+                    <label class="mood-opt"><input type="radio" name="mood" value="tired"> <span>😫 Tired</span></label>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
+              <button type="button" class="action-btn" style="padding: 10px 24px;" onclick="saveDraft()">Save Draft</button>
+              <button type="submit" class="greeting-btn" id="log-btn">Submit Final Log</button>
+            </div>
+        </form>
         
-        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
-          <button class="action-btn" style="padding: 10px 24px;">Save Draft</button>
-          <button class="greeting-btn" id="log-btn" onclick="submitLog()">Submit Final Log</button>
-        </div>
-        
-        <div id="log-saved" style="display:none;align-items:center;gap:6px;font-size:12px;color:var(--accent);margin-top:12px;justify-content: flex-end;">
+        <div id="log-success-msg" style="display:none;align-items:center;gap:6px;font-size:12px;color:var(--accent);margin-top:12px;justify-content: flex-end;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           Log submitted successfully!
         </div>
@@ -47,47 +58,31 @@
       <div class="panel-header">
         <div class="panel-title">Log History</div>
         <div style="display: flex; gap: 8px;">
-           <input type="month" class="lf" style="padding: 5px 10px; font-size: 12px; min-height: unset; width: auto;" value="{{ date('Y-m') }}">
+           <input type="month" id="history-month" class="lf" style="padding: 5px 10px; font-size: 12px; min-height: unset; width: auto;" value="{{ date('Y-m') }}">
         </div>
       </div>
       <div style="overflow-x: auto;">
-        <table class="history-table" id="tbl-emp-dailylogs" data-tabulator>
+        <table class="history-table" id="tbl-emp-dailylogs">
           <thead>
             <tr>
-              <th data-width="140">Date</th>
-              <th data-width="220">Morning Summary</th>
-              <th data-width="220">Afternoon Summary</th>
-              <th data-width="120">Status</th>
-              <th data-width="100">Action</th>
+              <th style="width:140px">Date</th>
+              <th>Morning Summary</th>
+              <th>Afternoon Summary</th>
+              <th style="width:120px">Status</th>
+              <th style="width:100px">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="log-history-body">
+            <!-- Skeletons -->
+            @for($i=0; $i<3; $i++)
             <tr>
-              <td><div style="font-weight: 600;">Feb 23, 2026</div><div style="font-size: 11px; color: var(--text-3);">Monday</div></td>
-              <td>Worked on the responsive layout bugs for the admin dashboard.</td>
-              <td>Completed the task management refactor and updated sidebar styles.</td>
-              <td><span class="status-pill done">Submitted</span></td>
-              <td><button class="action-btn" style="padding: 6px 12px; font-size: 12px;">View</button></td>
+                <td><div class="skeleton" style="width:80px;height:12px;margin-bottom:6px"></div><div class="skeleton" style="width:50px;height:10px"></div></td>
+                <td><div class="skeleton" style="width:90%;height:12px"></div></td>
+                <td><div class="skeleton" style="width:90%;height:12px"></div></td>
+                <td><div class="skeleton" style="width:60px;height:18px;border-radius:10px"></div></td>
+                <td><div class="skeleton" style="width:50px;height:24px"></div></td>
             </tr>
-            <tr>
-              <td><div style="font-weight: 600;">Feb 22, 2026</div><div style="font-size: 11px; color: var(--text-3);">Sunday</div></td>
-              <td colspan="2" style="text-align: center; color: var(--text-3); font-style: italic;">Office Closed (Weekend)</td>
-              <td><span style="color: var(--text-3);">—</span></td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><div style="font-weight: 600;">Feb 21, 2026</div><div style="font-size: 11px; color: var(--text-3);">Saturday</div></td>
-              <td colspan="2" style="text-align: center; color: var(--red); font-weight: 500;">Missing Log Entry</td>
-              <td><span class="status-pill pending" style="background: var(--red-lt); color: var(--red);">Overdue</span></td>
-              <td><button class="greeting-btn" style="padding: 6px 12px; font-size: 11px;">Fill Now</button></td>
-            </tr>
-            <tr>
-              <td><div style="font-weight: 600;">Feb 20, 2026</div><div style="font-size: 11px; color: var(--text-3);">Friday</div></td>
-              <td>Initial setup for the Employee portal and basic header/footer.</td>
-              <td>Assigned to 3 new projects and started internal documentation.</td>
-              <td><span class="status-pill done">Submitted</span></td>
-              <td><button class="action-btn" style="padding: 6px 12px; font-size: 12px;">View</button></td>
-            </tr>
+            @endfor
           </tbody>
         </table>
       </div>
@@ -115,24 +110,80 @@
 
 @push('scripts')
 <script>
-function submitLog() {
-  const btn = document.getElementById('log-btn');
-  const status = document.getElementById('log-status');
-  const saved = document.getElementById('log-saved');
-  
-  btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Submitting...';
-  btn.style.opacity = '0.7';
-  btn.style.pointerEvents = 'none';
-  
-  setTimeout(() => {
-    btn.innerHTML = 'Submitted';
-    btn.style.background = 'var(--text-3)';
-    status.innerHTML = 'Submitted';
-    status.style.background = 'var(--accent-lt)';
-    status.style.color = 'var(--accent)';
-    status.style.borderColor = 'var(--accent)';
-    saved.style.display = 'flex';
-  }, 1000);
+async function fetchLogs() {
+    const tbody = document.getElementById('log-history-body');
+    const month = document.getElementById('history-month').value;
+
+    try {
+        const res = await axios.get('/api/employee/daily-logs');
+        const logs = res.data.data.data || res.data.data;
+
+        if (logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-3);">No logs found yet.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = logs.map(l => {
+            const date = new Date(l.log_date);
+            const dateDisplay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+            const statusClass = l.status === 'approved' ? 'done' : 'pending';
+            const logId = l.id;
+
+            return `
+                <tr>
+                  <td>
+                    <div style="font-weight: 600;">${dateDisplay}</div>
+                    <div style="font-size: 11px; color: var(--text-3);">${dayName}</div>
+                  </td>
+                  <td>${l.morning_summary.substring(0, 60)}${l.morning_summary.length > 60 ? '...' : ''}</td>
+                  <td>${l.afternoon_summary.substring(0, 60)}${l.afternoon_summary.length > 60 ? '...' : ''}</td>
+                  <td><span class="status-pill ${statusClass}">${l.status.charAt(0).toUpperCase() + l.status.slice(1)}</span></td>
+                  <td><button class="action-btn" style="padding: 6px 12px; font-size: 12px;" onclick="window.location.href='/employee/dailylogs/show?id=${logId}'">View</button></td>
+                </tr>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error('Fetch logs error:', err);
+    }
+}
+
+document.getElementById('daily-log-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('log-btn');
+    const successMsg = document.getElementById('log-success-msg');
+    
+    const data = {
+        log_date: new Date().toISOString().split('T')[0],
+        morning_summary: document.getElementById('morning_summary').value,
+        afternoon_summary: document.getElementById('afternoon_summary').value,
+        mood: document.querySelector('input[name="mood"]:checked').value
+    };
+
+    btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Submitting...';
+    btn.disabled = true;
+
+    try {
+        await axios.post('/api/employee/daily-logs', data);
+        successMsg.style.display = 'flex';
+        btn.innerHTML = 'Submitted';
+        btn.style.background = 'var(--text-3)';
+        document.getElementById('daily-log-form').reset();
+        fetchLogs(); // Reload history
+        
+        setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
+    } catch (err) {
+        alert('Failed to submit log: ' + (err.response?.data?.message || 'Unknown error'));
+        btn.innerHTML = 'Submit Final Log';
+        btn.disabled = false;
+    }
+});
+
+document.getElementById('history-month').addEventListener('change', fetchLogs);
+document.addEventListener('DOMContentLoaded', fetchLogs);
+
+function saveDraft() {
+    alert('Draft saved to local storage (Simulation)');
 }
 </script>
 @endpush

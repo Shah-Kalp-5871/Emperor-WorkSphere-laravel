@@ -38,7 +38,13 @@ class AuthController extends Controller
     public function me(): JsonResponse
     {
         $guard = $this->getGuard();
-        return response()->json(auth($guard)->user());
+        $user = auth($guard)->user();
+        
+        if ($guard === 'api' && $user) {
+            $user->load(['employee.department', 'employee.designation']);
+        }
+        
+        return response()->json($user);
     }
 
     /**

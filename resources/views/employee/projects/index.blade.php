@@ -13,11 +13,11 @@
 
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-title">Active Projects <span class="count">3</span></div>
+        <div class="panel-title">Active Projects <span class="count" id="project-count">0</span></div>
       </div>
       
       <div class="table-container">
-        <table class="data-table" id="tbl-emp-projects" data-tabulator>
+        <table class="data-table" id="tbl-emp-projects">
           <thead>
             <tr>
               <th>Project</th>
@@ -29,71 +29,89 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td><div style="font-weight: 600; color: var(--text-1);">Website Redesign</div><div style="font-size: 11px; color: var(--text-3);">Internal Development</div></td>
-              <td>Priya S.</td>
-              <td>
-                <div class="member-avatars">
-                  <div class="member-avatar">P</div>
-                  <div class="member-avatar" style="background:var(--blue-lt); color:var(--blue);">R</div>
-                  <div class="member-avatar" style="background:var(--amber-lt); color:var(--amber);">A</div>
-                  <div class="member-avatar">+1</div>
-                </div>
-              </td>
-              <td>6 tasks · 4 done</td>
-              <td>
-                <div class="progress-wrap">
-                  <span class="progress-text">72%</span>
-                  <div class="proj-bar-bg"><div class="proj-bar-fill" style="width: 72%; background: var(--accent);"></div></div>
-                </div>
-              </td>
-              <td>Jan 20, 2026</td>
-              <td><button class="action-btn" onclick="window.location.href='{{ url('/employee/projects/details') }}'">View Details</button></td>
+          <tbody id="project-list-body">
+            <!-- Loading Skeletons -->
+            @for($i=0; $i<3; $i++)
+            <tr class="skeleton-row">
+                <td><div class="skeleton" style="width:140px;height:15px;margin-bottom:8px"></div><div class="skeleton" style="width:100px;height:10px"></div></td>
+                <td><div class="skeleton" style="width:80px;height:12px"></div></td>
+                <td><div style="display:flex;gap:4px"><div class="skeleton" style="width:24px;height:24px;border-radius:50%"></div><div class="skeleton" style="width:24px;height:24px;border-radius:50%"></div></div></td>
+                <td><div class="skeleton" style="width:90px;height:12px"></div></td>
+                <td><div class="skeleton" style="width:100px;height:15px"></div></td>
+                <td><div class="skeleton" style="width:80px;height:12px"></div></td>
+                <td><div class="skeleton" style="width:80px;height:28px;border-radius:6px"></div></td>
             </tr>
-            <tr>
-              <td><div style="font-weight: 600; color: var(--text-1);">Mobile App v2</div><div style="font-size: 11px; color: var(--text-3);">Client Project</div></td>
-              <td>Admin</td>
-              <td>
-                <div class="member-avatars">
-                  <div class="member-avatar" style="background:var(--blue-lt); color:var(--blue);">R</div>
-                  <div class="member-avatar" style="background:var(--amber-lt); color:var(--amber);">A</div>
-                  <div class="member-avatar">K</div>
-                </div>
-              </td>
-              <td>11 tasks · 5 done</td>
-              <td>
-                <div class="progress-wrap">
-                  <span class="progress-text">45%</span>
-                  <div class="proj-bar-bg"><div class="proj-bar-fill" style="width: 45%; background: var(--blue);"></div></div>
-                </div>
-              </td>
-              <td>Feb 01, 2026</td>
-              <td><button class="action-btn" onclick="window.location.href='{{ url('/employee/projects/details') }}'">View Details</button></td>
-            </tr>
-            <tr>
-              <td><div style="font-weight: 600; color: var(--text-1);">API Integration</div><div style="font-size: 11px; color: var(--text-3);">Infrastructure Enhancement</div></td>
-              <td>Ankit M.</td>
-              <td>
-                <div class="member-avatars">
-                  <div class="member-avatar" style="background:var(--amber-lt); color:var(--amber);">A</div>
-                  <div class="member-avatar">K</div>
-                </div>
-              </td>
-              <td>4 tasks · 3 done</td>
-              <td>
-                <div class="progress-wrap">
-                  <span class="progress-text">90%</span>
-                  <div class="proj-bar-bg"><div class="proj-bar-fill" style="width: 90%; background: var(--amber);"></div></div>
-                </div>
-              </td>
-              <td>Feb 10, 2026</td>
-              <td><button class="action-btn" onclick="window.location.href='{{ url('/employee/projects/details') }}'">View Details</button></td>
-            </tr>
+            @endfor
           </tbody>
         </table>
+
+        <div id="projects-empty" style="display:none; padding:40px; text-align:center; color:var(--text-3);">
+            <div style="font-size:32px;margin-bottom:12px">📂</div>
+            <p>You are not assigned to any active projects yet.</p>
+        </div>
       </div>
     </div>
+@push('scripts')
+<script>
+async function fetchProjects() {
+    const tbody = document.getElementById('project-list-body');
+    const emptyDiv = document.getElementById('projects-empty');
+    const countSpan = document.getElementById('project-count');
+
+    try {
+        const res = await axios.get('/api/employee/projects');
+        const projects = res.data.data.data || res.data.data; // Handle both paginated and direct array
+
+        if (projects.length === 0) {
+            tbody.innerHTML = '';
+            emptyDiv.style.display = 'block';
+            countSpan.textContent = '0';
+            return;
+        }
+
+        emptyDiv.style.display = 'none';
+        countSpan.textContent = projects.length;
+        
+        tbody.innerHTML = projects.map(p => {
+            const creator = p.creator?.name || 'Admin';
+            const createdDate = new Date(p.created_at).toLocaleDateString();
+            const progress = p.progress || 0; // Assuming backend calculates or default to 0
+            
+            // Member Avatars
+            const members = p.employees || [];
+            const memberHtml = members.slice(0, 3).map(m => `
+                <div class="member-avatar" title="${m.user?.name}">${m.user?.name ? m.user.name[0].toUpperCase() : '?'}</div>
+            `).join('') + (members.length > 3 ? `<div class="member-avatar">+${members.length - 3}</div>` : '');
+
+            return `
+                <tr>
+                  <td>
+                    <div style="font-weight: 600; color: var(--text-1);">${p.name}</div>
+                    <div style="font-size: 11px; color: var(--text-3);">${p.description ? p.description.substring(0, 40) + '...' : 'No description'}</div>
+                  </td>
+                  <td>${creator}</td>
+                  <td><div class="member-avatars">${memberHtml}</div></td>
+                  <td>${p.tasks_count || 0} tasks</td>
+                  <td>
+                    <div class="progress-wrap">
+                      <span class="progress-text">${progress}%</span>
+                      <div class="proj-bar-bg"><div class="proj-bar-fill" style="width: ${progress}%; background: var(--accent);"></div></div>
+                    </div>
+                  </td>
+                  <td>${createdDate}</td>
+                  <td><button class="action-btn" onclick="window.location.href='/employee/projects/details?id=${p.id}'">View Details</button></td>
+                </tr>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error('Fetch projects error:', err);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', fetchProjects);
+</script>
+@endpush
 @endsection
 
 @push('styles')
