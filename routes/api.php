@@ -40,6 +40,10 @@ Route::middleware('auth:api,admin')->group(function () {
             Route::apiResource('tasks', \App\Http\Controllers\Admin\TaskController::class);
             Route::post('tasks/{task}/assign-employees', [\App\Http\Controllers\Admin\TaskController::class, 'assignEmployees']);
         });
+
+        // Lookup Routes
+        Route::get('departments', [\App\Http\Controllers\Api\Admin\DepartmentController::class, 'index']);
+        Route::get('designations', [\App\Http\Controllers\Api\Admin\DesignationController::class, 'index']);
     });
 
     // Employee Routes

@@ -29,11 +29,17 @@ class EmployeeRepository implements EmployeeRepositoryInterface
     public function create(array $data)
     {
         return DB::transaction(function () use ($data) {
+            // Auto-generate employee_code if not provided
+            if (empty($data['employee_code'])) {
+                $lastId = $this->model->max('id') ?? 0;
+                $data['employee_code'] = 'EMP-' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
+            }
+
             // First create the User for login
             $user = $this->userModel->create([
-                'name' => $data['name'],
+                'name' => $data['name'] ?? 'New Employee', // Placeholder name
                 'email' => $data['email'],
-                'password' => Hash::make($data['password'] ?? Str::random(10)), // Need a way to set password
+                'password' => Hash::make($data['password'] ?? Str::random(10)),
             ]);
             
             // Assign employee role
@@ -50,7 +56,7 @@ class EmployeeRepository implements EmployeeRepositoryInterface
                 'date_of_birth' => $data['date_of_birth'] ?? null,
                 'date_of_joining' => $data['date_of_joining'] ?? null,
                 'is_active' => $data['is_active'] ?? true,
-                'created_by' => auth('api')->id(), // Admin ID
+                'created_by' => auth()->id(), // Admin ID (supports both guards now)
             ]);
         });
     }

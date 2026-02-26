@@ -10,7 +10,7 @@
         <div class="section-sub">12 active employees</div>
     </div>
     <div class="section-actions">
-        <button class="btn btn-primary" onclick="openModal('create-emp-modal')">
+        <button class="btn btn-primary" onclick="window.location.href='/admin/employees/create'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add Employee
         </button>

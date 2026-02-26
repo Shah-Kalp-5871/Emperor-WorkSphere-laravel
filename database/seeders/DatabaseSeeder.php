@@ -50,5 +50,30 @@ class DatabaseSeeder extends Seeder
                 'created_by' => $admin->id,
             ]
         );
+
+        // Seed Departments
+        $depts = ['Engineering', 'Marketing', 'Sales', 'Human Resources', 'Support'];
+        $deptModels = [];
+        foreach ($depts as $dept) {
+            $deptModels[$dept] = \App\Models\Department::firstOrCreate(['name' => $dept]);
+        }
+
+        // Seed Designations
+        $engineeringDeptId = $deptModels['Engineering']->id;
+        $desigs = ['Senior Developer', 'Junior Developer', 'Marketing Manager', 'HR Lead', 'Sales Executive', 'Support Agent'];
+        
+        foreach ($desigs as $desig) {
+            // Map designations to reasonable departments for better seeding
+            $deptId = $engineeringDeptId;
+            if (str_contains($desig, 'Marketing')) $deptId = $deptModels['Marketing']->id;
+            if (str_contains($desig, 'HR')) $deptId = $deptModels['Human Resources']->id;
+            if (str_contains($desig, 'Sales')) $deptId = $deptModels['Sales']->id;
+            if (str_contains($desig, 'Support')) $deptId = $deptModels['Support']->id;
+
+            \App\Models\Designation::firstOrCreate(
+                ['name' => $desig],
+                ['department_id' => $deptId]
+            );
+        }
     }
 }
