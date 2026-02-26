@@ -162,14 +162,14 @@
             <h1>Welcome back</h1>
             <p>Enter your details to access your workspace.</p>
 
-            <form>
+            <form id="loginForm">
                 <div class="form-group">
                     <label for="email">Work Email</label>
-                    <input type="email" id="email" placeholder="name@worksphere.com" required>
+                    <input type="email" id="email" name="email" placeholder="name@worksphere.com" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
                 </div>
 
                 <div class="options">
@@ -179,8 +179,59 @@
                     <a href="#" class="forgot">Reset password</a>
                 </div>
 
-                <button type="button" class="login-btn" onclick="window.location.href='/employee/dashboard'">Sign In</button>
+                <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+                <div id="login-error" style="color: #ff4d4d; font-size: 13px; margin-top: 12px; text-align: center; display: none;"></div>
             </form>
+
+            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+            <script>
+                document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    const btn = document.getElementById('loginBtn');
+                    const errorDiv = document.getElementById('login-error');
+
+                    btn.disabled = true;
+                    btn.innerText = 'Signing in...';
+                    errorDiv.style.display = 'none';
+
+                    try {
+                        const response = await axios.post('/api/employee/login', { email, password });
+                        const token = response.data.access_token;
+
+                        // Store token
+                        sessionStorage.setItem('token', token);
+
+                        // Set global axios header for immediate next call
+                        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+                        // Call /api/me to verify role
+                        const userResponse = await axios.get('/api/me');
+                        const user = userResponse.data;
+
+                        if (user.role === 'employee') {
+                            // Initialize Echo if available
+                            if (typeof window.initializeEcho === 'function') {
+                                window.initializeEcho();
+                            }
+                            window.location.href = '/employee/dashboard';
+                        } else {
+                            sessionStorage.removeItem('token');
+                            errorDiv.innerText = 'Unauthorized. Employee access only.';
+                            errorDiv.style.display = 'block';
+                            btn.disabled = false;
+                            btn.innerText = 'Sign In';
+                        }
+                    } catch (error) {
+                        console.error('Login Error:', error);
+                        errorDiv.innerText = error.response?.data?.error || 'Invalid credentials or server error.';
+                        errorDiv.style.display = 'block';
+                        btn.disabled = false;
+                        btn.innerText = 'Sign In';
+                    }
+                });
+            </script>
         </div>
         <div class="help-text">
             Need help? <a href="#">Contact Support</a>

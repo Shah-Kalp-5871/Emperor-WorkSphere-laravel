@@ -13,6 +13,9 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
+    protected $guard_name = 'web';
+
+
     /**
      * The attributes that are mass assignable.
      *
@@ -23,6 +26,13 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
     ];
+
+    protected $appends = ['role'];
+
+    public function getRoleAttribute()
+    {
+        return $this->roles->first()?->name;
+    }
 
     /**
      * The attributes that should be hidden for serialization.

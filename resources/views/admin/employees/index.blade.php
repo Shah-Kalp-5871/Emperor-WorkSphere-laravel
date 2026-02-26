@@ -23,50 +23,123 @@
     </div>
     <div class="card">
     <div class="table-wrap">
-    <table id="tbl-employees" data-tabulator>
+    <table id="tbl-employees">
         <thead><tr>
             <th>Employee</th><th>Username</th><th>Email</th><th>Mobile</th><th>Profile</th><th>Joined</th><th>Actions</th>
         </tr></thead>
-        <tbody>
-            <tr>
-            <td><div style="display:flex;align-items:center;gap:10px"><div class="av" style="margin:0;width:32px;height:32px">P</div><span class="td-main">Priya Sharma</span></div></td>
-            <td>priya_s</td>
-            <td>priya@company.com</td>
-            <td>+91 98XXX XXXXX</td>
-            <td><span class="privacy-pill privacy-public">🌍 Public</span></td>
-            <td>Jan 10, 2026</td>
-            <td><button class="btn btn-ghost btn-sm" onclick="openModal('view-emp-modal')">View</button></td>
-            </tr>
-            <tr>
-            <td><div style="display:flex;align-items:center;gap:10px"><div class="av av2" style="margin:0;width:32px;height:32px">R</div><span class="td-main">Ravi Kumar</span></div></td>
-            <td>ravi_k</td>
-            <td>ravi@company.com</td>
-            <td>+91 97XXX XXXXX</td>
-            <td><span class="privacy-pill privacy-private">🔒 Private</span></td>
-            <td>Jan 15, 2026</td>
-            <td><button class="btn btn-ghost btn-sm" onclick="openModal('view-emp-modal')">View</button></td>
-            </tr>
-            <tr>
-            <td><div style="display:flex;align-items:center;gap:10px"><div class="av av3" style="margin:0;width:32px;height:32px">A</div><span class="td-main">Ankit Mehta</span></div></td>
-            <td>ankit_m</td>
-            <td>ankit@company.com</td>
-            <td>+91 96XXX XXXXX</td>
-            <td><span class="privacy-pill privacy-public">🌍 Public</span></td>
-            <td>Feb 1, 2026</td>
-            <td><button class="btn btn-ghost btn-sm" onclick="openModal('view-emp-modal')">View</button></td>
-            </tr>
-            <tr>
-            <td><div style="display:flex;align-items:center;gap:10px"><div class="av av4" style="margin:0;width:32px;height:32px">S</div><span class="td-main">Sara Joshi</span></div></td>
-            <td>sara_j</td>
-            <td>sara@company.com</td>
-            <td>+91 95XXX XXXXX</td>
-            <td><span class="privacy-pill privacy-public">🌍 Public</span></td>
-            <td>Feb 5, 2026</td>
-            <td><button class="btn btn-ghost btn-sm" onclick="openModal('view-emp-modal')">View</button></td>
-            </tr>
+        <tbody id="employee-tbody">
+            <!-- Dynamic rows will be inserted here -->
         </tbody>
-        </table>
+    </table>
+    
+    <div id="table-loading" style="text-align:center; padding: 40px; display: none;">
+        <div class="spinner" style="border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
+        <div style="color: var(--text-2); font-size: 14px;">Loading employees...</div>
+    </div>
+
+    <div id="table-empty" style="text-align:center; padding: 40px; display: none;">
+        <div style="font-size: 24px; margin-bottom: 10px;">👥</div>
+        <div style="color: var(--text-2); font-size: 14px;">No employees found.</div>
+    </div>
+
+    <div id="table-error" style="text-align:center; padding: 40px; display: none; color: #ff4d4d;">
+        <div style="font-size: 20px; margin-bottom: 10px;">⚠️</div>
+        <div id="error-message" style="font-size: 14px;">Failed to load employees.</div>
+    </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-row" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-top: 1px solid var(--border);">
+        <div id="pagination-info" style="color: var(--text-2); font-size: 13px;">Showing 0 of 0 employees</div>
+        <div id="pagination-controls" style="display: flex; gap: 8px;">
+            <button class="btn btn-ghost btn-sm" id="prev-page" disabled>Previous</button>
+            <button class="btn btn-ghost btn-sm" id="next-page" disabled>Next</button>
+        </div>
     </div>
     </div>
 </div>
+
+<style>
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+
+@push('scripts')
+<script>
+    let currentPage = 1;
+
+    async function fetchEmployees(page = 1) {
+        const tbody = document.getElementById('employee-tbody');
+        const loading = document.getElementById('table-loading');
+        const empty = document.getElementById('table-empty');
+        const errorDiv = document.getElementById('table-error');
+        const info = document.getElementById('pagination-info');
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+
+        tbody.innerHTML = '';
+        loading.style.display = 'block';
+        empty.style.display = 'none';
+        errorDiv.style.display = 'none';
+        
+        try {
+            const response = await axios.get(`/api/admin/employees?page=${page}`);
+            const { data, current_page, last_page, total, from, to } = response.data;
+
+            loading.style.display = 'none';
+
+            if (data.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+
+            data.forEach(employee => {
+                const tr = document.createElement('tr');
+                const initial = employee.first_name ? employee.first_name[0].toUpperCase() : '?';
+                const fullName = `${employee.first_name || ''} ${employee.last_name || ''}`.trim();
+                const joinedDate = employee.created_at ? new Date(employee.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+                const privacyClass = employee.privacy_profile === 'private' ? 'privacy-private' : 'privacy-public';
+                const privacyIcon = employee.privacy_profile === 'private' ? '🔒' : '🌍';
+                const privacyText = employee.privacy_profile === 'private' ? 'Private' : 'Public';
+
+                tr.innerHTML = `
+                    <td><div style="display:flex;align-items:center;gap:10px"><div class="av" style="margin:0;width:32px;height:32px">${initial}</div><span class="td-main">${fullName}</span></div></td>
+                    <td>${employee.username || 'N/A'}</td>
+                    <td>${employee.email}</td>
+                    <td>${employee.phone || 'N/A'}</td>
+                    <td><span class="privacy-pill ${privacyClass}">${privacyIcon} ${privacyText}</span></td>
+                    <td>${joinedDate}</td>
+                    <td><button class="btn btn-ghost btn-sm" onclick="alert('Viewing employee ID: ${employee.id}')">View</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update Pagination
+            currentPage = current_page;
+            info.innerText = `Showing ${from || 0} to ${to || 0} of ${total} employees`;
+            prevBtn.disabled = current_page === 1;
+            nextBtn.disabled = current_page === last_page;
+
+        } catch (error) {
+            console.error('Fetch error:', error);
+            loading.style.display = 'none';
+            errorDiv.style.display = 'block';
+            document.getElementById('error-message').innerText = error.response?.data?.message || 'Failed to load employees.';
+        }
+    }
+
+    document.getElementById('prev-page').addEventListener('click', () => {
+        if (currentPage > 1) fetchEmployees(currentPage - 1);
+    });
+
+    document.getElementById('next-page').addEventListener('click', () => {
+        fetchEmployees(currentPage + 1);
+    });
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchEmployees();
+    });
+</script>
+@endpush
+
 @endsection

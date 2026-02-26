@@ -12,6 +12,9 @@ class Admin extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\AdminFactory> */
     use HasFactory, Notifiable, HasRoles;
+    
+    protected $guard_name = 'admin';
+
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +26,13 @@ class Admin extends Authenticatable implements JWTSubject
         'email',
         'password',
     ];
+
+    protected $appends = ['role'];
+
+    public function getRoleAttribute()
+    {
+        return $this->roles->first()?->name;
+    }
 
     /**
      * The attributes that should be hidden for serialization.

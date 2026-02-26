@@ -23,12 +23,13 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->only('email', 'password');
+        $guard = $this->getGuard();
 
-        if (! $token = auth('api')->attempt($credentials)) {
+        if (! $token = auth($guard)->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        return $this->respondWithToken($token, $guard);
     }
 
     /**
@@ -36,7 +37,8 @@ class AuthController extends Controller
      */
     public function me(): JsonResponse
     {
-        return response()->json(auth('api')->user());
+        $guard = $this->getGuard();
+        return response()->json(auth($guard)->user());
     }
 
     /**
@@ -44,7 +46,8 @@ class AuthController extends Controller
      */
     public function logout(): JsonResponse
     {
-        auth('api')->logout();
+        $guard = $this->getGuard();
+        auth($guard)->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -54,18 +57,36 @@ class AuthController extends Controller
      */
     public function refresh(): JsonResponse
     {
-        return $this->respondWithToken(auth('api')->refresh());
+        $guard = $this->getGuard();
+        return $this->respondWithToken(auth($guard)->refresh(), $guard);
     }
 
     /**
      * Get the token array structure.
      */
-    protected function respondWithToken(string $token): JsonResponse
+    protected function respondWithToken(string $token, string $guard): JsonResponse
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60
+            'expires_in' => auth($guard)->factory()->getTTL() * 60
         ]);
+    }
+
+    /**
+     * Determine which guard to use based on the request path.
+     */
+    protected function getGuard(): string
+    {
+        if (request()->is('api/admin/*') || request()->is('api/admin')) {
+            return 'admin';
+        }
+
+        // Check current authenticated guard if any
+        if (auth('admin')->check()) {
+            return 'admin';
+        }
+
+        return 'api';
     }
 }

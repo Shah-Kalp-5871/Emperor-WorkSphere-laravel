@@ -10,7 +10,52 @@
     <link rel="stylesheet" href="{{ asset('css/employee/tabulator-custom.css') }}">
     <script src="{{ asset('js/employee/tabulator-init.js') }}" defer></script>
     <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@6.3.0/dist/css/tabulator.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        (async function() {
+            const token = sessionStorage.getItem('token');
+            const isLoginPage = window.location.pathname.includes('/employee/login');
+
+            if (!token) {
+                if (!isLoginPage) {
+                    window.location.href = '/employee/login';
+                }
+                return;
+            }
+
+            // Set global axios header
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+            try {
+                const response = await axios.get('/api/me');
+                const user = response.data;
+
+                if (user.role !== 'employee') {
+                    throw new Error('Unauthorized');
+                }
+
+                // If on login page but already logged in, redirect to dashboard
+                if (isLoginPage) {
+                    window.location.href = '/employee/dashboard';
+                }
+
+                // Initialize Echo
+                window.onload = () => {
+                    if (typeof window.initializeEcho === 'function') {
+                        window.initializeEcho();
+                    }
+                };
+            } catch (error) {
+                console.error('Session validation failed:', error);
+                sessionStorage.removeItem('token');
+                if (!isLoginPage) {
+                    window.location.href = '/employee/login';
+                }
+            }
+        })();
+    </script>
     @stack('styles')
+
 </head>
 <body>
     <div class="layout">
