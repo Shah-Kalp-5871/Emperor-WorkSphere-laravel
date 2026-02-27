@@ -7,27 +7,27 @@ use Illuminate\Support\Facades\Route;
 | Admin Controllers
 |--------------------------------------------------------------------------
 */
-use App\Http\Controllers\admin\archivedController;
-use App\Http\Controllers\admin\calendarController;
-use App\Http\Controllers\admin\dailylogsController;
-use App\Http\Controllers\admin\dashboardController;
-use App\Http\Controllers\admin\employeesController;
-use App\Http\Controllers\admin\profileController as AdminProfileController;
-use App\Http\Controllers\admin\projectsController;
-use App\Http\Controllers\admin\tasksController;
+use App\Http\Controllers\Admin\ArchivedController;
+use App\Http\Controllers\Admin\CalendarController;
+use App\Http\Controllers\Admin\DailylogsController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EmployeesController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\ProjectsController;
+use App\Http\Controllers\Admin\TasksController;
 
 /*
 |--------------------------------------------------------------------------
 | Employee Controllers
 |--------------------------------------------------------------------------
 */
-use App\Http\Controllers\employee\calendarController as EmployeeCalendarController;
-use App\Http\Controllers\employee\dailylogsController as EmployeeDailyLogsController;
-use App\Http\Controllers\employee\dashboardController as EmployeeDashboardController;
-use App\Http\Controllers\employee\profileController as EmployeeProfileController;
-use App\Http\Controllers\employee\projectsController as EmployeeProjectsController;
-use App\Http\Controllers\employee\tasksController as EmployeeTasksController;
-use App\Http\Controllers\employee\teamController;
+use App\Http\Controllers\Employee\CalendarController as EmployeeCalendarController;
+use App\Http\Controllers\Employee\DailylogsController as EmployeeDailyLogsController;
+use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardController;
+use App\Http\Controllers\Employee\ProfileController as EmployeeProfileController;
+use App\Http\Controllers\Employee\ProjectsController as EmployeeProjectsController;
+use App\Http\Controllers\Employee\TasksController as EmployeeTasksController;
+use App\Http\Controllers\Employee\TeamController;
 
 Route::get('/', function () {
     return view('welcome');

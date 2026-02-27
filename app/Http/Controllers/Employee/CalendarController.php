@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\employee;
+namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class calendarController extends Controller
+class CalendarController extends Controller
 {
     public function index()
     {

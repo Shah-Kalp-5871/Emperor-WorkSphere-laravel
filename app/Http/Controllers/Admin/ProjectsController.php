@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class projectsController extends Controller
+class ProjectsController extends Controller
 {
     public function index()
     {
