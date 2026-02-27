@@ -127,6 +127,10 @@ Route::prefix('admin')->group(function () {
     Route::get('/login', function () {
         return view('admin.login');
     })->name('admin.login');
+
+    Route::get('/attendance', function () {
+        return view('admin.attendance.index');
+    })->name('admin.attendance.index');
 });
 
 /*

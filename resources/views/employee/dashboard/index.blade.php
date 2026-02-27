@@ -16,14 +16,37 @@
       </button>
     </div>
 
-    <!-- STATS -->
-    <div class="stats-row" id="stats-container">
-      @foreach(range(1, 4) as $i)
-      <div class="stat-card skeleton-card">
-        <div class="skeleton-text" style="width: 40%; height: 12px; margin-bottom: 8px;"></div>
-        <div class="skeleton-text" style="width: 30%; height: 24px;"></div>
+    <!-- ATTENDANCE & STATS -->
+    <div class="top-content-grid">
+      <!-- ATTENDANCE CARD -->
+      <div class="panel attendance-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Office Attendance
+          </div>
+          <span id="attendance-status-badge" class="status-badge checking">Checking...</span>
+        </div>
+        <div class="attendance-body">
+          <div id="attendance-main-action">
+            <div class="spinner-sm"></div>
+          </div>
+          <div id="attendance-location-info" class="location-info">
+             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+             <span id="location-text">Detecting location...</span>
+          </div>
+        </div>
       </div>
-      @endforeach
+
+      <!-- STATS -->
+      <div class="stats-row-grid" id="stats-container">
+        @foreach(range(1, 4) as $i)
+        <div class="stat-card skeleton-card">
+          <div class="skeleton-text" style="width: 40%; height: 12px; margin-bottom: 8px;"></div>
+          <div class="skeleton-text" style="width: 30%; height: 24px;"></div>
+        </div>
+        @endforeach
+      </div>
     </div>
 
     <!-- TWO COL -->
@@ -87,6 +110,49 @@
 @endsection
 
 <style>
+    .top-content-grid { display: grid; grid-template-columns: 350px 1fr; gap: 20px; margin-bottom: 25px; }
+    .attendance-panel { height: 100%; display: flex; flex-direction: column; min-height: 220px; }
+    .attendance-body { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px 20px; text-align: center; gap: 14px; }
+
+    /* Status badge */
+    .status-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; border: 1px solid transparent; }
+    .status-badge.checking  { background: #f1f5f9; color: #94a3b8; }
+    .status-badge.not-punched { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+    .status-badge.punched-in  { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
+    .status-badge.punched-out { background: #dbeafe; color: #2563eb; border-color: #bfdbfe; }
+
+    /* Punch button — circular */
+    .punch-btn-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
+    .punch-ring { position: absolute; width: 136px; height: 136px; border-radius: 50%; animation: pulse-ring 2s ease-out infinite; }
+    .punch-ring.green { border: 3px solid #22c55e; }
+    .punch-ring.blue  { border: 3px solid #3b82f6; }
+    @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.25); opacity: 0; } }
+
+    .punch-btn {
+        width: 120px; height: 120px; border-radius: 50%; border: none; cursor: pointer;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative; z-index: 1;
+    }
+    .punch-btn:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important; }
+    .punch-btn:disabled .punch-ring { display: none; }
+
+    .punch-btn.in  { background: #16a34a; color: #fff; box-shadow: 0 8px 24px rgba(22,163,74,0.35); }
+    .punch-btn.in:not(:disabled):hover  { transform: scale(1.06); box-shadow: 0 12px 30px rgba(22,163,74,0.5); }
+    .punch-btn.out { background: #2563eb; color: #fff; box-shadow: 0 8px 24px rgba(37,99,235,0.35); }
+    .punch-btn.out:not(:disabled):hover { transform: scale(1.06); box-shadow: 0 12px 30px rgba(37,99,235,0.5); }
+
+    .punch-btn svg  { display: block; margin-bottom: 4px; }
+    .punch-btn span { font-weight: 700; font-size: 13px; letter-spacing: 0.4px; }
+
+    /* Location chip */
+    .location-info { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 20px; }
+
+    /* Stats grid (2x2 on right) */
+    .stats-row-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    @media (max-width: 1024px) { .top-content-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 640px)  { .stats-row-grid  { grid-template-columns: 1fr; } }
+
     .skeleton-card { background: var(--bg-1); border-color: var(--border); padding: 20px; border-radius: 12px; }
     .skeleton-text { background: linear-gradient(90deg, var(--border) 25%, var(--bg-2) 50%, var(--border) 75%); background-size: 200% 100%; animation: skeleton-shimmer 2s infinite; border-radius: 4px; }
     @keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
@@ -102,7 +168,118 @@
 
 @push('scripts')
 <script>
+    // ATTENDANCE LOGIC
+    let currentCoords = null;
+
+    async function checkAttendanceStatus() {
+        try {
+            const res = await axios.get('/api/employee/attendance/status');
+            updateAttendanceUI(res.data.attendance_status);
+        } catch (err) {
+            console.error('Attendance Status Error:', err);
+        }
+    }
+
+    function updateAttendanceUI(status) {
+        const badge = document.getElementById('attendance-status-badge');
+        const main  = document.getElementById('attendance-main-action');
+
+        badge.className   = 'status-badge ' + status.toLowerCase().replace(/_/g, '-');
+        badge.textContent = status.replace(/_/g, ' ');
+
+        if (status === 'NOT_PUNCHED') {
+            main.innerHTML = `
+                <div class="punch-btn-wrap">
+                    <div class="punch-ring green"></div>
+                    <button class="punch-btn in" onclick="handlePunch('in')">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
+                        </svg>
+                        <span>Punch In</span>
+                    </button>
+                </div>
+                <div style="font-size:12px;color:#94a3b8">Tap to mark your arrival</div>
+            `;
+        } else if (status === 'PUNCHED_IN') {
+            main.innerHTML = `
+                <div class="punch-btn-wrap">
+                    <div class="punch-ring blue"></div>
+                    <button class="punch-btn out" onclick="handlePunch('out')">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M19.8 12H9"/>
+                        </svg>
+                        <span>Punch Out</span>
+                    </button>
+                </div>
+                <div style="font-size:12px;color:#94a3b8">Tap when leaving office</div>
+            `;
+        } else {
+            main.innerHTML = `
+                <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+                    <div style="width:80px;height:80px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div style="font-size:13px;font-weight:600;color:#16a34a">All done for today!</div>
+                    <div style="font-size:12px;color:#94a3b8">Attendance recorded successfully</div>
+                </div>
+            `;
+        }
+    }
+
+    async function handlePunch(type) {
+        const btn = document.querySelector('.punch-btn');
+        const originalContent = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner-sm" style="border-top-color:white"></div>';
+
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser');
+            resetPunchBtn(btn, originalContent);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            try {
+                const { latitude, longitude } = pos.coords;
+                const url = type === 'in' ? '/api/employee/attendance/punch-in' : '/api/employee/attendance/punch-out';
+                
+                const res = await axios.post(url, { latitude, longitude });
+                
+                // Show success notification (simplified for now)
+                alert(res.data.message);
+                checkAttendanceStatus();
+            } catch (err) {
+                alert(err.response?.data?.message || 'Action failed');
+                resetPunchBtn(btn, originalContent);
+            }
+        }, (err) => {
+            alert('Location access denied or unavailable.');
+            resetPunchBtn(btn, originalContent);
+        });
+    }
+
+    function resetPunchBtn(btn, content) {
+        btn.disabled = false;
+        btn.innerHTML = content;
+    }
+
+    function trackLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition((pos) => {
+                document.getElementById('location-text').textContent = 
+                    `Lat: ${pos.coords.latitude.toFixed(4)}, Lon: ${pos.coords.longitude.toFixed(4)}`;
+            }, (err) => {
+                document.getElementById('location-text').textContent = 'Location unavailable';
+            });
+        }
+    }
+
     async function loadDashboard() {
+        // Run checks in parallel
+        checkAttendanceStatus();
+        trackLocation();
         try {
             const res = await axios.get('/api/employee/dashboard');
             const data = res.data.data;

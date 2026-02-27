@@ -67,6 +67,13 @@ Route::middleware('auth:api,admin')->group(function () {
         // Lookup Routes
         Route::get('departments', [\App\Http\Controllers\Api\Admin\DepartmentController::class, 'index']);
         Route::get('designations', [\App\Http\Controllers\Api\Admin\DesignationController::class, 'index']);
+
+        // Office Settings
+        Route::get('settings/office-location', [\App\Http\Controllers\Admin\SettingController::class, 'getOfficeLocation']);
+        Route::post('settings/office-location', [\App\Http\Controllers\Admin\SettingController::class, 'updateOfficeLocation']);
+
+        // Attendance
+        Route::get('attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index']);
     });
 
     // Employee Routes
@@ -104,6 +111,11 @@ Route::middleware('auth:api,admin')->group(function () {
             Route::post('{sessionToken}/message', [\App\Http\Controllers\Api\Employee\AnonymousChatController::class, 'sendMessage'])->middleware('throttle:10,1');
             Route::get('{sessionToken}/messages', [\App\Http\Controllers\Api\Employee\AnonymousChatController::class, 'getMessages']);
         });
+
+        // Attendance Routes
+        Route::get('attendance/status', [\App\Http\Controllers\Employee\AttendanceController::class, 'status']);
+        Route::post('attendance/punch-in', [\App\Http\Controllers\Employee\AttendanceController::class, 'punchIn']);
+        Route::post('attendance/punch-out', [\App\Http\Controllers\Employee\AttendanceController::class, 'punchOut']);
     });
 
     // Test route
