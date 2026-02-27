@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('morning_summary')->nullable();
             $table->text('afternoon_summary')->nullable();
             $table->json('tasks_completed')->nullable();
-            $table->enum('mood', ['great', 'good', 'neutral', 'difficult', 'struggling'])->nullable();
+            $table->enum('mood', ['happy', 'good', 'neutral', 'bad', 'tired'])->nullable();
             $table->text('blockers')->nullable();
             $table->enum('status', ['submitted', 'reviewed', 'revision_requested'])->default('submitted');
             $table->text('admin_notes')->nullable();

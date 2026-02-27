@@ -21,4 +21,6 @@ interface EmployeeRepositoryInterface
     public function restore(int $id);
 
     public function forceDelete(int $id);
+
+    public function totalDelete(int $id);
 }

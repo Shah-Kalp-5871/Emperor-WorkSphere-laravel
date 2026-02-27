@@ -13,7 +13,13 @@ class ProjectRepository implements ProjectRepositoryInterface
 
     public function getAll(int $perPage = 15, array $filters = [])
     {
-        $query = $this->model->with(['creator', 'members.user', 'tasks'])->latest();
+        $query = $this->model->with(['creator', 'members.user', 'tasks.assignees.user'])->latest();
+
+        if (!empty($filters['employee_id'])) {
+            $query->whereHas('members', function($q) use ($filters) {
+                $q->where('employee_id', $filters['employee_id']);
+            });
+        }
 
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);
@@ -29,12 +35,13 @@ class ProjectRepository implements ProjectRepositoryInterface
 
     public function findById(int $id)
     {
-        return $this->model->with(['members.user', 'tasks'])->findOrFail($id);
+        return $this->model->with(['creator', 'members.user', 'tasks.assignees.user'])->findOrFail($id);
     }
 
     public function create(array $data)
     {
-        $data['created_by'] = auth('api')->id() ?? auth('admin')->id();
+        // Only set created_by if an admin is authenticated, otherwise it's null (for employees)
+        $data['created_by'] = auth('admin')->id();
         return $this->model->create($data);
     }
 
@@ -63,5 +70,14 @@ class ProjectRepository implements ProjectRepositoryInterface
         $project = $this->findById($projectId);
         $project->members()->sync($employeeIds);
         return $project->fresh(['members.user', 'tasks']);
+    }
+
+    public function addMember(int $projectId, int $employeeId, string $role = 'member')
+    {
+        $project = $this->findById($projectId);
+        $project->members()->syncWithoutDetaching([
+            $employeeId => ['role' => $role]
+        ]);
+        return $project->fresh(['members.user']);
     }
 }

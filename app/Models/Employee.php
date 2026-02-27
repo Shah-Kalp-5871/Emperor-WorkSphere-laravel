@@ -18,6 +18,8 @@ class Employee extends Model
         'employee_code',
         'phone',
         'address',
+        'about_me',
+        'skills',
         'date_of_birth',
         'date_of_joining',
         'profile_photo',

@@ -28,8 +28,10 @@
             <div class="modal-sub">Assign a new task to your team.</div>
             <form id="create-task-form" onsubmit="handleCreateTask(event)">
                 <div class="form-group">
-                    <label class="form-label">Project *</label>
-                    <select class="form-select" id="task-project-id" required style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;"></select>
+                    <label class="form-label">Project (Optional)</label>
+                    <select class="form-select" id="task-project-id" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                        <option value="">No Project (Standalone Task)</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Task Title *</label>
@@ -251,7 +253,7 @@
 
         try {
             await axios.post('/api/admin/tasks', {
-                project_id:  document.getElementById('task-project-id').value,
+                project_id:  document.getElementById('task-project-id').value || null,
                 title:       document.getElementById('task-title').value,
                 description: document.getElementById('task-desc').value,
                 status:      document.getElementById('task-status').value,

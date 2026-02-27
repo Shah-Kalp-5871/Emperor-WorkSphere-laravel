@@ -40,8 +40,8 @@ class EmployeeController extends Controller
 
     public function destroy(int $id): JsonResponse
     {
-        $this->employeeService->deleteEmployee($id);
-        return response()->json(['message' => 'Employee deleted (archived) successfully']);
+        $this->employeeService->totalDeleteEmployee($id);
+        return response()->json(['message' => 'Employee and all associated data deleted successfully']);
     }
 
     public function archived(): JsonResponse

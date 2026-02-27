@@ -14,6 +14,60 @@
     <div class="panel">
       <div class="panel-header">
         <div class="panel-title">Active Projects <span class="count" id="project-count">0</span></div>
+        <button class="action-btn" style="background: var(--accent); color: #fff; border: none; font-weight: 600;" onclick="openCreateModal()">+ Create Project</button>
+      </div>
+
+      <!-- CREATE PROJECT MODAL -->
+      <div id="create-project-modal" class="modal-backdrop" style="display:none;">
+          <div class="modal-content" style="max-width: 500px;">
+              <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; padding:15px 20px; border-bottom:1px solid var(--border);">
+                  <h3 style="margin:0; font-size:16px;">Create New Project</h3>
+                  <button type="button" class="close-btn" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-3);" onclick="closeCreateModal()">&times;</button>
+              </div>
+              <form id="create-project-form">
+                  <div style="padding: 20px;">
+                      <div class="field-group" style="margin-bottom:15px">
+                          <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-3); margin-bottom:6px;">Project Name</label>
+                          <input type="text" id="proj_name" class="lf" placeholder="Enter project name" required>
+                      </div>
+                      <div class="field-group" style="margin-bottom:15px">
+                          <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-3); margin-bottom:6px;">Description</label>
+                          <textarea id="proj_desc" class="lf" style="height:80px" placeholder="Enter project description"></textarea>
+                      </div>
+                      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:15px">
+                          <div class="field-group">
+                              <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-3); margin-bottom:6px;">Priority</label>
+                              <select id="proj_priority" class="lf">
+                                  <option value="low">Low</option>
+                                  <option value="medium" selected>Medium</option>
+                                  <option value="high">High</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:15px">
+                          <div class="field-group">
+                              <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-3); margin-bottom:6px;">Start Date</label>
+                              <input type="date" id="proj_start" class="lf">
+                          </div>
+                          <div class="field-group">
+                              <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-3); margin-bottom:6px;">End Date</label>
+                              <input type="date" id="proj_end" class="lf">
+                          </div>
+                      </div>
+
+                      <div class="field-group">
+                          <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-3); margin-bottom:6px;">Assign Teammates</label>
+                          <div id="teammate-list" style="max-height: 120px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 10px; background: var(--bg);">
+                              <div style="font-size: 12px; color: var(--text-3); text-align: center; padding: 10px;">Loading teammates...</div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="modal-footer" style="padding:15px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px;">
+                      <button type="button" class="action-btn" onclick="closeCreateModal()">Cancel</button>
+                      <button type="submit" class="greeting-btn" id="submit-project-btn">Create Project</button>
+                  </div>
+              </form>
+          </div>
       </div>
       
       <div class="table-container">
@@ -73,15 +127,16 @@ async function fetchProjects() {
         countSpan.textContent = projects.length;
         
         tbody.innerHTML = projects.map(p => {
-            const creator = p.creator?.name || 'Admin';
+            const creator = p.creator_name || 'Admin';
             const createdDate = new Date(p.created_at).toLocaleDateString();
             const progress = p.progress || 0; // Assuming backend calculates or default to 0
             
-            // Member Avatars
-            const members = p.employees || [];
-            const memberHtml = members.slice(0, 3).map(m => `
-                <div class="member-avatar" title="${m.user?.name}">${m.user?.name ? m.user.name[0].toUpperCase() : '?'}</div>
-            `).join('') + (members.length > 3 ? `<div class="member-avatar">+${members.length - 3}</div>` : '');
+            // Member Names
+            const members = p.members || [];
+            const memberNames = members.map(m => m.name || 'Unknown').join(', ');
+            const memberHtml = `<div style="font-size: 13px; color: var(--text-2);" title="${memberNames}">
+                ${memberNames.length > 40 ? memberNames.substring(0, 40) + '...' : memberNames}
+            </div>`;
 
             return `
                 <tr>
@@ -110,6 +165,70 @@ async function fetchProjects() {
 }
 
 document.addEventListener('DOMContentLoaded', fetchProjects);
+
+function openCreateModal() {
+    document.getElementById('create-project-modal').style.display = 'flex';
+    fetchTeammates();
+}
+
+async function fetchTeammates() {
+    const list = document.getElementById('teammate-list');
+    try {
+        const res = await axios.get('/api/employee/team');
+        const team = res.data.data.data; // Paginated response
+        
+        if (!team || team.length === 0) {
+            list.innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:10px">No teammates found.</div>';
+            return;
+        }
+
+        list.innerHTML = team.map(member => `
+            <label style="display:flex; align-items:center; gap:8px; padding:6px 0; cursor:pointer; font-size:13px; border-bottom:1px solid rgba(0,0,0,0.03);">
+                <input type="checkbox" name="employee_ids[]" value="${member.id}" style="width:16px;height:16px;accent-color:var(--accent)">
+                <span>${member.user.name} <small style="color:var(--text-3)">(${member.designation?.name || 'Employee'})</small></span>
+            </label>
+        `).join('');
+    } catch (err) {
+        list.innerHTML = '<div style="font-size:12px;color:var(--red);text-align:center;padding:10px">Failed to load teammates.</div>';
+    }
+}
+
+function closeCreateModal() {
+    document.getElementById('create-project-modal').style.display = 'none';
+    document.getElementById('create-project-form').reset();
+    document.getElementById('teammate-list').innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:10px">Loading teammates...</div>';
+}
+
+document.getElementById('create-project-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-project-btn');
+    
+    const selectedMembers = Array.from(document.querySelectorAll('input[name="employee_ids[]"]:checked')).map(cb => cb.value);
+
+    const data = {
+        name: document.getElementById('proj_name').value,
+        description: document.getElementById('proj_desc').value,
+        priority: document.getElementById('proj_priority').value,
+        start_date: document.getElementById('proj_start').value || null,
+        end_date: document.getElementById('proj_end').value || null,
+        employee_ids: selectedMembers
+    };
+
+    btn.innerHTML = 'Creating...';
+    btn.disabled = true;
+
+    try {
+        await axios.post('/api/employee/projects', data);
+        alert('Project created successfully!');
+        closeCreateModal();
+        fetchProjects();
+    } catch (err) {
+        alert(err.response?.data?.message || 'Failed to create project.');
+    } finally {
+        btn.innerHTML = 'Create Project';
+        btn.disabled = false;
+    }
+});
 </script>
 @endpush
 @endsection
@@ -165,5 +284,29 @@ document.addEventListener('DOMContentLoaded', fetchProjects);
         transition: all 0.2s;
     }
     .action-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+
+    .modal-backdrop { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0,0,0,0.4); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 1000; 
+        animation: fadeIn 0.2s ease;
+    }
+    .modal-content { 
+        background: #fff; 
+        border-radius: 12px; 
+        width: 90%; 
+        box-shadow: var(--shadow-md); 
+        animation: slideUp 0.3s ease;
+        overflow: hidden;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 </style>
 @endpush

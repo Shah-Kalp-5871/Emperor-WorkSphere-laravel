@@ -27,11 +27,20 @@ class ProjectResource extends JsonResource
             'members_count'           => $this->whenLoaded('members', fn () => $this->members->count(), 0),
             'tasks_count'             => $this->whenLoaded('tasks', fn () => $this->tasks->count(), 0),
             'completed_tasks_count'   => $this->whenLoaded('tasks', fn () => $this->tasks->where('status', 'completed')->count(), 0),
+            'progress'                => $this->whenLoaded('tasks', function () {
+                $total = $this->tasks->count();
+                if ($total === 0) return 0;
+                $completed = $this->tasks->where('status', 'completed')->count();
+                return round(($completed / $total) * 100);
+            }, 0),
             'tasks'                   => $this->whenLoaded('tasks', function () {
                 return $this->tasks->map(fn ($task) => [
                     'id'     => $task->id,
                     'title'  => $task->title,
                     'status' => $task->status,
+                    'priority' => $task->priority,
+                    'due_date' => $task->due_date?->format('Y-m-d'),
+                    'assigned_employees_names' => $task->assignees->map(fn($a) => $a->user?->name)->filter()->join(', '),
                 ]);
             }),
             'created_at'              => $this->created_at?->toISOString(),

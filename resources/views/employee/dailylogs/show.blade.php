@@ -33,7 +33,6 @@
     .log-section { margin-bottom: 30px; }
     .log-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
     .log-content { font-size: 15px; color: var(--text-1); line-height: 1.6; background: var(--bg-1); padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
-    .mood-display { font-size: 20px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
     .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
     .status-pill.pending { background: var(--amber-lt); color: var(--amber); }
     .status-pill.approved { background: var(--accent-lt); color: var(--accent); }
@@ -70,14 +69,6 @@ async function fetchLogDetails() {
             editBtn.onclick = () => window.location.href = `/employee/dailylogs/edit?id=${log.id}`;
         }
 
-        const moodMap = {
-            'happy': '😊 Happy',
-            'good': '🙂 Good',
-            'neutral': '😐 Neutral',
-            'bad': '😔 Bad',
-            'tired': '😫 Tired'
-        };
-
         container.innerHTML = `
             <div class="log-section">
                 <div class="log-section-label">🌅 Morning Session</div>
@@ -86,10 +77,6 @@ async function fetchLogDetails() {
             <div class="log-section">
                 <div class="log-section-label">🌆 Afternoon Session</div>
                 <div class="log-content">${log.afternoon_summary}</div>
-            </div>
-            <div class="log-section">
-                <div class="log-section-label">Mood of the day</div>
-                <div class="mood-display">${moodMap[log.mood] || '—'}</div>
             </div>
             ${log.admin_remark ? `
             <div class="log-section" style="margin-top: 40px; border-top: 1px dashed var(--border); padding-top: 20px;">
@@ -108,4 +95,3 @@ async function fetchLogDetails() {
 document.addEventListener('DOMContentLoaded', fetchLogDetails);
 </script>
 @endpush
-@endsection

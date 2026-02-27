@@ -13,106 +13,14 @@
         <a href="{{ url('/admin/projects/archived') }}" class="btn btn-ghost btn-sm" style="margin-right:8px;">
             🗃 Archived
         </a>
-        <button class="btn btn-primary" onclick="openCreateModal()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New Project
-        </button>
+        <a href="{{ url('/admin/projects/create') }}" class="btn btn-primary">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Project
+        </a>
     </div>
     </div>
 
-    {{-- Create Project Modal --}}
-    <div class="modal-overlay" id="create-proj-modal">
-        <div class="modal">
-            <div class="modal-close" onclick="closeModal('create-proj-modal')">✕</div>
-            <div class="modal-title">New Project</div>
-            <div class="modal-sub">Create a new workspace for your team.</div>
-            <form id="create-project-form" onsubmit="handleCreateProject(event)">
-                <div class="form-group">
-                    <label class="form-label">Project Name *</label>
-                    <input class="form-input" id="proj-name" required placeholder="e.g. Customer Portal v3">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Description</label>
-                    <textarea class="form-input" id="proj-desc" rows="2" placeholder="Brief description…" style="resize:vertical;"></textarea>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                    <div class="form-group">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" id="proj-status" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
-                            <option value="planning">Planning</option>
-                            <option value="active">Active</option>
-                            <option value="on_hold">On Hold</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Priority</label>
-                        <select class="form-select" id="proj-priority" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Add Members</label>
-                    <select class="form-select" id="project-members-select" multiple style="height:100px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
-                        <!-- Options will be loaded via JS -->
-                    </select>
-                    <small style="color:var(--text-3);font-size:11px;margin-top:4px;display:block;">Hold Ctrl/Cmd to select multiple</small>
-                </div>
-                <div id="modal-error" style="color:#ef4444;font-size:13px;margin-bottom:16px;display:none;"></div>
-                <div class="modal-footer" style="padding:0;margin-top:24px;">
-                    <button type="button" class="btn btn-ghost" onclick="closeModal('create-proj-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="create-proj-btn">Create Project</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    {{-- Edit Project Modal --}}
-    <div class="modal-overlay" id="edit-proj-modal">
-        <div class="modal">
-            <div class="modal-close" onclick="closeModal('edit-proj-modal')">✕</div>
-            <div class="modal-title">Edit Project</div>
-            <div class="modal-sub">Update project details.</div>
-            <form id="edit-project-form" onsubmit="handleEditProject(event)">
-                <input type="hidden" id="edit-proj-id">
-                <div class="form-group">
-                    <label class="form-label">Project Name *</label>
-                    <input class="form-input" id="edit-proj-name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Description</label>
-                    <textarea class="form-input" id="edit-proj-desc" rows="2" style="resize:vertical;"></textarea>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                    <div class="form-group">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" id="edit-proj-status" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
-                            <option value="planning">Planning</option>
-                            <option value="active">Active</option>
-                            <option value="on_hold">On Hold</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Priority</label>
-                        <select class="form-select" id="edit-proj-priority" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </div>
-                </div>
-                <div id="edit-modal-error" style="color:#ef4444;font-size:13px;margin-bottom:16px;display:none;"></div>
-                <div class="modal-footer" style="padding:0;margin-top:24px;">
-                    <button type="button" class="btn btn-ghost" onclick="closeModal('edit-proj-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="edit-proj-btn">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <div class="filter-bar">
         <input class="filter-input" id="search-input" placeholder="Search projects…" oninput="debounceSearch()">
@@ -211,95 +119,7 @@
         }
     }
 
-    // ── CREATE ─────────────────────────────────────────────────────────────
-    function openCreateModal() {
-        openModal('create-proj-modal');
-        loadEmployeesForModal('project-members-select');
-    }
 
-    async function handleCreateProject(e) {
-        e.preventDefault();
-        const btn = document.getElementById('create-proj-btn');
-        const errorDiv = document.getElementById('modal-error');
-        errorDiv.style.display = 'none';
-        btn.disabled = true;
-        btn.textContent = 'Creating…';
-
-        const employee_ids = Array.from(
-            document.getElementById('project-members-select').selectedOptions
-        ).map(o => parseInt(o.value));
-
-        try {
-            await axios.post('/api/admin/projects', {
-                name:         document.getElementById('proj-name').value,
-                description:  document.getElementById('proj-desc').value,
-                status:       document.getElementById('proj-status').value,
-                priority:     document.getElementById('proj-priority').value,
-                employee_ids,
-            });
-
-            closeModal('create-proj-modal');
-            document.getElementById('create-project-form').reset();
-            document.getElementById('project-members-select').innerHTML = '';
-            fetchProjects(1);
-        } catch (err) {
-            const msg = err.response?.data?.message
-                ?? err.response?.data?.errors
-                ?? 'Failed to create project.';
-            errorDiv.innerText = typeof msg === 'object' ? Object.values(msg).flat().join(' ') : msg;
-            errorDiv.style.display = 'block';
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Create Project';
-        }
-    }
-
-    // ── EDIT ──────────────────────────────────────────────────────────────
-    async function openEditModal(id) {
-        openModal('edit-proj-modal');
-        document.getElementById('edit-proj-id').value = id;
-
-        try {
-            const res = await axios.get(`/api/admin/projects/${id}`);
-            const p = res.data.data;
-            document.getElementById('edit-proj-name').value      = p.name;
-            document.getElementById('edit-proj-desc').value      = p.description ?? '';
-            document.getElementById('edit-proj-status').value    = p.status;
-            document.getElementById('edit-proj-priority').value  = p.priority ?? 'medium';
-        } catch (e) {
-            alert('Failed to load project data.');
-            closeModal('edit-proj-modal');
-        }
-    }
-
-    async function handleEditProject(e) {
-        e.preventDefault();
-        const id       = document.getElementById('edit-proj-id').value;
-        const btn      = document.getElementById('edit-proj-btn');
-        const errorDiv = document.getElementById('edit-modal-error');
-        errorDiv.style.display = 'none';
-        btn.disabled = true;
-        btn.textContent = 'Saving…';
-
-        try {
-            await axios.put(`/api/admin/projects/${id}`, {
-                name:        document.getElementById('edit-proj-name').value,
-                description: document.getElementById('edit-proj-desc').value,
-                status:      document.getElementById('edit-proj-status').value,
-                priority:    document.getElementById('edit-proj-priority').value,
-            });
-
-            closeModal('edit-proj-modal');
-            fetchProjects(currentPage);
-        } catch (err) {
-            const msg = err.response?.data?.message ?? 'Failed to update project.';
-            errorDiv.innerText = msg;
-            errorDiv.style.display = 'block';
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Save Changes';
-        }
-    }
 
     // ── ARCHIVE ────────────────────────────────────────────────────────────
     async function archiveProject(id, name) {
@@ -385,7 +205,7 @@
                     <td>${createdDate}</td>
                     <td style="display:flex;gap:6px;padding-top:13px">
                         <button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/projects/${p.id}'">View</button>
-                        <button class="btn btn-ghost btn-sm" onclick="openEditModal(${p.id})">Edit</button>
+                        <button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/projects/${p.id}/edit'">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="archiveProject(${p.id}, '${p.name.replace(/'/g,"\\'")}')">Archive</button>
                     </td>
                 `;

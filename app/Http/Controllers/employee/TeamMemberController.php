@@ -28,4 +28,31 @@ class TeamMemberController extends Controller
             'data' => $team
         ]);
     }
+
+    /**
+     * GET /api/employee/team/{id}
+     */
+    public function show($id): JsonResponse
+    {
+        try {
+            $member = $this->employeeRepository->findById($id);
+            if (!$member) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Team member not found.'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Team member retrieved successfully.',
+                'data' => $member
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving team member.'
+            ], 500);
+        }
+    }
 }

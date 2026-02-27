@@ -1,0 +1,434 @@
+[
+    {
+        "id": 1,
+        "name": "asv (Updated)",
+        "description": "asx",
+        "status": "completed",
+        "priority": "low",
+        "start_date": null,
+        "end_date": null,
+        "created_by": 1,
+        "created_at": "2026-02-27T04:39:09.000000Z",
+        "updated_at": "2026-02-27T04:44:04.000000Z",
+        "deleted_at": null,
+        "members": [
+            {
+                "id": 1,
+                "user_id": 1,
+                "department_id": null,
+                "designation_id": null,
+                "employee_code": "EMP-0001",
+                "phone": null,
+                "address": null,
+                "date_of_birth": null,
+                "date_of_joining": null,
+                "profile_photo": null,
+                "about_me": "I am a senior developer with 10 years experience.",
+                "skills": "Laravel, Vue, AWS, Docker",
+                "profile_visibility": "team_only",
+                "is_active": true,
+                "created_by": 1,
+                "created_at": "2026-02-27T04:23:12.000000Z",
+                "updated_at": "2026-02-27T05:01:30.000000Z",
+                "deleted_at": null,
+                "pivot": {
+                    "project_id": 1,
+                    "employee_id": 1,
+                    "role": "member",
+                    "joined_at": "2026-02-27 10:09:09",
+                    "created_at": "2026-02-27T04:39:09.000000Z",
+                    "updated_at": "2026-02-27T04:39:09.000000Z"
+                },
+                "user": {
+                    "id": 1,
+                    "name": "KALP",
+                    "email": "kalp.5871@gmail.com",
+                    "email_verified_at": null,
+                    "created_at": "2026-02-27T04:23:12.000000Z",
+                    "updated_at": "2026-02-27T05:33:04.000000Z",
+                    "role": "employee",
+                    "roles": [
+                        {
+                            "id": 2,
+                            "name": "employee",
+                            "guard_name": "web",
+                            "created_at": "2026-02-26T17:04:10.000000Z",
+                            "updated_at": "2026-02-26T17:04:10.000000Z",
+                            "pivot": {
+                                "model_type": "App\\Models\\User",
+                                "model_id": 1,
+                                "role_id": 2
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "flutter",
+        "description": "work on it",
+        "status": "active",
+        "priority": "high",
+        "start_date": null,
+        "end_date": null,
+        "created_by": 1,
+        "created_at": "2026-02-27T06:01:06.000000Z",
+        "updated_at": "2026-02-27T06:01:06.000000Z",
+        "deleted_at": null,
+        "members": [
+            {
+                "id": 2,
+                "user_id": 2,
+                "department_id": null,
+                "designation_id": null,
+                "employee_code": "EMP-0002",
+                "phone": null,
+                "address": null,
+                "date_of_birth": null,
+                "date_of_joining": null,
+                "profile_photo": null,
+                "about_me": null,
+                "skills": null,
+                "profile_visibility": "team_only",
+                "is_active": true,
+                "created_by": 1,
+                "created_at": "2026-02-27T05:38:38.000000Z",
+                "updated_at": "2026-02-27T05:38:38.000000Z",
+                "deleted_at": null,
+                "pivot": {
+                    "project_id": 2,
+                    "employee_id": 2,
+                    "role": "member",
+                    "joined_at": "2026-02-27 11:31:06",
+                    "created_at": "2026-02-27T06:01:06.000000Z",
+                    "updated_at": "2026-02-27T06:01:06.000000Z"
+                },
+                "user": {
+                    "id": 2,
+                    "name": "tushar",
+                    "email": "admin@worksphere.com",
+                    "email_verified_at": null,
+                    "created_at": "2026-02-27T05:38:38.000000Z",
+                    "updated_at": "2026-02-27T05:38:38.000000Z",
+                    "role": "employee",
+                    "roles": [
+                        {
+                            "id": 2,
+                            "name": "employee",
+                            "guard_name": "web",
+                            "created_at": "2026-02-26T17:04:10.000000Z",
+                            "updated_at": "2026-02-26T17:04:10.000000Z",
+                            "pivot": {
+                                "model_type": "App\\Models\\User",
+                                "model_id": 2,
+                                "role_id": 2
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Automated Test Project 1772182083",
+        "description": "A project created by an employee via automated test.",
+        "status": "planning",
+        "priority": "high",
+        "start_date": "2026-02-27T00:00:00.000000Z",
+        "end_date": null,
+        "created_by": null,
+        "created_at": "2026-02-27T08:48:03.000000Z",
+        "updated_at": "2026-02-27T08:48:03.000000Z",
+        "deleted_at": null,
+        "members": [
+            {
+                "id": 1,
+                "user_id": 1,
+                "department_id": null,
+                "designation_id": null,
+                "employee_code": "EMP-0001",
+                "phone": null,
+                "address": null,
+                "date_of_birth": null,
+                "date_of_joining": null,
+                "profile_photo": null,
+                "about_me": "I am a senior developer with 10 years experience.",
+                "skills": "Laravel, Vue, AWS, Docker",
+                "profile_visibility": "team_only",
+                "is_active": true,
+                "created_by": 1,
+                "created_at": "2026-02-27T04:23:12.000000Z",
+                "updated_at": "2026-02-27T05:01:30.000000Z",
+                "deleted_at": null,
+                "pivot": {
+                    "project_id": 3,
+                    "employee_id": 1,
+                    "role": "lead",
+                    "joined_at": "2026-02-27 14:18:03",
+                    "created_at": "2026-02-27T08:48:03.000000Z",
+                    "updated_at": "2026-02-27T08:48:03.000000Z"
+                },
+                "user": {
+                    "id": 1,
+                    "name": "KALP",
+                    "email": "kalp.5871@gmail.com",
+                    "email_verified_at": null,
+                    "created_at": "2026-02-27T04:23:12.000000Z",
+                    "updated_at": "2026-02-27T05:33:04.000000Z",
+                    "role": "employee",
+                    "roles": [
+                        {
+                            "id": 2,
+                            "name": "employee",
+                            "guard_name": "web",
+                            "created_at": "2026-02-26T17:04:10.000000Z",
+                            "updated_at": "2026-02-26T17:04:10.000000Z",
+                            "pivot": {
+                                "model_type": "App\\Models\\User",
+                                "model_id": 1,
+                                "role_id": 2
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "php",
+        "description": "work",
+        "status": "planning",
+        "priority": "high",
+        "start_date": "2026-02-12T00:00:00.000000Z",
+        "end_date": "2026-03-28T00:00:00.000000Z",
+        "created_by": null,
+        "created_at": "2026-02-27T08:50:22.000000Z",
+        "updated_at": "2026-02-27T08:50:22.000000Z",
+        "deleted_at": null,
+        "members": [
+            {
+                "id": 1,
+                "user_id": 1,
+                "department_id": null,
+                "designation_id": null,
+                "employee_code": "EMP-0001",
+                "phone": null,
+                "address": null,
+                "date_of_birth": null,
+                "date_of_joining": null,
+                "profile_photo": null,
+                "about_me": "I am a senior developer with 10 years experience.",
+                "skills": "Laravel, Vue, AWS, Docker",
+                "profile_visibility": "team_only",
+                "is_active": true,
+                "created_by": 1,
+                "created_at": "2026-02-27T04:23:12.000000Z",
+                "updated_at": "2026-02-27T05:01:30.000000Z",
+                "deleted_at": null,
+                "pivot": {
+                    "project_id": 4,
+                    "employee_id": 1,
+                    "role": "lead",
+                    "joined_at": "2026-02-27 14:20:22",
+                    "created_at": "2026-02-27T08:50:22.000000Z",
+                    "updated_at": "2026-02-27T08:50:22.000000Z"
+                },
+                "user": {
+                    "id": 1,
+                    "name": "KALP",
+                    "email": "kalp.5871@gmail.com",
+                    "email_verified_at": null,
+                    "created_at": "2026-02-27T04:23:12.000000Z",
+                    "updated_at": "2026-02-27T05:33:04.000000Z",
+                    "role": "employee",
+                    "roles": [
+                        {
+                            "id": 2,
+                            "name": "employee",
+                            "guard_name": "web",
+                            "created_at": "2026-02-26T17:04:10.000000Z",
+                            "updated_at": "2026-02-26T17:04:10.000000Z",
+                            "pivot": {
+                                "model_type": "App\\Models\\User",
+                                "model_id": 1,
+                                "role_id": 2
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "id": 2,
+                "user_id": 2,
+                "department_id": null,
+                "designation_id": null,
+                "employee_code": "EMP-0002",
+                "phone": null,
+                "address": null,
+                "date_of_birth": null,
+                "date_of_joining": null,
+                "profile_photo": null,
+                "about_me": null,
+                "skills": null,
+                "profile_visibility": "team_only",
+                "is_active": true,
+                "created_by": 1,
+                "created_at": "2026-02-27T05:38:38.000000Z",
+                "updated_at": "2026-02-27T05:38:38.000000Z",
+                "deleted_at": null,
+                "pivot": {
+                    "project_id": 4,
+                    "employee_id": 2,
+                    "role": "member",
+                    "joined_at": "2026-02-27 14:55:20",
+                    "created_at": "2026-02-27T09:25:20.000000Z",
+                    "updated_at": "2026-02-27T09:25:20.000000Z"
+                },
+                "user": {
+                    "id": 2,
+                    "name": "tushar",
+                    "email": "admin@worksphere.com",
+                    "email_verified_at": null,
+                    "created_at": "2026-02-27T05:38:38.000000Z",
+                    "updated_at": "2026-02-27T05:38:38.000000Z",
+                    "role": "employee",
+                    "roles": [
+                        {
+                            "id": 2,
+                            "name": "employee",
+                            "guard_name": "web",
+                            "created_at": "2026-02-26T17:04:10.000000Z",
+                            "updated_at": "2026-02-26T17:04:10.000000Z",
+                            "pivot": {
+                                "model_type": "App\\Models\\User",
+                                "model_id": 2,
+                                "role_id": 2
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Member Test Project 1772183008",
+        "description": "Testing member assignment during creation.",
+        "status": "planning",
+        "priority": "medium",
+        "start_date": null,
+        "end_date": null,
+        "created_by": null,
+        "created_at": "2026-02-27T09:03:28.000000Z",
+        "updated_at": "2026-02-27T09:03:28.000000Z",
+        "deleted_at": null,
+        "members": [
+            {
+                "id": 1,
+                "user_id": 1,
+                "department_id": null,
+                "designation_id": null,
+                "employee_code": "EMP-0001",
+                "phone": null,
+                "address": null,
+                "date_of_birth": null,
+                "date_of_joining": null,
+                "profile_photo": null,
+                "about_me": "I am a senior developer with 10 years experience.",
+                "skills": "Laravel, Vue, AWS, Docker",
+                "profile_visibility": "team_only",
+                "is_active": true,
+                "created_by": 1,
+                "created_at": "2026-02-27T04:23:12.000000Z",
+                "updated_at": "2026-02-27T05:01:30.000000Z",
+                "deleted_at": null,
+                "pivot": {
+                    "project_id": 5,
+                    "employee_id": 1,
+                    "role": "lead",
+                    "joined_at": "2026-02-27 14:33:28",
+                    "created_at": "2026-02-27T09:03:28.000000Z",
+                    "updated_at": "2026-02-27T09:03:28.000000Z"
+                },
+                "user": {
+                    "id": 1,
+                    "name": "KALP",
+                    "email": "kalp.5871@gmail.com",
+                    "email_verified_at": null,
+                    "created_at": "2026-02-27T04:23:12.000000Z",
+                    "updated_at": "2026-02-27T05:33:04.000000Z",
+                    "role": "employee",
+                    "roles": [
+                        {
+                            "id": 2,
+                            "name": "employee",
+                            "guard_name": "web",
+                            "created_at": "2026-02-26T17:04:10.000000Z",
+                            "updated_at": "2026-02-26T17:04:10.000000Z",
+                            "pivot": {
+                                "model_type": "App\\Models\\User",
+                                "model_id": 1,
+                                "role_id": 2
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "id": 2,
+                "user_id": 2,
+                "department_id": null,
+                "designation_id": null,
+                "employee_code": "EMP-0002",
+                "phone": null,
+                "address": null,
+                "date_of_birth": null,
+                "date_of_joining": null,
+                "profile_photo": null,
+                "about_me": null,
+                "skills": null,
+                "profile_visibility": "team_only",
+                "is_active": true,
+                "created_by": 1,
+                "created_at": "2026-02-27T05:38:38.000000Z",
+                "updated_at": "2026-02-27T05:38:38.000000Z",
+                "deleted_at": null,
+                "pivot": {
+                    "project_id": 5,
+                    "employee_id": 2,
+                    "role": "member",
+                    "joined_at": "2026-02-27 14:33:28",
+                    "created_at": "2026-02-27T09:03:28.000000Z",
+                    "updated_at": "2026-02-27T09:03:28.000000Z"
+                },
+                "user": {
+                    "id": 2,
+                    "name": "tushar",
+                    "email": "admin@worksphere.com",
+                    "email_verified_at": null,
+                    "created_at": "2026-02-27T05:38:38.000000Z",
+                    "updated_at": "2026-02-27T05:38:38.000000Z",
+                    "role": "employee",
+                    "roles": [
+                        {
+                            "id": 2,
+                            "name": "employee",
+                            "guard_name": "web",
+                            "created_at": "2026-02-26T17:04:10.000000Z",
+                            "updated_at": "2026-02-26T17:04:10.000000Z",
+                            "pivot": {
+                                "model_type": "App\\Models\\User",
+                                "model_id": 2,
+                                "role_id": 2
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

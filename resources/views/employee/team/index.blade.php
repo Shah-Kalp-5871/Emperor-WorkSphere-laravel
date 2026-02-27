@@ -68,7 +68,7 @@ async function fetchTeam() {
                     <p class="member-role">${role}</p>
                     <p class="member-email">${user.email}</p>
                     <div class="card-actions">
-                        <button class="card-btn" onclick="window.location.href='/employee/profile/my-profile?id=${m.id}'">View Profile</button>
+                        <button class="card-btn" onclick="window.location.href='/employee/team/show?id=${m.id}'">View Profile</button>
                         <button class="card-btn" onclick="alert('Message feature coming soon!')">Message</button>
                     </div>
                 </div>

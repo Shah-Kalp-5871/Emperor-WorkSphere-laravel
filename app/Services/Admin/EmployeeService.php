@@ -25,9 +25,6 @@ class EmployeeService
     public function createEmployee(array $data)
     {
         try {
-            // Business logic: Generate random password and send email (simulate email for now)
-            $data['password'] = \Illuminate\Support\Str::random(10);
-            
             $employee = $this->employeeRepository->create($data);
             
             // TODO: Dispatch Job or Event to send email with generated password
@@ -73,5 +70,15 @@ class EmployeeService
     public function permanentlyDeleteEmployee(int $id)
     {
         return $this->employeeRepository->forceDelete($id);
+    }
+
+    public function totalDeleteEmployee(int $id)
+    {
+        try {
+            return $this->employeeRepository->totalDelete($id);
+        } catch (Exception $e) {
+            Log::error("Failed to totally delete employee {$id}: " . $e->getMessage());
+            throw $e;
+        }
     }
 }

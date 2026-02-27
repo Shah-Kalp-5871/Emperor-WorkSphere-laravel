@@ -81,11 +81,14 @@ Route::middleware('auth:api,admin')->group(function () {
         Route::post('tickets/{id}/reply', [\App\Http\Controllers\Employee\SupportTicketController::class, 'reply']);
 
         Route::get('tasks', [\App\Http\Controllers\Employee\TaskController::class, 'index']);
+        Route::post('tasks', [\App\Http\Controllers\Employee\TaskController::class, 'store']);
         Route::get('tasks/{id}', [\App\Http\Controllers\Employee\TaskController::class, 'show']);
         Route::patch('tasks/{id}/status', [\App\Http\Controllers\Employee\TaskController::class, 'updateStatus']);
 
         Route::get('projects', [\App\Http\Controllers\Employee\ProjectController::class, 'index']);
+        Route::post('projects', [\App\Http\Controllers\Employee\ProjectController::class, 'store']);
         Route::get('projects/{id}', [\App\Http\Controllers\Employee\ProjectController::class, 'show']);
+        Route::post('projects/{id}/members', [\App\Http\Controllers\Employee\ProjectController::class, 'addMember']);
 
         Route::get('daily-logs', [\App\Http\Controllers\Employee\DailyLogController::class, 'index']);
         Route::post('daily-logs', [\App\Http\Controllers\Employee\DailyLogController::class, 'store']);
@@ -93,6 +96,7 @@ Route::middleware('auth:api,admin')->group(function () {
         Route::put('daily-logs/{id}', [\App\Http\Controllers\Employee\DailyLogController::class, 'update']);
 
         Route::get('team', [\App\Http\Controllers\Employee\TeamMemberController::class, 'index']);
+        Route::get('team/{id}', [\App\Http\Controllers\Employee\TeamMemberController::class, 'show']);
 
         Route::prefix('anonymous-chat')->group(function () {
             Route::post('start', [\App\Http\Controllers\Api\Employee\AnonymousChatController::class, 'startSession']);

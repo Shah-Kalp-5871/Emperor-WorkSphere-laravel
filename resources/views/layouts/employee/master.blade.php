@@ -53,6 +53,18 @@
                 }
             }
         })();
+
+        async function employeeLogout() {
+            if (!confirm('Are you sure you want to logout?')) return;
+            try {
+                await axios.post('/api/logout');
+            } catch (err) {
+                console.error('Logout error:', err);
+            } finally {
+                sessionStorage.removeItem('token');
+                window.location.href = '/employee/login';
+            }
+        }
     </script>
     @stack('styles')
 

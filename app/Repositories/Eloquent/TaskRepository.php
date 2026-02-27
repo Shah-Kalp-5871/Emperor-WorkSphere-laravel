@@ -15,6 +15,12 @@ class TaskRepository implements TaskRepositoryInterface
     {
         $query = $this->model->with(['project', 'assignees.user', 'creator'])->latest();
 
+        if (!empty($filters['employee_id'])) {
+            $query->whereHas('assignees', function($q) use ($filters) {
+                $q->where('employee_id', $filters['employee_id']);
+            });
+        }
+
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }

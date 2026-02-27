@@ -127,7 +127,10 @@
         <div class="card" style="margin-top:0;">
             <div class="card-header">
                 <div class="card-title">Tasks</div>
-                <a href="/admin/tasks" class="card-action">All tasks →</a>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary btn-sm" onclick="openProjectTaskModal()">+ Add Task</button>
+                    <a href="/admin/tasks" class="btn btn-ghost btn-sm">All tasks →</a>
+                </div>
             </div>
             <div class="table-wrap">
                 <table>
@@ -144,6 +147,55 @@
     </div>{{-- /detail-content --}}
 </div>
 
+{{-- Create Project Task Modal --}}
+<div class="modal-overlay" id="create-proj-task-modal">
+    <div class="modal">
+        <div class="modal-close" onclick="closeModal('create-proj-task-modal')">✕</div>
+        <div class="modal-title">Add Task to Project</div>
+        <form id="create-proj-task-form" onsubmit="handleCreateProjTask(event)">
+            <div class="form-group">
+                <label class="form-label">Task Title *</label>
+                <input class="form-input" id="ptask-title" required placeholder="Task title...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-input" id="ptask-desc" rows="2" style="resize:vertical;"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="ptask-status" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="on_hold">On Hold</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" id="ptask-priority" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Assign To (Project Members)</label>
+                <select class="form-select" id="ptask-assignees" multiple style="height:100px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;"></select>
+                <small style="color:var(--text-3);font-size:11px;margin-top:4px;display:block;">Hold Ctrl/Cmd to select multiple</small>
+            </div>
+            <div id="ptask-error" style="color:#ef4444;font-size:13px;margin-bottom:16px;display:none;"></div>
+            <div class="modal-footer" style="padding:0;margin-top:24px;">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('create-proj-task-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-create-ptask">Create Task</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <style>
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .status-pill { display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em; }
@@ -159,6 +211,7 @@
 @push('scripts')
 <script>
     const projectId = {{ $projectId }};
+    let projectMembers = [];
 
     function statusPillClass(s) {
         const map = {planning:'s-planning', active:'s-active', on_hold:'s-on_hold', completed:'s-completed'};
@@ -205,6 +258,7 @@
 
             // Members
             const membersList = document.getElementById('proj-members-list');
+            projectMembers = p.members || [];
             if (p.members && p.members.length > 0) {
                 membersList.innerHTML = p.members.map(m => `
                     <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
@@ -214,6 +268,13 @@
                         <div style="font-size:13px;font-weight:500;">${m.name}</div>
                     </div>
                 `).join('');
+                
+                // Populate Assignees dropdown
+                const ptaskAssignees = document.getElementById('ptask-assignees');
+                ptaskAssignees.innerHTML = '';
+                p.members.forEach(m => {
+                    ptaskAssignees.appendChild(new Option(m.name, m.pivot?.employee_id || m.id)); // Assuming pivot has employee_id or fallback to user id? Wait, p.members are likely Users with pivot, but assignee expects employee_id. Need to ensure we use employee_id. Let's use m.pivot?.employee_id. Let's inspect the API. Actually p.members inside project is returned by resource. The User model might not have employee_id directly without `employee` relation. Wait! If `p.members` is an array of what? The ProjectResource maps `members`. Let's assume it returns employee_id. If not, we will need to adjust. We'll use `m.id` assuming they are Employee objects, but `TaskRepository` uses `employee_id`. Let's check `ProjectResource`/`EmployeeService`.
+                });
             } else {
                 membersList.innerHTML = '<div style="color:var(--text-3);font-size:13px;">No members assigned.</div>';
             }
@@ -262,6 +323,50 @@
     }
 
     document.addEventListener('DOMContentLoaded', loadProject);
+
+    function openProjectTaskModal() {
+        const ptaskAssignees = document.getElementById('ptask-assignees');
+        ptaskAssignees.innerHTML = '';
+        // In the resource, members are likely Users but we need Employee ID.
+        // Assuming the array comes from employee relation with user nested or User with employee pivot.
+        projectMembers.forEach(m => {
+            // we need the employee ID. The `m` object has `id` which might be the User ID or Employee ID depending on resource.
+            // If it's `Employee` model, then `m.id` is employee_id and `m.user.name` is the name.
+            // But earlier we used `m.name`, which means the Resource might map it.
+            // Let's use `m.employee_id` if available, or just `m.id`
+            ptaskAssignees.appendChild(new Option(m.name, m.employee_id || m.id));
+        });
+        openModal('create-proj-task-modal');
+    }
+
+    async function handleCreateProjTask(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-create-ptask');
+        const errorDiv = document.getElementById('ptask-error');
+        errorDiv.style.display = 'none';
+        btn.disabled = true;
+
+        const assignee_ids = Array.from(document.getElementById('ptask-assignees').selectedOptions).map(o => parseInt(o.value));
+
+        try {
+            await axios.post('/api/admin/tasks', {
+                project_id: projectId,
+                title: document.getElementById('ptask-title').value,
+                description: document.getElementById('ptask-desc').value,
+                status: document.getElementById('ptask-status').value,
+                priority: document.getElementById('ptask-priority').value,
+                assignee_ids
+            });
+            closeModal('create-proj-task-modal');
+            document.getElementById('create-proj-task-form').reset();
+            loadProject(); // refresh project details to show new task
+        } catch (err) {
+            errorDiv.innerText = err.response?.data?.message || 'Failed to create task.';
+            errorDiv.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+        }
+    }
 </script>
 @endpush
 @endsection

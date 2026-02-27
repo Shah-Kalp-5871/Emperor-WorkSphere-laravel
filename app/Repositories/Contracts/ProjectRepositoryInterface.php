@@ -12,4 +12,5 @@ interface ProjectRepositoryInterface
     public function update(int $id, array $data);
     public function delete(int $id);
     public function assignEmployees(int $projectId, array $employeeIds);
+    public function addMember(int $projectId, int $employeeId, string $role = 'member');
 }

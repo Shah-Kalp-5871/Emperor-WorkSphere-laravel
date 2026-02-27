@@ -67,8 +67,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/projects/create', function () {
         return view('admin.projects.create');
     });
-    Route::get('/projects/edit', function () {
-        return view('admin.projects.edit');
+    Route::get('/projects/{id}/edit', function ($id) {
+        return view('admin.projects.edit', ['projectId' => $id]);
     });
     Route::get('/projects/{id}', function ($id) {
         return view('admin.projects.show', ['projectId' => $id]);
@@ -166,6 +166,9 @@ Route::prefix('employee')->group(function () {
     Route::get('/dailylogs/create', function () {
         return view('employee.dailylogs.create');
     });
+    Route::get('/dailylogs/show', function () {
+        return view('employee.dailylogs.show');
+    });
     Route::get('/dailylogs/edit', function () {
         return view('employee.dailylogs.edit');
     });
@@ -174,13 +177,21 @@ Route::prefix('employee')->group(function () {
     Route::get('/calendar', function () {
         return view('employee.calendar.index');
     });
+    // Team
     Route::get('/team', function () {
         return view('employee.team.index');
+    });
+    Route::get('/team/show', function () {
+        return view('employee.team.show');
     });
 
     // Profile
     Route::get('/profile/my-profile', function () {
         return view('employee.profile.index');
+    });
+
+    Route::get('/profile/edit', function () {
+        return view('employee.profile.edit');
     });
 
     // Tickets

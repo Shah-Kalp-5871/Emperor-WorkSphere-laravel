@@ -10,11 +10,11 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
+            $table->foreignId('project_id')->nullable()->constrained('projects')->nullOnDelete();
             $table->string('title', 200);
             $table->text('description')->nullable();
-            $table->enum('status', ['todo', 'in_progress', 'in_review', 'completed', 'blocked'])->default('todo');
-            $table->enum('priority', ['low', 'medium', 'high', 'critical'])->default('medium');
+            $table->enum('status', ['pending', 'in_progress', 'on_hold', 'completed'])->default('pending');
+            $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium');
             $table->date('due_date')->nullable();
             $table->decimal('estimated_hours', 5, 2)->nullable();
             $table->decimal('actual_hours', 5, 2)->nullable();

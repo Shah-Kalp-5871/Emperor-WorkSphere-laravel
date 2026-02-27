@@ -39,7 +39,7 @@ class EmployeeRepository implements EmployeeRepositoryInterface
             $user = $this->userModel->create([
                 'name' => $data['name'] ?? 'New Employee', // Placeholder name
                 'email' => $data['email'],
-                'password' => Hash::make($data['password'] ?? Str::random(10)),
+                'password' => $data['password'],
             ]);
             
             // Assign employee role
@@ -110,7 +110,31 @@ class EmployeeRepository implements EmployeeRepositoryInterface
 
     public function forceDelete(int $id)
     {
-        $employee = $this->model->onlyTrashed()->findOrFail($id);
+        $employee = $this->model->withTrashed()->findOrFail($id);
         return $employee->forceDelete();
+    }
+
+    public function totalDelete(int $id)
+    {
+        return DB::transaction(function () use ($id) {
+            $employee = $this->model->withTrashed()->findOrFail($id);
+            $user = $employee->user;
+
+            // 1. Delete associated data
+            $employee->dailyLogs()->delete();
+            $employee->supportTickets()->delete();
+            $employee->projects()->detach();
+            $employee->tasks()->detach();
+
+            // 2. Delete the Admin-Employee record
+            $employee->forceDelete();
+
+            // 3. Delete the User record
+            if ($user) {
+                $user->delete();
+            }
+
+            return true;
+        });
     }
 }

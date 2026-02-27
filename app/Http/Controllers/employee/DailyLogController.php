@@ -35,7 +35,7 @@ class DailyLogController extends Controller
             'log_date' => 'required|date',
             'morning_summary' => 'required|string',
             'afternoon_summary' => 'required|string',
-            'mood' => 'required|string|in:happy,good,neutral,bad,tired'
+            'mood' => 'nullable|string|in:happy,good,neutral,bad,tired'
         ]);
 
         try {
@@ -81,7 +81,7 @@ class DailyLogController extends Controller
          $request->validate([
             'morning_summary' => 'sometimes|required|string',
             'afternoon_summary' => 'sometimes|required|string',
-            'mood' => 'sometimes|required|string|in:happy,good,neutral,bad,tired'
+            'mood' => 'sometimes|nullable|string|in:happy,good,neutral,bad,tired'
         ]);
 
         try {

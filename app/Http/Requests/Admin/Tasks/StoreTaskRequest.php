@@ -14,10 +14,10 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id'   => ['required', 'exists:projects,id'],
+            'project_id'   => ['nullable', 'exists:projects,id'],
             'title'        => ['required', 'string', 'max:150'],
             'description'  => ['nullable', 'string'],
-            'status'       => ['nullable', 'in:pending,in_progress,completed,on_hold'],
+            'status'       => ['nullable', 'in:pending,in_progress,on_hold,completed'],
             'priority'     => ['required', 'in:low,medium,high,urgent'],
             'due_date'     => ['nullable', 'date'],
             'assignee_ids' => ['nullable', 'array'],

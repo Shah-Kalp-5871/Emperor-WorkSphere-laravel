@@ -22,6 +22,8 @@ class ProfileController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
+            'about_me' => 'nullable|string|max:1000',
+            'skills' => 'nullable|string|max:500',
         ]);
 
         $user->update([
@@ -33,6 +35,8 @@ class ProfileController extends Controller
             $user->employee->update([
                 'phone' => $validated['phone'] ?? $user->employee->phone,
                 'address' => $validated['address'] ?? $user->employee->address,
+                'about_me' => $validated['about_me'] ?? $user->employee->about_me,
+                'skills' => $validated['skills'] ?? $user->employee->skills,
             ]);
         }
 

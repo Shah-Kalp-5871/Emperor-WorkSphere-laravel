@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
         ]);
 
+        /*
         // Seed Departments
         $depts = ['Engineering', 'Marketing', 'Sales', 'Human Resources', 'Support'];
         $deptModels = [];
@@ -43,6 +44,7 @@ class DatabaseSeeder extends Seeder
                 ['department_id' => $deptId]
             );
         }
+        */
 
         // Create Admin
         $admin = \App\Models\Admin::firstOrCreate(
@@ -54,6 +56,7 @@ class DatabaseSeeder extends Seeder
         );
         $admin->assignRole('super_admin');
 
+        /*
         // Create Employee User
         $user = \App\Models\User::firstOrCreate(
             ['email' => 'employee@worksphere.com'],
@@ -151,6 +154,7 @@ class DatabaseSeeder extends Seeder
                 'status' => 'open',
             ]);
         }
+        */
 
         $this->command->info('Database seeded successfully.');
     }

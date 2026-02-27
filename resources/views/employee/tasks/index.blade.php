@@ -19,6 +19,7 @@
       <div class="panel-header">
         <div class="panel-title">All Assigned Tasks <span class="count" id="task-count">0</span></div>
         <div style="display: flex; gap: 8px;">
+          <button class="btn-primary" onclick="openEmpTaskModal()" style="padding: 6px 12px; font-size: 13px; border-radius: 6px; border: none; background: var(--accent); color: #fff; cursor: pointer;">+ Add Task</button>
           <select class="lf" id="filter-project" style="padding: 5px 10px; font-size: 12px; min-height: unset; width: auto;">
             <option value="">All Projects</option>
           </select>
@@ -64,6 +65,49 @@
         </div>
       </div>
     </div>
+
+{{-- Create Employee Task Modal --}}
+<div class="modal-overlay" id="create-emp-task-modal">
+    <div class="modal">
+        <div class="modal-close" onclick="closeModal('create-emp-task-modal')">✕</div>
+        <div class="modal-title">Create Standalone Task</div>
+        <form id="create-emp-task-form" onsubmit="handleCreateEmpTask(event)">
+            <div class="form-group">
+                <label class="form-label">Task Title *</label>
+                <input class="form-input" id="etask-title" required placeholder="Task title...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-input" id="etask-desc" rows="2" style="resize:vertical;"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" id="etask-priority" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Due Date</label>
+                    <input type="date" class="form-input" id="etask-due-date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Assign To</label>
+                <select class="form-select" id="etask-assignees" multiple style="height:80px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;"></select>
+                <small style="color:var(--text-3);font-size:11px;margin-top:4px;display:block;">Leave empty to assign to yourself. Hold Ctrl/Cmd to select multiple.</small>
+            </div>
+            <div id="etask-error" style="color:#ef4444;font-size:13px;margin-bottom:16px;display:none;"></div>
+            <div class="modal-footer" style="padding:0;margin-top:24px;">
+                <button type="button" class="btn-ghost" onclick="closeModal('create-emp-task-modal')" style="padding: 8px 16px; border: none; background: transparent; cursor: pointer; color: var(--text-2);">Cancel</button>
+                <button type="submit" class="btn-primary" id="btn-create-etask" style="padding: 8px 16px; border-radius: 6px; border: none; background: var(--accent); color: #fff; cursor: pointer;">Create Task</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 
 @push('styles')
@@ -198,6 +242,58 @@ async function toggleTask(id, el) {
 
 document.getElementById('filter-project').addEventListener('change', renderTasks);
 document.getElementById('filter-priority').addEventListener('change', renderTasks);
+
+async function loadTeamMembers() {
+    try {
+        const res = await axios.get('/api/employee/team');
+        const members = res.data.data || [];
+        const select = document.getElementById('etask-assignees');
+        select.innerHTML = '';
+        members.forEach(m => {
+            select.appendChild(new Option(m.user?.name || 'Unknown', m.id));
+        });
+    } catch(err) {
+        console.error("Failed to load team members");
+    }
+}
+
+function openEmpTaskModal() {
+    document.getElementById('create-emp-task-modal').classList.add('active');
+    loadTeamMembers();
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+async function handleCreateEmpTask(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-create-etask');
+    const errorDiv = document.getElementById('etask-error');
+    errorDiv.style.display = 'none';
+    btn.disabled = true;
+
+    const assignee_ids = Array.from(document.getElementById('etask-assignees').selectedOptions).map(o => parseInt(o.value));
+
+    try {
+        await axios.post('/api/employee/tasks', {
+            title: document.getElementById('etask-title').value,
+            description: document.getElementById('etask-desc').value,
+            priority: document.getElementById('etask-priority').value,
+            due_date: document.getElementById('etask-due-date').value || null,
+            status: 'pending',
+            assignee_ids: assignee_ids.length > 0 ? assignee_ids : null
+        });
+        closeModal('create-emp-task-modal');
+        document.getElementById('create-emp-task-form').reset();
+        fetchTasks();
+    } catch (err) {
+        errorDiv.innerText = err.response?.data?.message || 'Failed to create task.';
+        errorDiv.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+    }
+}
 
 document.addEventListener('DOMContentLoaded', fetchTasks);
 </script>

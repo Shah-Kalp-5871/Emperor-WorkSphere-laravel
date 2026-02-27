@@ -82,7 +82,7 @@ class TaskController extends Controller
     public function updateStatus(Request $request, int $id): JsonResponse
     {
         $request->validate([
-            'status' => 'required|in:pending,in_progress,completed,on_hold'
+            'status' => 'required|in:pending,in_progress,on_hold,completed'
         ]);
 
         $result = $this->taskService->updateTaskStatus($id, $request->status);

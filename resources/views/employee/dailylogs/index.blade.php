@@ -29,16 +29,6 @@
               </div>
             </div>
 
-            <div style="margin-top: 20px;">
-                <div class="log-sec-label">How's your mood today?</div>
-                <div style="display:flex; gap:12px; margin-top:8px;">
-                    <label class="mood-opt"><input type="radio" name="mood" value="happy" required> <span>😊 Happy</span></label>
-                    <label class="mood-opt"><input type="radio" name="mood" value="good" checked> <span>🙂 Good</span></label>
-                    <label class="mood-opt"><input type="radio" name="mood" value="neutral"> <span>😐 Neutral</span></label>
-                    <label class="mood-opt"><input type="radio" name="mood" value="bad"> <span>😔 Bad</span></label>
-                    <label class="mood-opt"><input type="radio" name="mood" value="tired"> <span>😫 Tired</span></label>
-                </div>
-            </div>
             
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
               <button type="button" class="action-btn" style="padding: 10px 24px;" onclick="saveDraft()">Save Draft</button>
@@ -157,7 +147,6 @@ document.getElementById('daily-log-form').addEventListener('submit', async (e) =
         log_date: new Date().toISOString().split('T')[0],
         morning_summary: document.getElementById('morning_summary').value,
         afternoon_summary: document.getElementById('afternoon_summary').value,
-        mood: document.querySelector('input[name="mood"]:checked').value
     };
 
     btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Submitting...';

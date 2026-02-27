@@ -109,7 +109,10 @@
                     <td>${employee.phone || 'N/A'}</td>
                     <td><span class="privacy-pill ${privacyClass}">${privacyIcon} ${privacyText}</span></td>
                     <td>${joinedDate}</td>
-                    <td><button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/employees/${employee.id}'">View</button></td>
+                    <td>
+                        <button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/employees/${employee.id}'">View</button>
+                        <button class="btn btn-ghost btn-sm" style="color:#ff4d4d" onclick="deleteEmployee(${employee.id}, '${fullName}')">Delete</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -125,6 +128,19 @@
             loading.style.display = 'none';
             errorDiv.style.display = 'block';
             document.getElementById('error-message').innerText = error.response?.data?.message || 'Failed to load employees.';
+        }
+    }
+
+    async function deleteEmployee(id, name) {
+        if (!confirm(`Are you sure you want to permanently delete ${name} and all their associated data? This action cannot be undone.`)) return;
+
+        try {
+            await axios.delete(`/api/admin/employees/${id}`);
+            alert('Employee deleted successfully.');
+            fetchEmployees(currentPage);
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert('Failed to delete employee: ' + (error.response?.data?.message || 'Unknown error'));
         }
     }
 

@@ -55,6 +55,19 @@
                 }
             }
         })();
+
+        async function adminLogout() {
+            if (!confirm('Are you sure you want to logout?')) return;
+            try {
+                // Optional: Call API logout
+                await axios.post('/api/logout');
+            } catch (err) {
+                console.error('Logout error:', err);
+            } finally {
+                sessionStorage.removeItem('token');
+                window.location.href = '/admin/login';
+            }
+        }
     </script>
     @include('partials.admin.sidebar')
 

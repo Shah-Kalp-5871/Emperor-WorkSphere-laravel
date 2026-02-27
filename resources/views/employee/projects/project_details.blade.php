@@ -53,6 +53,10 @@
     <div class="panel" style="margin-top: 20px;">
       <div class="panel-header">
         <div class="panel-title">Project Tasks <span class="count" id="proj-task-count">0</span></div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-primary" id="btn-open-add-member" onclick="openAddMemberModal()" style="display:none; padding: 6px 12px; font-size: 13px; border-radius: 6px; border: none; background: var(--surface-2); color: var(--text-1); border: 1px solid var(--border); cursor: pointer;">+ Add Member</button>
+          <button class="btn-primary" onclick="openProjectTaskModal()" style="padding: 6px 12px; font-size: 13px; border-radius: 6px; border: none; background: var(--accent); color: #fff; cursor: pointer;">+ Add Task</button>
+        </div>
       </div>
 
       <div style="overflow-x: auto;">
@@ -83,6 +87,78 @@
         </table>
       </div>
     </div>
+
+{{-- Create Project Task Modal --}}
+<div class="modal-overlay" id="create-proj-task-modal">
+    <div class="modal">
+        <div class="modal-close" onclick="closeModal('create-proj-task-modal')">✕</div>
+        <div class="modal-title">Add Task to Project</div>
+        <form id="create-proj-task-form" onsubmit="handleCreateProjTask(event)">
+            <div class="form-group">
+                <label class="form-label">Task Title *</label>
+                <input class="form-input" id="ptask-title" required placeholder="Task title...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-input" id="ptask-desc" rows="2" style="resize:vertical;"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="ptask-status" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="on_hold">On Hold</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" id="ptask-priority" style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Assign To (Project Members)</label>
+                <select class="form-select" id="ptask-assignees" multiple style="height:100px;width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;"></select>
+                <small style="color:var(--text-3);font-size:11px;margin-top:4px;display:block;">Hold Ctrl/Cmd to select multiple</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Due Date</label>
+                <input type="date" class="form-input" id="ptask-due-date">
+            </div>
+            <div id="ptask-error" style="color:#ef4444;font-size:13px;margin-bottom:16px;display:none;"></div>
+            <div class="modal-footer" style="padding:0;margin-top:24px;">
+                <button type="button" class="btn-ghost" onclick="closeModal('create-proj-task-modal')" style="padding: 8px 16px; border: none; background: transparent; cursor: pointer; color: var(--text-2);">Cancel</button>
+                <button type="submit" class="btn-primary" id="btn-create-ptask" style="padding: 8px 16px; border-radius: 6px; border: none; background: var(--accent); color: #fff; cursor: pointer;">Create Task</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Add Project Member Modal --}}
+<div class="modal-overlay" id="add-member-modal">
+    <div class="modal">
+        <div class="modal-close" onclick="closeModal('add-member-modal')">✕</div>
+        <div class="modal-title">Add Team Member</div>
+        <form id="add-member-form" onsubmit="handleAddMember(event)">
+            <div class="form-group">
+                <label class="form-label">Select Employee *</label>
+                <select class="form-select" id="add-member-employee-id" required style="width:100%;border:1px solid var(--border);border-radius:8px;background:var(--bg-1);color:var(--text-1);padding:8px;"></select>
+                <small style="color:var(--text-3);font-size:11px;margin-top:4px;display:block;">Only active employees not already in the project are shown.</small>
+            </div>
+            <div id="add-member-error" style="color:#ef4444;font-size:13px;margin-bottom:16px;display:none;"></div>
+            <div class="modal-footer" style="padding:0;margin-top:24px;">
+                <button type="button" class="btn-ghost" onclick="closeModal('add-member-modal')" style="padding: 8px 16px; border: none; background: transparent; cursor: pointer; color: var(--text-2);">Cancel</button>
+                <button type="submit" class="btn-primary" id="btn-confirm-add-member" style="padding: 8px 16px; border-radius: 6px; border: none; background: var(--accent); color: #fff; cursor: pointer;">Add Member</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 
 @push('styles')
@@ -131,7 +207,7 @@
     }
     .action-btn-sm:hover { border-color: var(--accent); color: var(--accent); }
 
-    .member-avatars { display: flex; align-items: center; }
+    .member-avatars { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
     .member-avatar { 
         width: 28px; 
         height: 28px; 
@@ -144,15 +220,15 @@
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        margin-left: -10px;
+        flex-shrink: 0;
     }
-    .member-avatar:first-child { margin-left: 0; }
 </style>
 @endpush
 
 @push('scripts')
 <script>
 const projectId = new URLSearchParams(window.location.search).get('id');
+let projectMembers = [];
 
 async function fetchProjectDetails() {
     if (!projectId) {
@@ -164,6 +240,12 @@ async function fetchProjectDetails() {
     try {
         const res = await axios.get(`/api/employee/projects/${projectId}`);
         const project = res.data.data;
+        
+        // Check if user has permission to add members (Admin or already a member)
+        // Since this is the employee panel, we'll assume they are a member if they can see this,
+        // but we'll double check the backend response logic.
+        document.getElementById('btn-open-add-member').style.display = 'block';
+        
         renderProject(project);
     } catch (err) {
         console.error('Fetch project details error:', err);
@@ -185,9 +267,14 @@ function renderProject(p) {
     document.getElementById('proj-progress-bar').style.width = `${progress}%`;
 
     // Members
-    const members = p.employees || [];
+    const members = p.members || [];
+    console.log("Project Members Details:", members);
+    projectMembers = members;
     document.getElementById('proj-member-avatars').innerHTML = members.map(m => `
-        <div class="member-avatar" title="${m.user?.name}">${m.user?.name ? m.user.name[0].toUpperCase() : '?'}</div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <div class="member-avatar" title="${m.name}">${m.name ? m.name[0].toUpperCase() : '?'}</div>
+            <span style="font-size: 13px; color: var(--text-2);">${m.name || 'Unknown'}</span>
+        </div>
     `).join('');
 
     // Tasks Status
@@ -208,6 +295,7 @@ function renderProject(p) {
     // Task Table
     const tbody = document.getElementById('proj-task-list');
     document.getElementById('proj-task-count').textContent = tasks.length;
+    document.getElementById('proj-creator').textContent = p.creator_name || 'Admin';
     
     if (tasks.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3);">No tasks found for this project.</td></tr>';
@@ -229,7 +317,7 @@ function renderProject(p) {
               <td>${assignedTo}</td>
               <td><span class="priority ${priorityClass}">${t.priority}</span></td>
               <td><span class="task-due">${isDone ? '✓ Done' : dueDate}</span></td>
-              <td><button class="action-btn-sm" onclick="window.location.href='/employee/tasks/show.blade.php?id=${t.id}'">View</button></td>
+              <td><button class="action-btn-sm" onclick="window.location.href='/employee/tasks/show?id=${t.id}'">View</button></td>
             </tr>
         `;
     }).join('');
@@ -244,6 +332,101 @@ async function toggleTask(id, el) {
         fetchProjectDetails(); // Refresh to update progress/stats
     } catch (err) {
         alert('Failed to update status: ' + (err.response?.data?.message || 'Unknown error'));
+    }
+}
+
+function openProjectTaskModal() {
+    const ptaskAssignees = document.getElementById('ptask-assignees');
+    ptaskAssignees.innerHTML = '';
+    projectMembers.forEach(m => {
+        ptaskAssignees.appendChild(new Option(m.name || 'Unknown', m.id));
+    });
+    document.getElementById('create-proj-task-modal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+async function handleCreateProjTask(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-create-ptask');
+    const errorDiv = document.getElementById('ptask-error');
+    errorDiv.style.display = 'none';
+    btn.disabled = true;
+
+    const assignee_ids = Array.from(document.getElementById('ptask-assignees').selectedOptions).map(o => parseInt(o.value));
+
+    try {
+        await axios.post('/api/employee/tasks', {
+            project_id: projectId,
+            title: document.getElementById('ptask-title').value,
+            description: document.getElementById('ptask-desc').value,
+            status: document.getElementById('ptask-status').value,
+            priority: document.getElementById('ptask-priority').value,
+            due_date: document.getElementById('ptask-due-date').value || null,
+            assignee_ids: assignee_ids.length > 0 ? assignee_ids : null
+        });
+        closeModal('create-proj-task-modal');
+        document.getElementById('create-proj-task-form').reset();
+        fetchProjectDetails(); // refresh project details to show new task
+    } catch (err) {
+        errorDiv.innerText = err.response?.data?.message || 'Failed to create task.';
+        errorDiv.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function openAddMemberModal() {
+    const select = document.getElementById('add-member-employee-id');
+    select.innerHTML = '<option value="">Loading employees...</option>';
+    document.getElementById('add-member-modal').classList.add('active');
+
+    try {
+        const res = await axios.get('/api/employee/team');
+        const allEmployees = res.data.data.data || res.data.data; // Handle pagination if present
+        
+        // Filter out existing members
+        const existingIds = projectMembers.map(m => m.id);
+        const availableEmployees = allEmployees.filter(e => !existingIds.includes(e.id) && e.is_active);
+
+        select.innerHTML = '<option value="">-- Select Employee --</option>';
+        availableEmployees.forEach(e => {
+            select.appendChild(new Option(`${e.user?.name || 'Unknown'} (${e.employee_code || ''})`, e.id));
+        });
+
+        if (availableEmployees.length === 0) {
+            select.innerHTML = '<option value="">No available employees to add</option>';
+        }
+    } catch (err) {
+        console.error('Fetch team error:', err);
+        select.innerHTML = '<option value="">Failed to load employees</option>';
+    }
+}
+
+async function handleAddMember(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-confirm-add-member');
+    const errorDiv = document.getElementById('add-member-error');
+    const employeeId = document.getElementById('add-member-employee-id').value;
+
+    if (!employeeId) return;
+
+    errorDiv.style.display = 'none';
+    btn.disabled = true;
+
+    try {
+        await axios.post(`/api/employee/projects/${projectId}/members`, {
+            employee_id: employeeId
+        });
+        closeModal('add-member-modal');
+        fetchProjectDetails(); // refresh details
+    } catch (err) {
+        errorDiv.innerText = err.response?.data?.message || 'Failed to add member.';
+        errorDiv.style.display = 'block';
+    } finally {
+        btn.disabled = false;
     }
 }
 

@@ -152,4 +152,4 @@ async function updateTaskStatus() {
 document.addEventListener('DOMContentLoaded', fetchTaskDetails);
 </script>
 @endpush
-@endsection
+

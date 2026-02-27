@@ -30,8 +30,11 @@ class TaskService
         $employeeId = $this->getCurrentEmployeeId();
         $task = $this->taskRepository->findById($taskId);
         
-        // Safety check: ensure task is assigned to this employee
-        if (!$task->employees->contains($employeeId)) {
+        $isAssignee = $task->assignees->contains($employeeId);
+        $isProjectMember = $task->project && $task->project->members->contains($employeeId);
+
+        // Safety check: ensure task is assigned to this employee OR employee is in the project
+        if (!$isAssignee && !$isProjectMember) {
             throw new Exception("Unauthorized to view this task.");
         }
 
@@ -47,11 +50,46 @@ class TaskService
         
         // Safety check: ensure task is assigned to this employee
         $task = $this->taskRepository->findById($taskId);
-        if (!$task->employees->contains($employeeId)) {
-            throw new Exception("Unauthorized to update this task's status.");
+        if (!$task->assignees->contains($employeeId)) {
+            throw new Exception("Unauthorized to update this task's status. Only assigned employees can update.");
         }
 
         return $this->taskRepository->updateStatus($taskId, $status);
+    }
+
+    /**
+     * Create a task as an employee
+     */
+    public function createMyTask(array $data)
+    {
+        $employeeId = $this->getCurrentEmployeeId();
+        
+        // If assigned to a project, verify the creator is a member of that project
+        if (!empty($data['project_id'])) {
+            $project = \App\Models\Project::with('members')->findOrFail($data['project_id']);
+            if (!$project->members->contains('id', $employeeId)) {
+                throw new Exception("You can only create tasks in projects you are a member of.");
+            }
+
+            // Verify assignees are project members (basic check)
+            if (!empty($data['assignee_ids'])) {
+                foreach ($data['assignee_ids'] as $aId) {
+                    if (!$project->members->contains('id', $aId)) {
+                        throw new Exception("Assignee ID {$aId} is not a member of this project.");
+                    }
+                }
+            }
+        }
+        
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($data, $employeeId) {
+            $task = $this->taskRepository->create($data);
+            
+            // Assign to provided employees, otherwise default to self
+            $assignees = !empty($data['assignee_ids']) ? $data['assignee_ids'] : [$employeeId];
+            $this->taskRepository->assignEmployees($task->id, $assignees);
+            
+            return $task->load(['project', 'assignees.user']);
+        });
     }
 
     protected function getCurrentEmployeeId()

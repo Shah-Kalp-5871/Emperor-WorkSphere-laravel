@@ -1,0 +1,66 @@
+# Database & User Architecture Overview
+
+Emperor-WorkSphere uses a **Multi-Auth Architecture** to strictly separate administrative functions from employee features.
+
+## 1. User Authentication System
+
+The system distinguishes between two primary types of users:
+
+### Admins (Management)
+- **Table**: `admins`
+- **Purpose**: System-wide control, employee management, and oversight.
+- **Auth Guard**: `admin`
+- **Role**: Primarily `super_admin`.
+
+### Employees (Staff)
+- **Table System**: Two-table split.
+  1. `users`: Stores login credentials (email, password).
+  2. `employees`: Stores "Staff" specific data (code, department, phone).
+- **Purpose**: Daily work reporting, task management, and communication.
+- **Auth Guard**: `web` (default)
+- **Role**: `employee`.
+
+---
+
+## 2. Key Database Relationships
+
+```mermaid
+erDiagram
+    ADMINS ||--o{ EMPLOYEES : "created_by"
+    ADMINS ||--o{ PROJECTS : "created_by"
+    ADMINS ||--o{ DAILY_LOGS : "reviewed_by"
+    ADMINS ||--o{ SUPPORT_TICKETS : "assigned_to"
+
+    USERS ||--|| EMPLOYEES : "authentication (user_id)"
+    
+    DEPARTMENTS ||--o{ DESIGNATIONS : "belongs_to"
+    DEPARTMENTS ||--o{ EMPLOYEES : "assigned_to"
+    
+    DESIGNATIONS ||--o{ EMPLOYEES : "assigned_to"
+    
+    EMPLOYEES ||--o{ DAILY_LOGS : "log_owner"
+    EMPLOYEES ||--o{ SUPPORT_TICKETS : "raised_by"
+    EMPLOYEES ||--o{ PROJECT_MEMBERS : "member"
+    
+    PROJECTS ||--o{ PROJECT_MEMBERS : "has_members"
+```
+
+---
+
+## 3. Field Connectivity Details
+
+| Table | Link Field | Target Table | Description |
+| :--- | :--- | :--- | :--- |
+| **`employees`** | `user_id` | `users.id` | Connects the employee profile to logout/login credentials. |
+| **`employees`** | `department_id` | `departments.id` | Organizes staff into business units. |
+| **`employees`** | `created_by` | `admins.id` | Tracks which admin added this staff member. |
+| **`daily_logs`** | `employee_id` | `employees.id` | Connects work logs to the specific staff member. |
+| **`daily_logs`** | `reviewed_by` | `admins.id` | Tracks which admin reviewed the daily summary. |
+| **`projects`** | `created_by` | `admins.id` | Only admins can initiate high-level projects. |
+| **`support_tickets`**| `employee_id` | `employees.id` | The employee who is requesting help. |
+| **`support_tickets`**| `assigned_to` | `admins.id` | The admin responsible for resolving the issue. |
+
+## 4. Why this structure?
+- **Security**: Admins have their own table, meaning even a complete breach of the `users` table doesn't grant admin access.
+- **Flexibility**: The `users` table handles basic auth, while `employees` can handle hundreds of staff-specific fields without cluttering the login logic.
+- **Tracking**: Every major action (Logs, Tickets, Projects) has a clear owner (Employee) and a clear overseer (Admin).

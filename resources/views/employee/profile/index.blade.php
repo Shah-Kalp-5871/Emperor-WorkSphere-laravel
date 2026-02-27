@@ -18,10 +18,10 @@
             </div>
         </div>
         <div style="display:flex; gap:12px">
-            <button class="greeting-btn" onclick="showEditProfile()">
+            <a href="{{ url('/employee/profile/edit') }}" class="greeting-btn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 Edit Profile
-            </button>
+            </a>
             <button class="greeting-btn" style="background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)" onclick="showChangePassword()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
                 Security
@@ -42,8 +42,8 @@
                 </div>
             </div>
             <div style="padding: 22px;">
-                <p style="font-size: 14px; line-height: 1.6; color: var(--text-2);">
-                    Passionate Full Stack Developer Intern with a focus on building scalable web applications using Laravel and modern JavaScript frameworks. I enjoy solving complex problems and learning new technologies to improve user experiences.
+                <p style="font-size: 14px; line-height: 1.6; color: var(--text-2);" id="about-me-text">
+                    Loading...
                 </p>
             </div>
         </div>
@@ -57,22 +57,16 @@
                 </div>
             </div>
             <div style="padding: 22px;">
-                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                    <span class="privacy-pill privacy-public" style="border: 1px solid var(--accent-lt);">Laravel</span>
-                    <span class="privacy-pill privacy-public" style="border: 1px solid var(--accent-lt);">Vue.js</span>
-                    <span class="privacy-pill privacy-public" style="border: 1px solid var(--accent-lt);">PHP</span>
-                    <span class="privacy-pill privacy-public" style="border: 1px solid var(--accent-lt);">MySQL</span>
-                    <span class="privacy-pill privacy-public" style="border: 1px solid var(--accent-lt);">Tailwind CSS</span>
-                    <span class="privacy-pill privacy-public" style="border: 1px solid var(--accent-lt);">Git</span>
-                    <span class="privacy-pill privacy-public" style="border: 1px solid var(--accent-lt);">REST APIs</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="skills-container">
+                    <!-- Skills will be loaded via JS -->
+                    <span style="color:var(--text-3);font-size:14px;">Loading...</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="two-col" style="grid-template-columns: 1.2fr 0.8fr;">
     <!-- PERSONAL INFORMATION -->
-    <div class="panel">
+    <div class="panel" style="grid-column: span 2;">
         <div class="panel-header">
         <div class="panel-title">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -88,71 +82,6 @@
         </div>
     </div>
 
-    <!-- ACCOUNT INFORMATION -->
-    <div class="panel">
-        <div class="panel-header">
-        <div class="panel-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            Account Information
-        </div>
-        </div>
-        <div style="padding: 22px;">
-        <div class="detail-grid" style="grid-template-columns: 1fr;">
-            <div class="detail-item">
-            <div class="detail-label">Department</div>
-            <div class="detail-value" id="department-display">-</div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div class="detail-item">
-                <div class="detail-label">Joined On</div>
-                <div class="detail-value" id="joined-display">-</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Designation</div>
-                <div class="detail-value" id="designation-display">-</div>
-            </div>
-            </div>
-        </div>
-        </div>
-    </div>
-    </div>
-
-<!-- Edit Profile Modal -->
-<div id="editProfileModal" class="modal-overlay" style="display:none">
-    <div class="modal-content">
-        <div class="modal-header"><h3>Edit Personal Information</h3><button class="close-btn" onclick="closeModals()">&times;</button></div>
-        <div class="modal-body">
-            <form id="editProfileForm">
-                <div class="form-group"><label>Full Name</label><input type="text" id="edit-name" class="form-control" required></div>
-                <div class="form-group"><label>Email Address</label><input type="email" id="edit-email" class="form-control" required></div>
-                <div class="form-group"><label>Phone Number</label><input type="text" id="edit-phone" class="form-control"></div>
-                <div class="form-group" style="margin-top:10px"><label>Address</label><textarea id="edit-address" class="form-control" rows="3"></textarea></div>
-                <div style="display:flex; gap:10px; margin-top:20px">
-                    <button type="submit" class="greeting-btn" id="save-profile-btn" style="flex:1; justify-content:center">Save Changes</button>
-                    <button type="button" class="greeting-btn" style="background:var(--surface-2);color:var(--text-2);flex:1;justify-content:center" onclick="closeModals()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Change Password Modal -->
-<div id="changePasswordModal" class="modal-overlay" style="display:none">
-    <div class="modal-content">
-        <div class="modal-header"><h3>Security Settings</h3><button class="close-btn" onclick="closeModals()">&times;</button></div>
-        <div class="modal-body">
-            <form id="changePasswordForm">
-                <div class="form-group"><label>Current Password</label><input type="password" id="current_password" class="form-control" required></div>
-                <div class="form-group"><label>New Password</label><input type="password" id="password" class="form-control" required></div>
-                <div class="form-group"><label>Confirm New Password</label><input type="password" id="password_confirmation" class="form-control" required></div>
-                <div style="display:flex; gap:10px; margin-top:20px">
-                    <button type="submit" class="greeting-btn" id="save-password-btn" style="flex:1; justify-content:center">Update Password</button>
-                    <button type="button" class="greeting-btn" style="background:var(--surface-2);color:var(--text-2);flex:1;justify-content:center" onclick="closeModals()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
     <div class="two-col" style="grid-template-columns: 0.8fr 1.2fr; margin-top: 20px;">
     <!-- PRIVACY SETTINGS -->
@@ -261,6 +190,7 @@
     .form-control:focus { outline: none; border-color: var(--accent); }
 </style>
 
+@push('scripts')
 <script>
     let currentUser = null;
 
@@ -297,73 +227,26 @@
             <div class="detail-item" style="grid-column: span 2"><div class="detail-label">Address</div><div class="detail-value">${currentUser.employee?.address || 'N/A'}</div></div>
         `;
 
-        document.getElementById('department-display').textContent = currentUser.employee?.department?.name || 'N/A';
-        document.getElementById('designation-display').textContent = currentUser.employee?.designation?.name || 'N/A';
-        document.getElementById('joined-display').textContent = currentUser.employee?.date_of_joining ? new Date(currentUser.employee.date_of_joining).toLocaleDateString() : 'N/A';
-    }
-
-    function showEditProfile() {
-        if (!currentUser) return;
-        document.getElementById('edit-name').value = currentUser.name;
-        document.getElementById('edit-email').value = currentUser.email;
-        document.getElementById('edit-phone').value = currentUser.employee?.phone || '';
-        document.getElementById('edit-address').value = currentUser.employee?.address || '';
-        document.getElementById('editProfileModal').style.display = 'flex';
+        // About Me & Skills
+        document.getElementById('about-me-text').textContent = currentUser.employee?.about_me || 'No description provided.';
+        
+        const skillsContainer = document.getElementById('skills-container');
+        const skillsArr = (currentUser.employee?.skills || '').split(',').map(s => s.trim()).filter(s => s);
+        if (skillsArr.length > 0) {
+            skillsContainer.innerHTML = skillsArr.map(skill => 
+                `<span class="privacy-pill privacy-public" style="border: 1px solid var(--accent-lt);">${skill}</span>`
+            ).join('');
+        } else {
+            skillsContainer.innerHTML = '<span style="color:var(--text-3);font-size:14px;">No skills listed.</span>';
+        }
     }
 
     function showChangePassword() {
-        document.getElementById('changePasswordForm').reset();
-        document.getElementById('changePasswordModal').style.display = 'flex';
+        // Redirect to a security page if one exists, or implement it as a page.
+        // For now, let's keep it as is or handle it if requested.
+        alert('Security settings available on edit page.');
+        window.location.href = '/employee/profile/edit#security';
     }
-
-    function closeModals() {
-        document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-    }
-
-    document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('save-profile-btn');
-        btn.disabled = true;
-        btn.textContent = 'Saving...';
-
-        try {
-            await axios.put('/api/profile', {
-                name: document.getElementById('edit-name').value,
-                email: document.getElementById('edit-email').value,
-                phone: document.getElementById('edit-phone').value,
-                address: document.getElementById('edit-address').value,
-            });
-            await fetchMe();
-            closeModals();
-        } catch (err) {
-            alert('Update failed: ' + (err.response?.data?.message || 'Error occurred'));
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Save Changes';
-        }
-    });
-
-    document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('save-password-btn');
-        btn.disabled = true;
-        btn.textContent = 'Updating...';
-
-        try {
-            await axios.put('/api/password', {
-                current_password: document.getElementById('current_password').value,
-                password: document.getElementById('password').value,
-                password_confirmation: document.getElementById('password_confirmation').value,
-            });
-            alert('Password updated successfully.');
-            closeModals();
-        } catch (err) {
-            alert('Password update failed: ' + (err.response?.data?.message || 'Check your fields'));
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Update Password';
-        }
-    });
 
     document.addEventListener('DOMContentLoaded', fetchMe);
 </script>

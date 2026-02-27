@@ -25,16 +25,6 @@
                   </div>
                 </div>
 
-                <div style="margin-top: 24px;">
-                    <div class="log-sec-label">How's your mood today?</div>
-                    <div style="display:flex; gap:12px; margin-top:8px;">
-                        <label class="mood-opt"><input type="radio" name="mood" value="happy"> <span>😊 Happy</span></label>
-                        <label class="mood-opt"><input type="radio" name="mood" value="good"> <span>🙂 Good</span></label>
-                        <label class="mood-opt"><input type="radio" name="mood" value="neutral"> <span>😐 Neutral</span></label>
-                        <label class="mood-opt"><input type="radio" name="mood" value="bad"> <span>😔 Bad</span></label>
-                        <label class="mood-opt"><input type="radio" name="mood" value="tired"> <span>😫 Tired</span></label>
-                    </div>
-                </div>
                 
                 <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
                   <button type="button" class="action-btn" onclick="window.history.back()">Cancel</button>
@@ -74,9 +64,6 @@ async function fetchLog() {
         document.getElementById('log-date-display').textContent = new Date(log.log_date).toLocaleDateString();
         document.getElementById('morning_summary').value = log.morning_summary;
         document.getElementById('afternoon_summary').value = log.afternoon_summary;
-        
-        const moodRadio = document.querySelector(`input[name="mood"][value="${log.mood}"]`);
-        if (moodRadio) moodRadio.checked = true;
 
     } catch (err) {
         console.error('Fetch log error:', err);
@@ -87,11 +74,9 @@ document.getElementById('edit-daily-log-form').addEventListener('submit', async 
     e.preventDefault();
     const btn = document.getElementById('update-btn');
     const successMsg = document.getElementById('update-success-msg');
-    
     const data = {
         morning_summary: document.getElementById('morning_summary').value,
         afternoon_summary: document.getElementById('afternoon_summary').value,
-        mood: document.querySelector('input[name="mood"]:checked').value
     };
 
     btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Updating...';
