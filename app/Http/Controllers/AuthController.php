@@ -4,26 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
     /**
-     * Create a new AuthController instance.
-     * We protect all methods except login using the auth:api middleware.
-     */
-    public function __construct()
-    {
-        // For Laravel 11/12 we can define middleware in routes/route files, but we can also use routing here:
-    }
-
-    /**
      * Get a JWT via given credentials.
+     * Route pattern determines which guard to use (admin vs api/employee).
      */
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->only('email', 'password');
-        $guard = $this->getGuard();
+        $guard = $this->getGuardFromRoute();
 
         if (! $token = auth($guard)->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -33,17 +24,24 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the authenticated User.
+     * Get the authenticated user.
+     * Tries the admin guard first, then the api (employee) guard.
+     * This is necessary because /api/me is shared between admins and employees.
      */
     public function me(): JsonResponse
     {
-        $guard = $this->getGuard();
-        $user = auth($guard)->user();
-        
-        if ($guard === 'api' && $user) {
+        // Try admin guard first
+        if ($adminUser = auth('admin')->user()) {
+            return response()->json($adminUser);
+        }
+
+        // Fall back to api (employee) guard
+        $user = auth('api')->user();
+
+        if ($user) {
             $user->load(['employee.department', 'employee.designation']);
         }
-        
+
         return response()->json($user);
     }
 
@@ -52,8 +50,12 @@ class AuthController extends Controller
      */
     public function logout(): JsonResponse
     {
-        $guard = $this->getGuard();
-        auth($guard)->logout();
+        // Invalidate whichever guard's token is active
+        if (auth('admin')->check()) {
+            auth('admin')->logout();
+        } else {
+            auth('api')->logout();
+        }
 
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -63,8 +65,11 @@ class AuthController extends Controller
      */
     public function refresh(): JsonResponse
     {
-        $guard = $this->getGuard();
-        return $this->respondWithToken(auth($guard)->refresh(), $guard);
+        if (auth('admin')->check()) {
+            return $this->respondWithToken(auth('admin')->refresh(), 'admin');
+        }
+
+        return $this->respondWithToken(auth('api')->refresh(), 'api');
     }
 
     /**
@@ -74,22 +79,18 @@ class AuthController extends Controller
     {
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth($guard)->factory()->getTTL() * 60
+            'token_type'   => 'bearer',
+            'expires_in'   => auth($guard)->factory()->getTTL() * 60,
         ]);
     }
 
     /**
-     * Determine which guard to use based on the request path.
+     * Determine guard based solely on the route URL pattern.
+     * Only used during login — before any JWT token exists.
      */
-    protected function getGuard(): string
+    protected function getGuardFromRoute(): string
     {
-        if (request()->is('api/admin/*') || request()->is('api/admin')) {
-            return 'admin';
-        }
-
-        // Check current authenticated guard if any
-        if (auth('admin')->check()) {
+        if (request()->is('api/admin*')) {
             return 'admin';
         }
 

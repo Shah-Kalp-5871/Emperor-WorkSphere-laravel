@@ -4,9 +4,14 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// Redirect GET requests (browser navigation) to proper login pages
+Route::get('admin/login', fn() => redirect('/admin/login'));
+Route::get('employee/login', fn() => redirect('/employee/login'));
+
 Route::post('login', [AuthController::class, 'login']);
 Route::post('admin/login', [AuthController::class, 'login']);
 Route::post('employee/login', [AuthController::class, 'login']);
+
 
 Route::middleware('auth:api,admin')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
