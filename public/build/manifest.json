@@ -1,0 +1,60 @@
+{
+  "resources/css/admin/admin-style.css": {
+    "file": "assets/admin-style-DAPAaVpW.css",
+    "src": "resources/css/admin/admin-style.css",
+    "isEntry": true,
+    "name": "admin-style",
+    "names": [
+      "admin-style.css"
+    ]
+  },
+  "resources/css/admin/tabulator-custom.css": {
+    "file": "assets/tabulator-custom-CbcAY6v7.css",
+    "src": "resources/css/admin/tabulator-custom.css"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DiKZ5gBV.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/css/employee/employee-style.css": {
+    "file": "assets/employee-style-v1Dg-zkG.css",
+    "src": "resources/css/employee/employee-style.css",
+    "isEntry": true,
+    "name": "employee-style",
+    "names": [
+      "employee-style.css"
+    ]
+  },
+  "resources/css/employee/tabulator-custom.css": {
+    "file": "assets/tabulator-custom-wfqh5B15.css",
+    "src": "resources/css/employee/tabulator-custom.css",
+    "isEntry": true,
+    "name": "tabulator-custom",
+    "names": [
+      "tabulator-custom.css"
+    ]
+  },
+  "resources/js/admin/tabulator-init.js": {
+    "file": "assets/tabulator-init-BIEneYdC.js",
+    "name": "tabulator-init",
+    "src": "resources/js/admin/tabulator-init.js",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CKl8NZMC.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/employee/tabulator-init.js": {
+    "file": "assets/tabulator-init-WzRnz9n0.js",
+    "name": "tabulator-init",
+    "src": "resources/js/employee/tabulator-init.js",
+    "isEntry": true
+  }
+}
