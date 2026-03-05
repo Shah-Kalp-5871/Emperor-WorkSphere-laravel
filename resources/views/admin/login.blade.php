@@ -223,7 +223,7 @@
                 // ── Step 1: Authenticate ──────────────────────────────────
                 let token;
                 try {
-                    const response = await axios.post('/api/admin/login', { email, password });
+                    const response = await axios.post('{{ url('/admin/auth/login') }}', { email, password });
                     token = response.data.access_token;
                 } catch (err) {
                     const status = err.response?.status;
@@ -251,14 +251,14 @@
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
                 try {
-                    const userResponse = await axios.get('/api/me');
+                    const userResponse = await axios.get('{{ url('/admin/auth/me') }}');
                     const user = userResponse.data;
 
                     if (user && (user.role === 'admin' || user.role === 'super_admin')) {
                         if (typeof window.initializeEcho === 'function') {
                             window.initializeEcho();
                         }
-                        window.location.href = '/admin/dashboard';
+                        window.location.href = '{{ url('/admin/dashboard') }}';
                     } else {
                         sessionStorage.removeItem('token');
                         showError('Access denied. This portal is for admins only.');

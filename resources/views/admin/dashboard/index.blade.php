@@ -93,7 +93,7 @@
 <script>
     async function loadDashboardData() {
         try {
-            const res = await axios.get('/api/admin/dashboard/stats');
+            const res = await axios.get(window.APP_URL + '/api/admin/dashboard/stats');
             const data = res.data.data;
 
             renderStats(data.stats);

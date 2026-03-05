@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Requests\LoginRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,67 @@ use App\Http\Controllers\Employee\TeamController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Auth Endpoints (web routes - more reliable on shared hosting)
+| These mirror /api/admin/login and /api/me so login works on Hostinger.
+|--------------------------------------------------------------------------
+*/
+
+// Admin login — POST /admin/auth/login
+Route::post('admin/auth/login', function (LoginRequest $request) {
+    $credentials = $request->only('email', 'password');
+    if (! $token = auth('admin')->attempt($credentials)) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+    return response()->json([
+        'access_token' => $token,
+        'token_type'   => 'bearer',
+        'expires_in'   => auth('admin')->factory()->getTTL() * 60,
+    ]);
+});
+
+// Employee login — POST /employee/auth/login
+Route::post('employee/auth/login', function (LoginRequest $request) {
+    $credentials = $request->only('email', 'password');
+    if (! $token = auth('api')->attempt($credentials)) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+    return response()->json([
+        'access_token' => $token,
+        'token_type'   => 'bearer',
+        'expires_in'   => auth('api')->factory()->getTTL() * 60,
+    ]);
+});
+
+// Verify session — GET /admin/auth/me
+// No middleware needed: JWT driver reads Authorization header automatically.
+Route::get('admin/auth/me', function () {
+    // Parse the Bearer token from Authorization header manually
+    $token = request()->bearerToken();
+    if (! $token) {
+        return response()->json(['error' => 'Unauthenticated'], 401);
+    }
+
+    // Try admin guard first
+    try {
+        if ($user = auth('admin')->setToken($token)->user()) {
+            return response()->json($user);
+        }
+    } catch (\Exception $e) { /* ignore, try next guard */ }
+
+    // Fall back to employee guard
+    try {
+        if ($user = auth('api')->setToken($token)->user()) {
+            $user->load(['employee.department', 'employee.designation']);
+            return response()->json($user);
+        }
+    } catch (\Exception $e) { /* ignore */ }
+
+    return response()->json(['error' => 'Unauthenticated'], 401);
+});
+
 
 /*
 |--------------------------------------------------------------------------
