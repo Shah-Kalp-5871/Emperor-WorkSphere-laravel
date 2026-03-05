@@ -198,53 +198,85 @@
 
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
+            function showError(msg) {
+                const errorDiv = document.getElementById('login-error');
+                errorDiv.innerText = msg;
+                errorDiv.style.display = 'block';
+            }
+
+            function resetBtn() {
+                const btn = document.getElementById('loginBtn');
+                btn.disabled = false;
+                btn.innerText = 'Sign In';
+            }
+
             document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const email = document.getElementById('email').value;
+                const email    = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
-                const btn = document.getElementById('loginBtn');
-                const errorDiv = document.getElementById('login-error');
+                const btn      = document.getElementById('loginBtn');
 
                 btn.disabled = true;
-                btn.innerText = 'Signing in...';
-                errorDiv.style.display = 'none';
+                btn.innerText = 'Signing in…';
+                document.getElementById('login-error').style.display = 'none';
 
+                // ── Step 1: Authenticate ──────────────────────────────────
+                let token;
                 try {
                     const response = await axios.post('/api/admin/login', { email, password });
-                    const token = response.data.access_token;
+                    token = response.data.access_token;
+                } catch (err) {
+                    const status = err.response?.status;
+                    if (status === 401) {
+                        showError('Incorrect email or password. Please try again.');
+                    } else if (status === 422) {
+                        const errors = err.response?.data?.errors;
+                        const first  = errors ? Object.values(errors)[0]?.[0] : null;
+                        showError(first || 'Please fill in all required fields correctly.');
+                    } else if (status === 429) {
+                        showError('Too many login attempts. Please wait a moment and try again.');
+                    } else if (status >= 500) {
+                        showError('Server error. Please try again later or contact support.');
+                    } else if (!err.response) {
+                        showError('Cannot reach the server. Check your internet connection.');
+                    } else {
+                        showError('Login failed. Please try again.');
+                    }
+                    resetBtn();
+                    return;
+                }
 
-                    // Store token
-                    sessionStorage.setItem('token', token);
+                // ── Step 2: Store token & verify admin role ───────────────
+                sessionStorage.setItem('token', token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-                    // Set global axios header for immediate next call
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-                    // Call /api/me to verify role
+                try {
                     const userResponse = await axios.get('/api/me');
                     const user = userResponse.data;
 
-                    if (user.role === 'admin' || user.role === 'super_admin') {
-                        // Initialize Echo if available
+                    if (user && (user.role === 'admin' || user.role === 'super_admin')) {
                         if (typeof window.initializeEcho === 'function') {
                             window.initializeEcho();
                         }
                         window.location.href = '/admin/dashboard';
                     } else {
                         sessionStorage.removeItem('token');
-                        errorDiv.innerText = 'Unauthorized. Admin access only.';
-                        errorDiv.style.display = 'block';
-                        btn.disabled = false;
-                        btn.innerText = 'Sign In';
+                        showError('Access denied. This portal is for admins only.');
+                        resetBtn();
                     }
-                } catch (error) {
-                    console.error('Login Error:', error);
-                    errorDiv.innerText = error.response?.data?.error || 'Invalid credentials or server error.';
-                    errorDiv.style.display = 'block';
-                    btn.disabled = false;
-                    btn.innerText = 'Sign In';
+                } catch (err) {
+                    sessionStorage.removeItem('token');
+                    const status = err.response?.status;
+                    if (status === 401) {
+                        showError('Session could not be verified. Please try again.');
+                    } else {
+                        showError('Could not verify your account. Please try again.');
+                    }
+                    resetBtn();
                 }
             });
         </script>
+
 
         <div class="footer-text">
             Protected by WorkSphere Security.

@@ -2,160 +2,74 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
+     * Creates one super admin and one employee with all required data.
+     *
+     * NOTE: Do NOT use Hash::make() here. The Admin and User models both have
+     * 'password' => 'hashed' in their casts, which auto-hashes the password
+     * on save. Using Hash::make() would cause double-hashing and login failures.
      */
     public function run(): void
     {
+        // 1. Seed Roles & Permissions first (required by assignRole)
         $this->call([
             RoleSeeder::class,
             PermissionSeeder::class,
         ]);
 
-        /*
-        // Seed Departments
-        $depts = ['Engineering', 'Marketing', 'Sales', 'Human Resources', 'Support'];
-        $deptModels = [];
-        foreach ($depts as $dept) {
-            $deptModels[$dept] = \App\Models\Department::firstOrCreate(['name' => $dept]);
-        }
-
-        // Seed Designations
-        $engineeringDeptId = $deptModels['Engineering']->id;
-        $desigs = ['Senior Developer', 'Junior Developer', 'Marketing Manager', 'HR Lead', 'Sales Executive', 'Support Agent'];
-        
-        foreach ($desigs as $desig) {
-            $deptId = $engineeringDeptId;
-            if (str_contains($desig, 'Marketing')) $deptId = $deptModels['Marketing']->id;
-            if (str_contains($desig, 'HR')) $deptId = $deptModels['Human Resources']->id;
-            if (str_contains($desig, 'Sales')) $deptId = $deptModels['Sales']->id;
-            if (str_contains($desig, 'Support')) $deptId = $deptModels['Support']->id;
-
-            \App\Models\Designation::firstOrCreate(
-                ['name' => $desig],
-                ['department_id' => $deptId]
-            );
-        }
-        */
-
-        // Create Admin
+        // 2. Create Admin (stored in the `admins` table)
+        //    Plain text password → model's 'hashed' cast handles bcrypt automatically
         $admin = \App\Models\Admin::firstOrCreate(
             ['email' => 'admin@worksphere.com'],
             [
-                'name' => 'Admin User',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'name'     => 'Admin User',
+                'password' => 'Admin@1234',   // plain text — model casts to bcrypt
             ]
         );
-        $admin->assignRole('super_admin');
+        $admin->syncRoles(['super_admin']);
 
-        /*
-        // Create Employee User
+        // 3. Create a Department (required by Employee)
+        $department = \App\Models\Department::firstOrCreate(
+            ['name' => 'Engineering'],
+            ['description' => 'Software Engineering Department']
+        );
+
+        // 4. Create a Designation inside that Department
+        $designation = \App\Models\Designation::firstOrCreate(
+            ['name' => 'Software Developer', 'department_id' => $department->id],
+        );
+
+        // 5. Create Employee User (stored in the `users` table)
+        //    Same as above — plain text password, model auto-hashes
         $user = \App\Models\User::firstOrCreate(
             ['email' => 'employee@worksphere.com'],
             [
-                'name' => 'Employee User',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'name'     => 'Employee User',
+                'password' => 'Employee@1234',  // plain text — model casts to bcrypt
             ]
         );
-        $user->assignRole('employee');
+        $user->syncRoles(['employee']);
 
-        // Create Employee Record
+        // 6. Create the Employee record (stored in the `employees` table, linked to the user)
         \App\Models\Employee::firstOrCreate(
             ['user_id' => $user->id],
             [
-                'employee_code' => 'EMP001',
-                'phone' => '1234567890',
-                'is_active' => true,
-                'created_by' => $admin->id,
-                'department_id' => $deptModels['Engineering']->id,
-                'designation_id' => \App\Models\Designation::where('name', 'Senior Developer')->first()->id,
+                'department_id'   => $department->id,
+                'designation_id'  => $designation->id,
+                'employee_code'   => 'EMP001',
+                'phone'           => '9000000001',
+                'is_active'       => true,
+                'created_by'      => $admin->id,
+                'date_of_joining' => now()->toDateString(),
             ]
         );
 
-        // Seed More Employees
-        $users = [
-            ['name' => 'John Doe', 'email' => 'john@worksphere.com'],
-            ['name' => 'Jane Smith', 'email' => 'jane@worksphere.com'],
-            ['name' => 'Michael Brown', 'email' => 'michael@worksphere.com'],
-        ];
-
-        foreach ($users as $index => $u) {
-            $createdUser = \App\Models\User::firstOrCreate(
-                ['email' => $u['email']],
-                [
-                    'name' => $u['name'],
-                    'password' => \Illuminate\Support\Facades\Hash::make('password'),
-                ]
-            );
-            $createdUser->assignRole('employee');
-
-            \App\Models\Employee::firstOrCreate(
-                ['user_id' => $createdUser->id],
-                [
-                    'employee_code' => 'EMP00' . ($index + 2),
-                    'phone' => '987654321' . $index,
-                    'is_active' => true,
-                    'department_id' => $deptModels['Engineering']->id,
-                    'designation_id' => \App\Models\Designation::where('name', 'Senior Developer')->first()->id,
-                    'created_by' => $admin->id,
-                ]
-            );
-        }
-
-        // Seed Projects
-        $projects = [
-            ['name' => 'Project Emperor', 'status' => 'active', 'priority' => 'high'],
-            ['name' => 'SkyNet Migration', 'status' => 'planning', 'priority' => 'critical'],
-            ['name' => 'User Feedback Module', 'status' => 'completed', 'priority' => 'medium'],
-        ];
-
-        foreach ($projects as $p) {
-            \App\Models\Project::firstOrCreate(
-                ['name' => $p['name']],
-                [
-                    'description' => 'Description for ' . $p['name'],
-                    'status' => $p['status'],
-                    'priority' => $p['priority'],
-                    'start_date' => now(),
-                    'created_by' => $admin->id,
-                ]
-            );
-        }
-
-        // Add sample logs for seeded employees
-        $employees = \App\Models\Employee::all();
-        $projectList = \App\Models\Project::all();
-        foreach ($employees as $employee) {
-            \App\Models\DailyLog::create([
-                'employee_id' => $employee->id,
-                'log_date' => now()->format('Y-m-d'),
-                'morning_summary' => 'Finished UI components for ' . ($projectList->random()->name ?? 'Project'),
-                'afternoon_summary' => 'Worked on API integration and bug fixes.',
-                'status' => 'submitted',
-                'mood' => 'good'
-            ]);
-        }
-        foreach ($employees as $employee) {
-            \App\Models\SupportTicket::create([
-                'ticket_number' => 'TK-' . rand(1000, 9999),
-                'employee_id' => $employee->id,
-                'category' => 'technical',
-                'subject' => 'Issue with system access',
-                'description' => 'I cannot access the project module.',
-                'priority' => 'medium',
-                'status' => 'open',
-            ]);
-        }
-        */
-
-        $this->command->info('Database seeded successfully.');
+        $this->command->info('✅ Seeded: admin@worksphere.com (password: Admin@1234)');
+        $this->command->info('✅ Seeded: employee@worksphere.com (password: Employee@1234)');
     }
 }
