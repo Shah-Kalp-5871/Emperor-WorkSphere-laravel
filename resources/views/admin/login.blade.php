@@ -164,6 +164,29 @@
             text-decoration: none;
             font-weight: 500;
         }
+
+        /* Password eye toggle */
+        .password-wrap {
+            position: relative;
+        }
+        .password-wrap input {
+            padding-right: 42px;
+        }
+        .eye-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-2);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+        .eye-toggle:hover { color: var(--text-1); }
     </style>
 </head>
 <body>
@@ -182,7 +205,22 @@
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                <div class="password-wrap">
+                    <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                    <button type="button" class="eye-toggle" id="eyeToggle" aria-label="Toggle password visibility">
+                        <!-- Eye icon -->
+                        <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <!-- Eye-off icon (hidden by default) -->
+                        <svg id="eyeOffIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="remember-forgot">
@@ -196,88 +234,136 @@
             <div id="login-error" style="color: #ff4d4d; font-size: 13px; margin-top: 12px; text-align: center; display: none;"></div>
         </form>
 
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script>
-            function showError(msg) {
-                const errorDiv = document.getElementById('login-error');
-                errorDiv.innerText = msg;
-                errorDiv.style.display = 'block';
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+
+// Base API URL
+axios.defaults.baseURL = 'https://emperorsmartsolutions.com/worksphere/public';
+axios.defaults.headers.common['Accept'] = 'application/json';
+
+// UI helpers
+function showError(msg) {
+    const errorDiv = document.getElementById('login-error');
+    errorDiv.innerText = msg;
+    errorDiv.style.display = 'block';
+}
+
+function resetBtn() {
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = false;
+    btn.innerText = 'Sign In';
+}
+
+// Login submit
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('loginBtn');
+
+    btn.disabled = true;
+    btn.innerText = 'Signing in...';
+    document.getElementById('login-error').style.display = 'none';
+
+    let token = null;
+
+    try {
+
+        // Step 1 — Login
+        const response = await axios.post('/api/admin/login', {
+            email: email,
+            password: password
+        });
+
+        token = response.data.access_token;
+
+        if (!token) {
+            throw new Error('Token not received');
+        }
+
+        // Save token
+        sessionStorage.setItem('token', token);
+
+        // Set axios auth header
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+        // Step 2 — Verify user role
+        const userResponse = await axios.get('/api/me');
+
+        const user = userResponse.data;
+
+        if (user.role === 'admin' || user.role === 'super_admin') {
+
+            // optional realtime setup
+            if (typeof window.initializeEcho === 'function') {
+                window.initializeEcho();
             }
 
-            function resetBtn() {
-                const btn = document.getElementById('loginBtn');
-                btn.disabled = false;
-                btn.innerText = 'Sign In';
-            }
+            window.location.href = '/worksphere/public/admin/dashboard';
 
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email    = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-                const btn      = document.getElementById('loginBtn');
+        } else {
 
-                btn.disabled = true;
-                btn.innerText = 'Signing in…';
-                document.getElementById('login-error').style.display = 'none';
+            sessionStorage.removeItem('token');
+            showError('Access denied. Admins only.');
+            resetBtn();
+        }
 
-                // ── Step 1: Authenticate ──────────────────────────────────
-                let token;
-                try {
-                    const response = await axios.post('{{ url('/admin/auth/login') }}', { email, password });
-                    token = response.data.access_token;
-                } catch (err) {
-                    const status = err.response?.status;
-                    if (status === 401) {
-                        showError('Incorrect email or password. Please try again.');
-                    } else if (status === 422) {
-                        const errors = err.response?.data?.errors;
-                        const first  = errors ? Object.values(errors)[0]?.[0] : null;
-                        showError(first || 'Please fill in all required fields correctly.');
-                    } else if (status === 429) {
-                        showError('Too many login attempts. Please wait a moment and try again.');
-                    } else if (status >= 500) {
-                        showError('Server error. Please try again later or contact support.');
-                    } else if (!err.response) {
-                        showError('Cannot reach the server. Check your internet connection.');
-                    } else {
-                        showError('Login failed. Please try again.');
-                    }
-                    resetBtn();
-                    return;
-                }
+    } catch (err) {
 
-                // ── Step 2: Store token & verify admin role ───────────────
-                sessionStorage.setItem('token', token);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        console.error('Login Error:', err);
 
-                try {
-                    const userResponse = await axios.get('{{ url('/admin/auth/me') }}');
-                    const user = userResponse.data;
+        const status = err.response?.status;
 
-                    if (user && (user.role === 'admin' || user.role === 'super_admin')) {
-                        if (typeof window.initializeEcho === 'function') {
-                            window.initializeEcho();
-                        }
-                        window.location.href = '{{ url('/admin/dashboard') }}';
-                    } else {
-                        sessionStorage.removeItem('token');
-                        showError('Access denied. This portal is for admins only.');
-                        resetBtn();
-                    }
-                } catch (err) {
-                    sessionStorage.removeItem('token');
-                    const status = err.response?.status;
-                    if (status === 401) {
-                        showError('Session could not be verified. Please try again.');
-                    } else {
-                        showError('Could not verify your account. Please try again.');
-                    }
-                    resetBtn();
-                }
-            });
-        </script>
+        if (status === 401) {
+            showError('Incorrect email or password.');
+        }
+        else if (status === 422) {
+            const errors = err.response?.data?.errors;
+            const firstError = errors ? Object.values(errors)[0][0] : null;
+            showError(firstError || 'Invalid input.');
+        }
+        else if (status === 429) {
+            showError('Too many login attempts. Please wait.');
+        }
+        else if (status >= 500) {
+            showError('Server error. Try again later.');
+        }
+        else if (!err.response) {
+            showError('Network error. Check internet connection.');
+        }
+        else {
+            showError('Login failed. Please try again.');
+        }
+
+        resetBtn();
+    }
+
+});
 
 
+// Password toggle
+document.getElementById('eyeToggle').addEventListener('click', function () {
+
+    const input = document.getElementById('password');
+    const eye = document.getElementById('eyeIcon');
+    const eyeOff = document.getElementById('eyeOffIcon');
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        eye.style.display = 'none';
+        eyeOff.style.display = '';
+    } else {
+        input.type = 'password';
+        eye.style.display = '';
+        eyeOff.style.display = 'none';
+    }
+
+});
+
+</script>
         <div class="footer-text">
             Protected by WorkSphere Security.
         </div>
