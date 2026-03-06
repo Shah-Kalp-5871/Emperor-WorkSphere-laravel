@@ -72,7 +72,7 @@
     async function loadEmployees() {
         const select = document.getElementById('project-members-select');
         try {
-            const res = await axios.get('/api/admin/employees?per_page=200');
+            const res = await axios.get(window.APP_URL + '/api/admin/employees?per_page=200');
             const employees = res.data.data?.data ?? res.data.data ?? [];
             employees.forEach(emp => {
                 const opt = document.createElement('option');
@@ -99,7 +99,7 @@
         ).map(o => parseInt(o.value));
 
         try {
-            await axios.post('/api/admin/projects', {
+            await axios.post(window.APP_URL + '/api/admin/projects', {
                 name:         document.getElementById('proj-name').value,
                 description:  document.getElementById('proj-desc').value,
                 status:       document.getElementById('proj-status').value,
@@ -108,7 +108,7 @@
             });
 
             // Redirect back to projects index
-            window.location.href = '/admin/projects';
+            window.location.href = window.APP_URL + '/admin/projects';
         } catch (err) {
             const msg = err.response?.data?.message
                 ?? err.response?.data?.errors

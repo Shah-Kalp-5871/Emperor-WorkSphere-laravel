@@ -83,7 +83,7 @@
         loader.style.display = 'block';
 
         try {
-            const res = await axios.get(`/api/admin/${activeArchiveTab}/archived`);
+            const res = await axios.get(`${window.APP_URL}/api/admin/${activeArchiveTab}/archived`);
             const data = (activeArchiveTab === 'employees') ? res.data.data.data : res.data.data.data; 
             // Handle different pagination wrappers if necessary, but usually it's in data.data.data
 
@@ -148,7 +148,7 @@
         if (!confirm('Are you sure you want to restore this item?')) return;
         
         try {
-            await axios.post(`/api/admin/${activeArchiveTab}/${id}/restore`);
+            await axios.post(`${window.APP_URL}/api/admin/${activeArchiveTab}/${id}/restore`);
             fetchArchived();
         } catch (err) {
             alert('Restore failed: ' + (err.response?.data?.message || 'Error occurred'));

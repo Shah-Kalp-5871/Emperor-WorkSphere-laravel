@@ -181,7 +181,7 @@
     // Fetch dependencies
     async function loadFormData() {
         try {
-            const res = await axios.get('/api/employee/tickets/form-data');
+            const res = await axios.get(window.APP_URL + '/api/employee/tickets/form-data');
             formData = res.data.data;
             
             const pSelect = document.getElementById('projectSelect');
@@ -241,7 +241,7 @@
         };
 
         try {
-            await axios.post('/api/employee/tickets', payload);
+            await axios.post(window.APP_URL + '/api/employee/tickets', payload);
             window.location.href = '{{ route('employee.tickets.index') }}';
         } catch (error) {
             alert('Failed to submit ticket: ' + (error.response?.data?.message || 'Check fields'));

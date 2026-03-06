@@ -75,7 +75,7 @@
         errorDiv.style.display = 'none';
         
         try {
-            const response = await axios.get(`/api/admin/daily-logs?page=${page}`);
+            const response = await axios.get(`${window.APP_URL}/api/admin/daily-logs?page=${page}`);
             const { data, meta } = response.data;
             const logs = data;
             const paginationMeta = meta || response.data;

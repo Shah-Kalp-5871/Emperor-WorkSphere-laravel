@@ -56,7 +56,7 @@ async function fetchLogDetails() {
     }
 
     try {
-        const res = await axios.get(`/api/employee/daily-logs/${logId}`);
+        const res = await axios.get(`${window.APP_URL}/api/employee/daily-logs/${logId}`);
         const log = res.data.data;
 
         dateDisplay.textContent = new Date(log.log_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -66,7 +66,7 @@ async function fetchLogDetails() {
 
         if (log.status === 'pending') {
             editBtn.style.display = 'block';
-            editBtn.onclick = () => window.location.href = `/employee/dailylogs/edit?id=${log.id}`;
+            editBtn.onclick = () => window.location.href = `${window.APP_URL}/employee/dailylogs/edit?id=${log.id}`;
         }
 
         container.innerHTML = `

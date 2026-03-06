@@ -10,7 +10,7 @@
         <div class="section-sub">12 active employees</div>
     </div>
     <div class="section-actions">
-        <button class="btn btn-primary" onclick="window.location.href='/admin/employees/create'">
+        <button class="btn btn-primary" onclick="window.location.href = window.APP_URL + '/admin/employees/create'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add Employee
         </button>
@@ -82,7 +82,7 @@
         errorDiv.style.display = 'none';
         
         try {
-            const response = await axios.get(`/api/admin/employees?page=${page}`);
+            const response = await axios.get(`${window.APP_URL}/api/admin/employees?page=${page}`);
             const { data, current_page, last_page, total, from, to } = response.data;
 
             loading.style.display = 'none';
@@ -110,7 +110,7 @@
                     <td><span class="privacy-pill ${privacyClass}">${privacyIcon} ${privacyText}</span></td>
                     <td>${joinedDate}</td>
                     <td>
-                        <button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/employees/${employee.id}'">View</button>
+                        <button class="btn btn-ghost btn-sm" onclick="window.location.href = window.APP_URL + '/admin/employees/${employee.id}'">View</button>
                         <button class="btn btn-ghost btn-sm" style="color:#ff4d4d" onclick="deleteEmployee(${employee.id}, '${fullName}')">Delete</button>
                     </td>
                 `;
@@ -135,7 +135,7 @@
         if (!confirm(`Are you sure you want to permanently delete ${name} and all their associated data? This action cannot be undone.`)) return;
 
         try {
-            await axios.delete(`/api/admin/employees/${id}`);
+            await axios.delete(`${window.APP_URL}/api/admin/employees/${id}`);
             alert('Employee deleted successfully.');
             fetchEmployees(currentPage);
         } catch (error) {

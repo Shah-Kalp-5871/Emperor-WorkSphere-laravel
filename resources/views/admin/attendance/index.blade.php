@@ -118,7 +118,7 @@
             if (status) params.append('status', status);
             if (search) params.append('search', search);
 
-            const res  = await axios.get('/api/admin/attendance?' + params.toString());
+            const res  = await axios.get(window.APP_URL + '/api/admin/attendance?' + params.toString());
             const data = res.data.data;
 
             // Update summary

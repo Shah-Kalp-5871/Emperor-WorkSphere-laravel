@@ -16,7 +16,7 @@ function saveLog() {
   }, 900);
 }
 function switchPanel() {
-  window.location.href = '/admin/dashboard';
+  window.location.href = window.APP_URL + '/admin/dashboard';
 }
 </script>
 <script src="https://unpkg.com/tabulator-tables@6.3.0/dist/js/tabulator.min.js"></script>

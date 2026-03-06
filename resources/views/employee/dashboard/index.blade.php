@@ -173,7 +173,7 @@
 
     async function checkAttendanceStatus() {
         try {
-            const res = await axios.get('/api/employee/attendance/status');
+            const res = await axios.get(window.APP_URL + '/api/employee/attendance/status');
             updateAttendanceUI(res.data.attendance_status);
         } catch (err) {
             console.error('Attendance Status Error:', err);
@@ -281,7 +281,7 @@
         checkAttendanceStatus();
         trackLocation();
         try {
-            const res = await axios.get('/api/employee/dashboard');
+            const res = await axios.get(window.APP_URL + '/api/employee/dashboard');
             const data = res.data.data;
 
             // 1. Greet

@@ -125,7 +125,7 @@
 
     async function fetchStats() {
         try {
-            const res = await axios.get('/api/employee/tickets/stats');
+            const res = await axios.get(window.APP_URL + '/api/employee/tickets/stats');
             const s = res.data.data;
             document.getElementById('ticket-stats-container').innerHTML = `
                 <div class="stat-card">
@@ -162,7 +162,7 @@
         empty.style.display = 'none';
         
         try {
-            const response = await axios.get(`/api/employee/tickets`, { params: { page, status } });
+            const response = await axios.get(`${window.APP_URL}/api/employee/tickets`, { params: { page, status } });
             const { data, meta } = response.data;
             const tickets = data;
 
@@ -214,7 +214,7 @@
         modal.style.display = 'flex';
 
         try {
-            const response = await axios.get(`/api/employee/tickets/${ticketId}`);
+            const response = await axios.get(`${window.APP_URL}/api/employee/tickets/${ticketId}`);
             const ticket = response.data.data;
             
             const createdDate = new Date(ticket.created_at).toLocaleString();
@@ -277,7 +277,7 @@
         btn.textContent = 'Sending...';
 
         try {
-            await axios.post(`/api/employee/tickets/${ticketId}/reply`, { message });
+            await axios.post(`${window.APP_URL}/api/employee/tickets/${ticketId}/reply`, { message });
             viewTicket(ticketId); // Refresh modal
         } catch (error) {
             alert('Failed to send reply.');

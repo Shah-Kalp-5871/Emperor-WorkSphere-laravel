@@ -10,7 +10,7 @@
             <div class="section-sub">Quickly create an account for a new team member.</div>
         </div>
         <div class="section-actions">
-            <button class="btn btn-ghost" onclick="window.location.href='/admin/employees'">
+            <button class="btn btn-ghost" onclick="window.location.href = window.APP_URL + '/admin/employees'">
                 Back to List
             </button>
         </div>
@@ -53,7 +53,7 @@
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <button class="btn btn-primary" onclick="copyToClipboard()" id="copy-btn">Copy for WhatsApp</button>
-                <button class="btn btn-ghost" onclick="window.location.href='/admin/employees'">Back to List</button>
+                <button class="btn btn-ghost" onclick="window.location.href = window.APP_URL + '/admin/employees'">Back to List</button>
             </div>
         </div>
     </div>
@@ -103,7 +103,7 @@
             const data = Object.fromEntries(formData.entries());
 
             try {
-                const response = await axios.post('/api/admin/employees', data);
+                const response = await axios.post(window.APP_URL + '/api/admin/employees', data);
                 const employee = response.data.data;
                 
                 // Build WhatsApp Text

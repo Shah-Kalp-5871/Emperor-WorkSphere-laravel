@@ -38,7 +38,7 @@ async function fetchTeam() {
     const onlineBadge = document.getElementById('online-count');
 
     try {
-        const res = await axios.get('/api/employee/team');
+        const res = await axios.get(window.APP_URL + '/api/employee/team');
         const members = res.data.data.data || res.data.data;
 
         if (members.length === 0) {
@@ -68,7 +68,7 @@ async function fetchTeam() {
                     <p class="member-role">${role}</p>
                     <p class="member-email">${user.email}</p>
                     <div class="card-actions">
-                        <button class="card-btn" onclick="window.location.href='/employee/team/show?id=${m.id}'">View Profile</button>
+                        <button class="card-btn" onclick="window.location.href = window.APP_URL + '/employee/team/show?id=${m.id}'">View Profile</button>
                         <button class="card-btn" onclick="alert('Message feature coming soon!')">Message</button>
                     </div>
                 </div>

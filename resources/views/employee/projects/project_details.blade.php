@@ -15,7 +15,7 @@
           <div class="skeleton" style="width:300px;height:14px"></div>
         </div>
       </div>
-      <button class="greeting-btn" onclick="window.location.href='/employee/projects'">
+      <button class="greeting-btn" onclick="window.location.href = window.APP_URL + '/employee/projects'">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         Back to Projects
       </button>
@@ -233,12 +233,12 @@ let projectMembers = [];
 async function fetchProjectDetails() {
     if (!projectId) {
         alert('No project ID found');
-        window.location.href = '/employee/projects';
+        window.location.href = window.APP_URL + '/employee/projects';
         return;
     }
 
     try {
-        const res = await axios.get(`/api/employee/projects/${projectId}`);
+        const res = await axios.get(`${window.APP_URL}/api/employee/projects/${projectId}`);
         const project = res.data.data;
         
         // Check if user has permission to add members (Admin or already a member)
@@ -317,7 +317,7 @@ function renderProject(p) {
               <td>${assignedTo}</td>
               <td><span class="priority ${priorityClass}">${t.priority}</span></td>
               <td><span class="task-due">${isDone ? '✓ Done' : dueDate}</span></td>
-              <td><button class="action-btn-sm" onclick="window.location.href='/employee/tasks/show?id=${t.id}'">View</button></td>
+              <td><button class="action-btn-sm" onclick="window.location.href = window.APP_URL + '/employee/tasks/show?id=${t.id}'">View</button></td>
             </tr>
         `;
     }).join('');
@@ -328,7 +328,7 @@ async function toggleTask(id, el) {
     const newStatus = isDone ? 'completed' : 'in_progress';
 
     try {
-        await axios.patch(`/api/employee/tasks/${id}/status`, { status: newStatus });
+        await axios.patch(`${window.APP_URL}/api/employee/tasks/${id}/status`, { status: newStatus });
         fetchProjectDetails(); // Refresh to update progress/stats
     } catch (err) {
         alert('Failed to update status: ' + (err.response?.data?.message || 'Unknown error'));
@@ -358,7 +358,7 @@ async function handleCreateProjTask(e) {
     const assignee_ids = Array.from(document.getElementById('ptask-assignees').selectedOptions).map(o => parseInt(o.value));
 
     try {
-        await axios.post('/api/employee/tasks', {
+        await axios.post(window.APP_URL + '/api/employee/tasks', {
             project_id: projectId,
             title: document.getElementById('ptask-title').value,
             description: document.getElementById('ptask-desc').value,
@@ -384,7 +384,7 @@ async function openAddMemberModal() {
     document.getElementById('add-member-modal').classList.add('active');
 
     try {
-        const res = await axios.get('/api/employee/team');
+        const res = await axios.get(window.APP_URL + '/api/employee/team');
         const allEmployees = res.data.data.data || res.data.data; // Handle pagination if present
         
         // Filter out existing members
@@ -417,7 +417,7 @@ async function handleAddMember(e) {
     btn.disabled = true;
 
     try {
-        await axios.post(`/api/employee/projects/${projectId}/members`, {
+        await axios.post(`${window.APP_URL}/api/employee/projects/${projectId}/members`, {
             employee_id: employeeId
         });
         closeModal('add-member-modal');

@@ -145,7 +145,7 @@ let allTasks = [];
 
 async function fetchTasks() {
     try {
-        const res = await axios.get('/api/employee/tasks');
+        const res = await axios.get(window.APP_URL + '/api/employee/tasks');
         allTasks = res.data.data.data; // Standard pagination structure
         renderTasks();
         renderProjectsFilter();
@@ -193,7 +193,7 @@ function renderTasks() {
               <td><span class="priority ${priorityClass}">${t.priority}</span></td>
               <td><span class="task-due">${dueDisplay}</span></td>
               <td class="action-btns">
-                <button class="btn-icon" onclick="window.location.href='/employee/tasks/show?id=${t.id}'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button class="btn-icon" onclick="window.location.href = window.APP_URL + '/employee/tasks/show?id=${t.id}'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
               </td>
             </tr>
         `;
@@ -232,7 +232,7 @@ async function toggleTask(id, el) {
     const newStatus = isDone ? 'completed' : 'in_progress';
 
     try {
-        await axios.patch(`/api/employee/tasks/${id}/status`, { status: newStatus });
+        await axios.patch(`${window.APP_URL}/api/employee/tasks/${id}/status`, { status: newStatus });
         // Optimistic UI or refetch
         fetchTasks();
     } catch (err) {
@@ -245,7 +245,7 @@ document.getElementById('filter-priority').addEventListener('change', renderTask
 
 async function loadTeamMembers() {
     try {
-        const res = await axios.get('/api/employee/team');
+        const res = await axios.get(window.APP_URL + '/api/employee/team');
         const members = res.data.data || [];
         const select = document.getElementById('etask-assignees');
         select.innerHTML = '';
@@ -276,7 +276,7 @@ async function handleCreateEmpTask(e) {
     const assignee_ids = Array.from(document.getElementById('etask-assignees').selectedOptions).map(o => parseInt(o.value));
 
     try {
-        await axios.post('/api/employee/tasks', {
+        await axios.post(window.APP_URL + '/api/employee/tasks', {
             title: document.getElementById('etask-title').value,
             description: document.getElementById('etask-desc').value,
             priority: document.getElementById('etask-priority').value,

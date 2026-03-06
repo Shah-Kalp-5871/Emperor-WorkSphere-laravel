@@ -111,7 +111,7 @@
 
     async function fetchMe() {
         try {
-            const res = await axios.get('/api/me');
+            const res = await axios.get(window.APP_URL + '/api/me');
             currentUser = res.data;
             renderProfile();
         } catch (err) { console.error('Fetch Me error:', err); }
@@ -167,7 +167,7 @@
         btn.textContent = 'Saving...';
 
         try {
-            await axios.put('/api/profile', {
+            await axios.put(window.APP_URL + '/api/profile', {
                 name: document.getElementById('edit-name').value,
                 email: document.getElementById('edit-email').value,
                 phone: document.getElementById('edit-phone').value,
@@ -189,7 +189,7 @@
         btn.textContent = 'Updating...';
 
         try {
-            await axios.put('/api/password', {
+            await axios.put(window.APP_URL + '/api/password', {
                 current_password: document.getElementById('current_password').value,
                 password: document.getElementById('password').value,
                 password_confirmation: document.getElementById('password_confirmation').value,

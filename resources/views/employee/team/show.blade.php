@@ -102,7 +102,7 @@
         }
 
         try {
-            const res = await axios.get(`/api/employee/team/${memberId}`);
+            const res = await axios.get(`${window.APP_URL}/api/employee/team/${memberId}`);
             const member = res.data.data;
             const user = member.user || { name: 'Unknown', email: 'N/A' };
             

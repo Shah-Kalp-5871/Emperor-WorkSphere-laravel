@@ -7,7 +7,7 @@
 
     {{-- Back button --}}
     <div style="margin-bottom:20px;">
-        <a href="/admin/projects" class="btn btn-ghost btn-sm">
+        <a href="{{ url('/admin/projects') }}" class="btn btn-ghost btn-sm">
             ← Back to Projects
         </a>
     </div>
@@ -129,7 +129,7 @@
                 <div class="card-title">Tasks</div>
                 <div style="display: flex; gap: 8px;">
                     <button class="btn btn-primary btn-sm" onclick="openProjectTaskModal()">+ Add Task</button>
-                    <a href="/admin/tasks" class="btn btn-ghost btn-sm">All tasks →</a>
+                    <a href="{{ url('/admin/tasks') }}" class="btn btn-ghost btn-sm">All tasks →</a>
                 </div>
             </div>
             <div class="table-wrap">
@@ -229,7 +229,7 @@
         const content = document.getElementById('detail-content');
 
         try {
-            const res = await axios.get(`/api/admin/projects/${projectId}`);
+            const res = await axios.get(`${window.APP_URL}/api/admin/projects/${projectId}`);
             const p   = res.data.data;
 
             document.getElementById('proj-title').textContent         = p.name;
@@ -287,7 +287,7 @@
                         <td class="td-main">${t.title}</td>
                         <td><span class="status-pill ${taskStatusClass(t.status)}">${(t.status||'').replace('_',' ')}</span></td>
                         <td>
-                            <a href="/admin/tasks" class="btn btn-ghost btn-sm">View in Tasks</a>
+                            <a href="{{ url('/admin/tasks') }}" class="btn btn-ghost btn-sm">View in Tasks</a>
                         </td>
                     </tr>
                 `).join('');
@@ -311,15 +311,15 @@
     async function archiveFromDetail(id, name) {
         if (!confirm(`Archive project "${name}"?`)) return;
         try {
-            await axios.delete(`/api/admin/projects/${id}`);
-            window.location.href = '/admin/projects';
+            await axios.delete(`${window.APP_URL}/api/admin/projects/${id}`);
+            window.location.href = window.APP_URL + '/admin/projects';
         } catch (err) {
             alert(err.response?.data?.message || 'Failed to archive.');
         }
     }
 
     function openEditFromDetail() {
-        window.location.href = '/admin/projects';
+        window.location.href = window.APP_URL + '/admin/projects';
     }
 
     document.addEventListener('DOMContentLoaded', loadProject);
@@ -349,7 +349,7 @@
         const assignee_ids = Array.from(document.getElementById('ptask-assignees').selectedOptions).map(o => parseInt(o.value));
 
         try {
-            await axios.post('/api/admin/tasks', {
+            await axios.post(window.APP_URL + '/api/admin/tasks', {
                 project_id: projectId,
                 title: document.getElementById('ptask-title').value,
                 description: document.getElementById('ptask-desc').value,

@@ -77,7 +77,7 @@
         errorDiv.style.display = 'none';
 
         try {
-            const res = await axios.get(`/api/admin/tasks/archived?page=${page}`);
+            const res = await axios.get(`${window.APP_URL}/api/admin/tasks/archived?page=${page}`);
             const data = res.data.data;
             const tasks = data.data ?? [];
             const meta = data.meta ?? {};
@@ -112,7 +112,7 @@
     async function restoreTask(id, title) {
         if (!confirm(`Restore task "${title}"?`)) return;
         try {
-            await axios.post(`/api/admin/tasks/${id}/restore`);
+            await axios.post(`${window.APP_URL}/api/admin/tasks/${id}/restore`);
             fetchArchivedTasks(currentPage);
         } catch (err) { alert(err.response?.data?.message || 'Failed to restore.'); }
     }

@@ -18,7 +18,7 @@
             </div>
         </div>
         <div style="display:flex; gap:12px">
-            <button class="greeting-btn" onclick="window.location.href='/admin/employees'">
+            <button class="greeting-btn" onclick="window.location.href = window.APP_URL + '/admin/employees'">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                 Back to List
             </button>
@@ -82,7 +82,7 @@
 
     async function fetchEmployee() {
         try {
-            const res = await axios.get(`/api/admin/employees/${employeeId}`);
+            const res = await axios.get(`${window.APP_URL}/api/admin/employees/${employeeId}`);
             const employee = res.data;
             renderEmployee(employee);
         } catch (err) { console.error('Fetch employee error:', err); }

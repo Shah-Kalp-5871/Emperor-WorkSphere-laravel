@@ -196,7 +196,7 @@
 
     async function fetchMe() {
         try {
-            const res = await axios.get('/api/me');
+            const res = await axios.get(window.APP_URL + '/api/me');
             currentUser = res.data;
             renderProfile();
         } catch (err) { console.error('Fetch Me error:', err); }
@@ -245,7 +245,7 @@
         // Redirect to a security page if one exists, or implement it as a page.
         // For now, let's keep it as is or handle it if requested.
         alert('Security settings available on edit page.');
-        window.location.href = '/employee/profile/edit#security';
+        window.location.href = window.APP_URL + '/employee/profile/edit#security';
     }
 
     document.addEventListener('DOMContentLoaded', fetchMe);

@@ -131,7 +131,7 @@
 
     async function fetchStats() {
         try {
-            const res = await axios.get('/api/admin/support-tickets/stats');
+            const res = await axios.get(window.APP_URL + '/api/admin/support-tickets/stats');
             const s = res.data.data;
             document.getElementById('ticket-stats-container').innerHTML = `
                 <div class="stat-card">
@@ -170,7 +170,7 @@
         errorDiv.style.display = 'none';
         
         try {
-            const response = await axios.get(`/api/admin/support-tickets`, { params: { page, status } });
+            const response = await axios.get(`${window.APP_URL}/api/admin/support-tickets`, { params: { page, status } });
             const { data, meta } = response.data;
             const tickets = data;
 
@@ -234,7 +234,7 @@ async function viewTicket(ticketId) {
     modal.style.display = 'flex';
 
     try {
-        const response = await axios.get(`/api/admin/support-tickets/${ticketId}`);
+        const response = await axios.get(`${window.APP_URL}/api/admin/support-tickets/${ticketId}`);
         const ticket = response.data.data;
         
         const createdDate = new Date(ticket.created_at).toLocaleString();
@@ -313,11 +313,11 @@ async function handleUpdateTicket(ticketId) {
 
     try {
         // 1. Update Status
-        await axios.put(`/api/admin/support-tickets/${ticketId}`, { status });
+        await axios.put(`${window.APP_URL}/api/admin/support-tickets/${ticketId}`, { status });
         
         // 2. Post Reply if exists
         if (message.trim()) {
-            await axios.post(`/api/admin/support-tickets/${ticketId}/reply`, { 
+            await axios.post(`${window.APP_URL}/api/admin/support-tickets/${ticketId}/reply`, { 
                 message, 
                 is_internal: isInternal 
             });

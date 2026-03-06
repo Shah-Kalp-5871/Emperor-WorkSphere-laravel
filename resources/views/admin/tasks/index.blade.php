@@ -212,8 +212,8 @@
     async function loadSelectData() {
         try {
             const [projRes, empRes] = await Promise.all([
-                axios.get('/api/admin/projects?per_page=100'),
-                axios.get('/api/admin/employees?per_page=100')
+                axios.get(window.APP_URL + '/api/admin/projects?per_page=100'),
+                axios.get(window.APP_URL + '/api/admin/employees?per_page=100')
             ]);
 
             const projects = projRes.data.data?.data ?? [];
@@ -252,7 +252,7 @@
         const assignee_ids = Array.from(document.getElementById('task-assignees-select').selectedOptions).map(o => parseInt(o.value));
 
         try {
-            await axios.post('/api/admin/tasks', {
+            await axios.post(window.APP_URL + '/api/admin/tasks', {
                 project_id:  document.getElementById('task-project-id').value || null,
                 title:       document.getElementById('task-title').value,
                 description: document.getElementById('task-desc').value,
@@ -276,7 +276,7 @@
         openModal('edit-task-modal');
         document.getElementById('edit-task-id').value = id;
         try {
-            const res = await axios.get(`/api/admin/tasks/${id}`);
+            const res = await axios.get(`${window.APP_URL}/api/admin/tasks/${id}`);
             const t = res.data.data;
             document.getElementById('edit-task-title').value = t.title;
             document.getElementById('edit-task-desc').value = t.description || '';
@@ -298,7 +298,7 @@
         btn.disabled = true;
 
         try {
-            await axios.put(`/api/admin/tasks/${id}`, {
+            await axios.put(`${window.APP_URL}/api/admin/tasks/${id}`, {
                 title:       document.getElementById('edit-task-title').value,
                 description: document.getElementById('edit-task-desc').value,
                 status:      document.getElementById('edit-task-status').value,
@@ -317,7 +317,7 @@
 
     async function updateStatus(id, newStatus) {
         try {
-            await axios.patch(`/api/admin/tasks/${id}/status`, { status: newStatus });
+            await axios.patch(`${window.APP_URL}/api/admin/tasks/${id}/status`, { status: newStatus });
             fetchTasks(currentPage);
         } catch (err) {
             alert(err.response?.data?.message || 'Failed to update status.');
@@ -327,7 +327,7 @@
     async function archiveTask(id, title) {
         if (!confirm(`Archive task "${title}"?`)) return;
         try {
-            await axios.delete(`/api/admin/tasks/${id}`);
+            await axios.delete(`${window.APP_URL}/api/admin/tasks/${id}`);
             fetchTasks(currentPage);
         } catch (err) {
             alert(err.response?.data?.message || 'Failed to archive task.');
@@ -358,7 +358,7 @@
             if (projectId) params.append('project_id', projectId);
             if (search) params.append('search', search);
 
-            const res = await axios.get(`/api/admin/tasks?${params}`);
+            const res = await axios.get(`${window.APP_URL}/api/admin/tasks?${params}`);
             const data = res.data.data;
             const tasks = data.data ?? [];
             const meta = data.meta ?? {};
@@ -378,7 +378,7 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="td-main">
-                        <a href="/admin/tasks/${t.id}" style="color:inherit;text-decoration:none;font-weight:600;">${t.title}</a>
+                        <a href="{{ url('/admin/tasks/${t.id}') }}" style="color:inherit;text-decoration:none;font-weight:600;">${t.title}</a>
                         ${t.description ? `<div style="font-size:11px;color:var(--text-3);margin-top:2px;">${t.description.substring(0,40)}...</div>` : ''}
                     </td>
                     <td>${t.project_name || 'N/A'}</td>

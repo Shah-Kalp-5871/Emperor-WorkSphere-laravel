@@ -106,7 +106,7 @@
         const select = document.getElementById(selectId);
         if (select.options.length > 0) return;
         try {
-            const res = await axios.get('/api/admin/employees?per_page=200');
+            const res = await axios.get(window.APP_URL + '/api/admin/employees?per_page=200');
             const employees = res.data.data?.data ?? res.data.data ?? [];
             employees.forEach(emp => {
                 const opt = document.createElement('option');
@@ -125,7 +125,7 @@
     async function archiveProject(id, name) {
         if (!confirm(`Archive project "${name}"? It can be restored later.`)) return;
         try {
-            const res = await axios.delete(`/api/admin/projects/${id}`);
+            const res = await axios.delete(`${window.APP_URL}/api/admin/projects/${id}`);
             if (res.data.success) fetchProjects(currentPage);
         } catch (err) {
             alert(err.response?.data?.message || 'Failed to archive project.');
@@ -155,7 +155,7 @@
             if (status) params.append('status', status);
             if (search) params.append('search', search);
 
-            const res   = await axios.get(`/api/admin/projects?${params}`);
+            const res   = await axios.get(`${window.APP_URL}/api/admin/projects?${params}`);
             const body  = res.data;
 
             // Standardized response: { success, message, data: { data: [...], meta: {...} } }
@@ -186,7 +186,7 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="td-main">
-                        <a href="/admin/projects/${p.id}" style="color:inherit;text-decoration:none;font-weight:600;">${p.name}</a>
+                        <a href="{{ url('/admin/projects/${p.id}') }}" style="color:inherit;text-decoration:none;font-weight:600;">${p.name}</a>
                         ${p.description ? `<div style="font-size:11px;color:var(--text-3);margin-top:2px;">${p.description.substring(0,50)}${p.description.length>50?'…':''}</div>` : ''}
                     </td>
                     <td><span class="status-pill ${statusClass(p.status)}">${(p.status||'').replace('_',' ')}</span></td>
@@ -204,8 +204,8 @@
                     </td>
                     <td>${createdDate}</td>
                     <td style="display:flex;gap:6px;padding-top:13px">
-                        <button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/projects/${p.id}'">View</button>
-                        <button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/projects/${p.id}/edit'">Edit</button>
+                        <button class="btn btn-ghost btn-sm" onclick="window.location.href = window.APP_URL + '/admin/projects/${p.id}'">View</button>
+                        <button class="btn btn-ghost btn-sm" onclick="window.location.href = window.APP_URL + '/admin/projects/${p.id}/edit'">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="archiveProject(${p.id}, '${p.name.replace(/'/g,"\\'")}')">Archive</button>
                     </td>
                 `;

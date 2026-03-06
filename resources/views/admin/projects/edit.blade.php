@@ -76,7 +76,7 @@
         const loader = document.getElementById('loading-project');
 
         try {
-            const res = await axios.get(`/api/admin/projects/${projectId}`);
+            const res = await axios.get(`${window.APP_URL}/api/admin/projects/${projectId}`);
             const p = res.data.data;
             
             document.getElementById('edit-proj-name').value      = p.name;
@@ -89,7 +89,7 @@
         } catch (e) {
             console.error('Failed to load project:', e);
             alert('Failed to load project data. Returning to list.');
-            window.location.href = '/admin/projects';
+            window.location.href = window.APP_URL + '/admin/projects';
         }
     }
 
@@ -102,14 +102,14 @@
         btn.textContent = 'Saving…';
 
         try {
-            await axios.put(`/api/admin/projects/${projectId}`, {
+            await axios.put(`${window.APP_URL}/api/admin/projects/${projectId}`, {
                 name:        document.getElementById('edit-proj-name').value,
                 description: document.getElementById('edit-proj-desc').value,
                 status:      document.getElementById('edit-proj-status').value,
                 priority:    document.getElementById('edit-proj-priority').value,
             });
 
-            window.location.href = '/admin/projects';
+            window.location.href = window.APP_URL + '/admin/projects';
         } catch (err) {
             const msg = err.response?.data?.message ?? 'Failed to update project.';
             errorDiv.innerText = msg;

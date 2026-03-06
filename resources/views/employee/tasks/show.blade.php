@@ -74,7 +74,7 @@ async function fetchTaskDetails() {
     }
 
     try {
-        const res = await axios.get(`/api/employee/tasks/${currentTaskId}`);
+        const res = await axios.get(`${window.APP_URL}/api/employee/tasks/${currentTaskId}`);
         const task = res.data.data;
 
         idText.textContent = task.id;
@@ -102,7 +102,7 @@ async function fetchTaskDetails() {
 
             <div class="task-section">
                 <div class="task-label">Project</div>
-                <div class="task-value" style="font-weight: 600; color: var(--accent); cursor: pointer;" onclick="window.location.href='/employee/projects/details?id=${task.project_id}'">
+                <div class="task-value" style="font-weight: 600; color: var(--accent); cursor: pointer;" onclick="window.location.href = window.APP_URL + '/employee/projects/details?id=${task.project_id}'">
                     ${task.project ? task.project.name : 'Unassigned'}
                 </div>
             </div>
@@ -138,7 +138,7 @@ async function updateTaskStatus() {
     btn.disabled = true;
 
     try {
-        await axios.patch(`/api/employee/tasks/${currentTaskId}/status`, { status });
+        await axios.patch(`${window.APP_URL}/api/employee/tasks/${currentTaskId}/status`, { status });
         await fetchTaskDetails(); // Refresh view
         alert('Task status updated successfully!');
     } catch (err) {

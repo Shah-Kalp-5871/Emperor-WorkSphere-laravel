@@ -105,7 +105,7 @@ async function fetchLogs() {
     const month = document.getElementById('history-month').value;
 
     try {
-        const res = await axios.get('/api/employee/daily-logs');
+        const res = await axios.get(window.APP_URL + '/api/employee/daily-logs');
         const logs = res.data.data.data || res.data.data;
 
         if (logs.length === 0) {
@@ -129,7 +129,7 @@ async function fetchLogs() {
                   <td>${l.morning_summary.substring(0, 60)}${l.morning_summary.length > 60 ? '...' : ''}</td>
                   <td>${l.afternoon_summary.substring(0, 60)}${l.afternoon_summary.length > 60 ? '...' : ''}</td>
                   <td><span class="status-pill ${statusClass}">${l.status.charAt(0).toUpperCase() + l.status.slice(1)}</span></td>
-                  <td><button class="action-btn" style="padding: 6px 12px; font-size: 12px;" onclick="window.location.href='/employee/dailylogs/show?id=${logId}'">View</button></td>
+                  <td><button class="action-btn" style="padding: 6px 12px; font-size: 12px;" onclick="window.location.href = window.APP_URL + '/employee/dailylogs/show?id=${logId}'">View</button></td>
                 </tr>
             `;
         }).join('');
@@ -153,7 +153,7 @@ document.getElementById('daily-log-form').addEventListener('submit', async (e) =
     btn.disabled = true;
 
     try {
-        await axios.post('/api/employee/daily-logs', data);
+        await axios.post(window.APP_URL + '/api/employee/daily-logs', data);
         successMsg.style.display = 'flex';
         btn.innerHTML = 'Submitted';
         btn.style.background = 'var(--text-3)';

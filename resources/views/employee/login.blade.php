@@ -185,6 +185,9 @@
 
             <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
             <script>
+                // Global URL base
+                window.APP_URL = '{{ rtrim(url('/'), '/') }}';
+                
                 document.getElementById('loginForm').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const email = document.getElementById('email').value;
@@ -197,7 +200,7 @@
                     errorDiv.style.display = 'none';
 
                     try {
-                        const response = await axios.post('/api/employee/login', { email, password });
+                        const response = await axios.post(window.APP_URL + '/api/employee/login', { email, password });
                         const token = response.data.access_token;
 
                         // Store token
@@ -207,7 +210,7 @@
                         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
                         // Call /api/me to verify role
-                        const userResponse = await axios.get('/api/me');
+                        const userResponse = await axios.get(window.APP_URL + '/api/me');
                         const user = userResponse.data;
 
                         if (user.role === 'employee') {
@@ -215,7 +218,7 @@
                             if (typeof window.initializeEcho === 'function') {
                                 window.initializeEcho();
                             }
-                            window.location.href = '/employee/dashboard';
+                            window.location.href = window.APP_URL + '/employee/dashboard';
                         } else {
                             sessionStorage.removeItem('token');
                             errorDiv.innerText = 'Unauthorized. Employee access only.';

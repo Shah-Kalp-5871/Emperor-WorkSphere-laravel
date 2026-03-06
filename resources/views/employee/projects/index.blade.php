@@ -113,7 +113,7 @@ async function fetchProjects() {
     const countSpan = document.getElementById('project-count');
 
     try {
-        const res = await axios.get('/api/employee/projects');
+        const res = await axios.get(window.APP_URL + '/api/employee/projects');
         const projects = res.data.data.data || res.data.data; // Handle both paginated and direct array
 
         if (projects.length === 0) {
@@ -154,7 +154,7 @@ async function fetchProjects() {
                     </div>
                   </td>
                   <td>${createdDate}</td>
-                  <td><button class="action-btn" onclick="window.location.href='/employee/projects/details?id=${p.id}'">View Details</button></td>
+                  <td><button class="action-btn" onclick="window.location.href = window.APP_URL + '/employee/projects/details?id=${p.id}'">View Details</button></td>
                 </tr>
             `;
         }).join('');
@@ -174,7 +174,7 @@ function openCreateModal() {
 async function fetchTeammates() {
     const list = document.getElementById('teammate-list');
     try {
-        const res = await axios.get('/api/employee/team');
+        const res = await axios.get(window.APP_URL + '/api/employee/team');
         const team = res.data.data.data; // Paginated response
         
         if (!team || team.length === 0) {
@@ -218,7 +218,7 @@ document.getElementById('create-project-form').addEventListener('submit', async 
     btn.disabled = true;
 
     try {
-        await axios.post('/api/employee/projects', data);
+        await axios.post(window.APP_URL + '/api/employee/projects', data);
         alert('Project created successfully!');
         closeCreateModal();
         fetchProjects();

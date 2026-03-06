@@ -238,8 +238,11 @@
 
 <script>
 
+// Global URL base
+window.APP_URL = '{{ rtrim(url('/'), '/') }}';
+
 // Base API URL
-axios.defaults.baseURL = 'https://emperorsmartsolutions.com/worksphere/public';
+axios.defaults.baseURL = window.APP_URL;
 axios.defaults.headers.common['Accept'] = 'application/json';
 
 // UI helpers
@@ -273,7 +276,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     try {
 
         // Step 1 — Login
-        const response = await axios.post('/api/admin/login', {
+        const response = await axios.post(window.APP_URL + '/api/admin/login', {
             email: email,
             password: password
         });
@@ -291,7 +294,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
         // Step 2 — Verify user role
-        const userResponse = await axios.get('/api/me');
+        const userResponse = await axios.get(window.APP_URL + '/api/me');
 
         const user = userResponse.data;
 
@@ -302,7 +305,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 window.initializeEcho();
             }
 
-            window.location.href = '/worksphere/public/admin/dashboard';
+            window.location.href = window.APP_URL + '/admin/dashboard';
 
         } else {
 

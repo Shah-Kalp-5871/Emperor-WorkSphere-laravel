@@ -58,7 +58,7 @@ async function fetchLog() {
     if (!logId) return;
 
     try {
-        const res = await axios.get(`/api/employee/daily-logs/${logId}`);
+        const res = await axios.get(`${window.APP_URL}/api/employee/daily-logs/${logId}`);
         const log = res.data.data;
 
         document.getElementById('log-date-display').textContent = new Date(log.log_date).toLocaleDateString();
@@ -83,12 +83,12 @@ document.getElementById('edit-daily-log-form').addEventListener('submit', async 
     btn.disabled = true;
 
     try {
-        await axios.put(`/api/employee/daily-logs/${logId}`, data);
+        await axios.put(`${window.APP_URL}/api/employee/daily-logs/${logId}`, data);
         successMsg.style.display = 'flex';
         btn.innerHTML = 'Updated';
         
         setTimeout(() => { 
-            window.location.href = `/employee/dailylogs/show?id=${logId}`;
+            window.location.href = `${window.APP_URL}/employee/dailylogs/show?id=${logId}`;
         }, 1500);
     } catch (err) {
         alert('Failed to update log: ' + (err.response?.data?.message || 'Unknown error'));

@@ -113,7 +113,7 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
   });
 });
 function switchPanel() {
-  window.location.href = '/employee/dashboard';
+  window.location.href = window.APP_URL + '/employee/dashboard';
 }
 </script>
 <script src="https://unpkg.com/tabulator-tables@6.3.0/dist/js/tabulator.min.js"></script>

@@ -38,7 +38,7 @@
             <div id="table-empty" style="text-align:center;padding:40px;display:none;">
                 <div style="font-size:28px;margin-bottom:10px;">🗃</div>
                 <div style="color:var(--text-2);font-size:14px;">No archived projects found.</div>
-                <a href="/admin/projects" style="font-size:13px;color:var(--accent);margin-top:8px;display:inline-block;">Go to active projects →</a>
+                <a href="{{ url('/admin/projects') }}" style="font-size:13px;color:var(--accent);margin-top:8px;display:inline-block;">Go to active projects →</a>
             </div>
 
             <div id="table-error" style="text-align:center;padding:40px;display:none;color:#ff4d4d;">
@@ -98,7 +98,7 @@
         errorDiv.style.display = 'none';
 
         try {
-            const res  = await axios.get(`/api/admin/projects/archived?page=${page}`);
+            const res  = await axios.get(`${window.APP_URL}/api/admin/projects/archived?page=${page}`);
             const body = res.data;
             const projects = body.data?.data ?? [];
             const meta     = body.data?.meta ?? {};
@@ -150,7 +150,7 @@
     async function restoreProject(id, name) {
         if (!confirm(`Restore project "${name}"? It will become active again.`)) return;
         try {
-            const res = await axios.post(`/api/admin/projects/${id}/restore`);
+            const res = await axios.post(`${window.APP_URL}/api/admin/projects/${id}/restore`);
             if (res.data.success) fetchArchivedProjects(currentPage);
         } catch (err) {
             alert(err.response?.data?.message || 'Failed to restore project.');

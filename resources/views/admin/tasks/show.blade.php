@@ -5,7 +5,7 @@
 @section('content')
 <div class="page active" id="page-task-detail">
     <div style="margin-bottom:20px;">
-        <a href="/admin/tasks" class="btn btn-ghost btn-sm">← Back to Tasks</a>
+        <a href="{{ url('/admin/tasks') }}" class="btn btn-ghost btn-sm">← Back to Tasks</a>
     </div>
 
     <div id="detail-loading" style="text-align:center;padding:60px;">
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="section-actions">
-                <button class="btn btn-ghost btn-sm" onclick="window.location.href='/admin/tasks'">Edit in List</button>
+                <button class="btn btn-ghost btn-sm" onclick="window.location.href = window.APP_URL + '/admin/tasks'">Edit in List</button>
                 <button class="btn btn-danger btn-sm" id="archive-task-btn">Archive</button>
             </div>
         </div>
@@ -94,7 +94,7 @@
         const error = document.getElementById('detail-error');
         const content = document.getElementById('detail-content');
         try {
-            const res = await axios.get(`/api/admin/tasks/${taskId}`);
+            const res = await axios.get(`${window.APP_URL}/api/admin/tasks/${taskId}`);
             const t = res.data.data;
             document.getElementById('task-title').textContent = t.title;
             document.getElementById('task-status-badge').textContent = t.status.replace('_', ' ');
@@ -131,8 +131,8 @@
     async function archiveTask(id, title) {
         if (!confirm(`Archive task "${title}"?`)) return;
         try {
-            await axios.delete(`/api/admin/tasks/${id}`);
-            window.location.href = '/admin/tasks';
+            await axios.delete(`${window.APP_URL}/api/admin/tasks/${id}`);
+            window.location.href = window.APP_URL + '/admin/tasks';
         } catch (err) { alert(err.response?.data?.message || 'Failed to archive.'); }
     }
 
