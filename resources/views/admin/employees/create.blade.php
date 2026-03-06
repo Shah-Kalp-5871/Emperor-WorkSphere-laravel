@@ -109,7 +109,7 @@
                 // Build WhatsApp Text
                 const message = `*Welcome to WorkSphere!* 🚀\n\n` +
                                 `Your account has been set up. Please use the following credentials to log in:\n\n` +
-                                `*Login URL:* ${window.location.origin}/employee/login\n` +
+                                `*Login URL:* ${window.APP_URL}/employee/login\n` +
                                 `*Email:* ${data.email}\n` +
                                 `*Password:* ${data.password}\n` +
                                 `*Employee ID:* ${employee.employee_code}\n\n` +
