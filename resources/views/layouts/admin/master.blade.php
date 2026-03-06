@@ -75,6 +75,23 @@
                 window.location.href = '{{ url('/admin/login') }}';
             }
         }
+        async function fetchSidebarStats() {
+            try {
+                const res = await axios.get(window.APP_URL + '/api/admin/dashboard/stats');
+                const data = res.data;
+                // Assuming data returns totals for employee, project, and task. 
+                // e.g: { totalEmployees: 12, totalProjects: 5, totalTasks: 3 }
+                document.getElementById('sidebar-emp-count').innerText = data.totalEmployees || 0;
+                document.getElementById('sidebar-proj-count').innerText = data.totalProjects || 0;
+                document.getElementById('sidebar-task-count').innerText = data.totalTasks || 0;
+            } catch(e) { console.error('Error fetching sidebar stats', e); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+             if (sessionStorage.getItem('token') && !window.location.pathname.includes('/admin/login')) {
+                 fetchSidebarStats();
+             }
+        });
     </script>
     @include('partials.admin.sidebar')
 

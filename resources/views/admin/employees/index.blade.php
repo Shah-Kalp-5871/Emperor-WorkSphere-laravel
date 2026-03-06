@@ -7,7 +7,7 @@
     <div class="section-header">
     <div>
         <div class="section-title">Employees</div>
-        <div class="section-sub">12 active employees</div>
+        <div class="section-sub"><span id="header-emp-count">0</span> active employees</div>
     </div>
     <div class="section-actions">
         <button class="btn btn-primary" onclick="window.location.href = window.APP_URL + '/admin/employees/create'">
@@ -84,6 +84,9 @@
         try {
             const response = await axios.get(`${window.APP_URL}/api/admin/employees?page=${page}`);
             const { data, current_page, last_page, total, from, to } = response.data;
+
+            // Update Header count
+            document.getElementById('header-emp-count').innerText = total || 0;
 
             loading.style.display = 'none';
 
