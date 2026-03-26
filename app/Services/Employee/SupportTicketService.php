@@ -13,7 +13,10 @@ class SupportTicketService
 
     public function getEmployeeTickets(array $filters = [], int $perPage = 15)
     {
-        $filters['employee_id'] = Auth::user()->employee->id;
+        $employee = Auth::user()->employee;
+        if (!$employee) return collect([]); 
+
+        $filters['employee_id'] = $employee->id;
         return $this->ticketRepo->getAll($perPage, $filters);
     }
 
@@ -31,7 +34,10 @@ class SupportTicketService
 
     public function createTicket(array $data)
     {
-        $data['employee_id'] = Auth::user()->employee->id;
+        $employee = Auth::user()->employee;
+        if (!$employee) throw new \Exception('Employee record not found.');
+
+        $data['employee_id'] = $employee->id;
         $data['status'] = 'open';
         
         return $this->ticketRepo->create($data);

@@ -22,7 +22,7 @@ class SupportTicketRepository implements SupportTicketRepositoryInterface
 
     public function getAll(int $perPage = 15, array $filters = [])
     {
-        $query = $this->model->with(['employee.user', 'assignee'])->latest();
+        $query = $this->model->with(['employee.user', 'employee.designation', 'assignee'])->latest();
 
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);

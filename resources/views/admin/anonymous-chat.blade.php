@@ -12,20 +12,9 @@
 
     <!-- Message Feed -->
     <div class="message-feed" id="messageFeed" style="flex: 1; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
-        <!-- Sample Messages -->
-        <div class="message-bubble">
-            <div class="message-content">Hello everyone, just testing the admin side of the anonymous chat.</div>
-            <div class="message-time">10:30 AM</div>
-        </div>
-        
-        <div class="message-bubble">
-            <div class="message-content">Everything seems to be working perfectly. The UI feels very responsive.</div>
-            <div class="message-time">10:45 AM</div>
-        </div>
-
-        <div class="message-bubble" style="background: var(--accent-lt); border-color: var(--accent);">
-            <div class="message-content">Note: Admins can see sender details internally if needed for safety reasons.</div>
-            <div class="message-time">11:15 AM</div>
+        <!-- Messages will be injected here dynamically by Socket.IO -->
+        <div style="text-align: center; color: var(--text-3); font-size: 14px; margin-top: auto; margin-bottom: auto;" id="loadingIndicator">
+            Connecting to secure chat server...
         </div>
     </div>
 
@@ -185,51 +174,98 @@
 @endpush
 
 @push('scripts')
+<!-- Socket.IO Client -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"></script>
 <script>
+    const socket = io('http://127.0.0.1:5000'); // Connect to Flask Chat Server
+    const feed = document.getElementById('messageFeed');
+    const input = document.getElementById('chatInput');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+
     // Auto-resize textarea
-    const textarea = document.getElementById('chatInput');
-    textarea.addEventListener('input', function() {
+    input.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });
 
+    // Socket Events
+    socket.on('connect', () => {
+        if(loadingIndicator) loadingIndicator.textContent = 'Connected. Loading messages...';
+    });
+
+    socket.on('load_history', (data) => {
+        feed.innerHTML = ''; // Clear loading
+        const messages = data.messages || [];
+        messages.forEach(msg => appendMessage(msg, false));
+        scrollToBottom();
+    });
+
+    socket.on('receive_message', (msg) => {
+        if (feed.querySelector('#loadingIndicator')) {
+            feed.innerHTML = '';
+        }
+        appendMessage(msg, true);
+    });
+
+    socket.on('error', (data) => {
+        alert(data.message); // Simple alert
+    });
+
+    socket.on('disconnect', () => {
+        feed.innerHTML += `<div style="text-align: center; color: var(--text-3); font-size: 14px; margin: 10px 0;">Disconnected from server. Reconnecting...</div>`;
+        scrollToBottom();
+    });
+
     function sendMessage() {
-        const input = document.getElementById('chatInput');
-        const feed = document.getElementById('messageFeed');
         const text = input.value.trim();
-        
         if (text === '') return;
 
-        // Extract time
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        // Send to server
+        socket.emit('send_message', { message: text });
+        
+        // Clear input
+        input.value = '';
+        input.style.height = 'auto';
+        input.focus();
+    }
 
-        // Create new bubble
+    function appendMessage(msg, animate = false) {
+        // Format time
+        let timeStr = '';
+        if (msg.timestamp) {
+            let dStr = msg.timestamp;
+            if (!dStr.includes('Z') && dStr.includes(' ')) {
+                 dStr = dStr.replace(' ', 'T') + 'Z';
+            }
+            const d = new Date(dStr);
+            if (!isNaN(d)) {
+                timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+        }
+
         const div = document.createElement('div');
         div.className = 'message-bubble';
-        div.style.opacity = '0';
-        div.style.transform = 'translateY(10px)';
-        div.style.transition = 'all 0.3s ease-out';
+        if (animate) {
+            div.style.opacity = '0';
+            div.style.transform = 'translateY(10px)';
+            div.style.transition = 'all 0.3s ease-out';
+        }
         
         div.innerHTML = `
-            <div class="message-content">${escapeHtml(text)}</div>
+            <div class="message-content">${escapeHtml(msg.content)}</div>
             <div class="message-time">${timeStr}</div>
         `;
 
         feed.appendChild(div);
         
-        // Trigger animation
-        setTimeout(() => {
-            div.style.opacity = '1';
-            div.style.transform = 'translateY(0)';
-        }, 10);
+        if (animate) {
+            setTimeout(() => {
+                div.style.opacity = '1';
+                div.style.transform = 'translateY(0)';
+            }, 10);
+        }
 
-        // Scroll to bottom
-        feed.scrollTop = feed.scrollHeight;
-        
-        // Clear input
-        input.value = '';
-        textarea.style.height = 'auto';
+        scrollToBottom();
     }
 
     function escapeHtml(text) {
@@ -238,18 +274,16 @@
         return div.innerHTML;
     }
 
+    function scrollToBottom() {
+        feed.scrollTop = feed.scrollHeight;
+    }
+
     // Enter to send (Shift+Enter for newline)
-    textarea.addEventListener('keydown', function(e) {
+    input.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
         }
-    });
-
-    // Auto-scroll to bottom on load
-    document.addEventListener('DOMContentLoaded', function() {
-        const feed = document.getElementById('messageFeed');
-        feed.scrollTop = feed.scrollHeight;
     });
 </script>
 @endpush

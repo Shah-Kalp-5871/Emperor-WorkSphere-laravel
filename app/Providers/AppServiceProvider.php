@@ -25,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\Project::observe(\App\Observers\AuditObserver::class);
         \App\Models\Task::observe(\App\Observers\AuditObserver::class);
         \App\Models\Employee::observe(\App\Observers\AuditObserver::class);
+        \App\Models\SupportTicket::observe(\App\Observers\SupportTicketObserver::class);
     }
 }

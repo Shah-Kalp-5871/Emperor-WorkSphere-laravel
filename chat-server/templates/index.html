@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Global Chat</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="header-info">
+                <div class="avatar-group">
+                    <div class="avatar"><i class="fa-solid fa-user-secret"></i></div>
+                </div>
+                <div class="chat-details">
+                    <h1>Global Anonymous Chat</h1>
+                    <p><span class="status-dot"></span> <span id="connection-status">Connecting...</span></p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="noti-btn" title="Enable Notifications" aria-label="Enable Notifications">
+                    <i class="fa-regular fa-bell"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Chat Messages Area -->
+        <main class="chat-messages" id="chat-messages">
+            <div class="loading-messages" id="loading-overlay">
+                <div class="spinner"></div>
+                <span>Loading messages...</span>
+            </div>
+            <!-- Messages will be injected here by JS -->
+        </main>
+
+        <!-- Scroll to bottom button (hidden by default) -->
+        <button id="scroll-bottom-btn" class="scroll-bottom-btn hidden" aria-label="Scroll to newest messages">
+            <i class="fa-solid fa-chevron-down"></i>
+            <span id="unread-badge" class="unread-badge hidden">0</span>
+        </button>
+
+        <!-- Message Input Form -->
+        <footer class="chat-footer">
+            <form id="chat-form" autocorrect="off" autocomplete="off">
+                <input type="text" id="message-input" placeholder="Type a message..." maxlength="500" required autofocus>
+                <button type="submit" id="send-btn" aria-label="Send message">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </footer>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Socket.IO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='chat.js') }}"></script>
+</body>
+</html>
