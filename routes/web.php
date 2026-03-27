@@ -162,9 +162,7 @@ Route::prefix('admin')->group(function () {
     });
 
     // Others
-    Route::get('/calendar', function () {
-        return view('admin.calendar.index');
-    });
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('admin.calendar.index');
     Route::get('/timeline', function () {
         return view('admin.timeline.index');
     });

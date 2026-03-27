@@ -79,6 +79,10 @@ Route::middleware('auth:api,admin')->group(function () {
 
         // Attendance
         Route::get('attendance', [\App\Http\Controllers\Admin\AttendanceController::class, 'index']);
+
+        // Calendar Events
+        Route::get('calendar/events', [\App\Http\Controllers\Admin\CalendarController::class, 'events']);
+        Route::apiResource('calendar/events', \App\Http\Controllers\Admin\CalendarController::class)->except(['index']);
     });
 
     // Employee Routes
@@ -121,6 +125,9 @@ Route::middleware('auth:api,admin')->group(function () {
         Route::get('attendance/status', [\App\Http\Controllers\Employee\AttendanceController::class, 'status']);
         Route::post('attendance/punch-in', [\App\Http\Controllers\Employee\AttendanceController::class, 'punchIn']);
         Route::post('attendance/punch-out', [\App\Http\Controllers\Employee\AttendanceController::class, 'punchOut']);
+
+        // Calendar Events
+        Route::get('calendar/events', [\App\Http\Controllers\Admin\CalendarController::class, 'events']);
     });
 
     // Test route
