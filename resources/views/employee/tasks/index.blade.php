@@ -236,7 +236,11 @@ async function toggleTask(id, el) {
         // Optimistic UI or refetch
         fetchTasks();
     } catch (err) {
-        alert('Failed to update status: ' + (err.response?.data?.message || 'Unknown error'));
+        Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: 'Failed to update status: ' + (err.response?.data?.message || 'Unknown error')
+        });
     }
 }
 

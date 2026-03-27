@@ -244,8 +244,13 @@
     function showChangePassword() {
         // Redirect to a security page if one exists, or implement it as a page.
         // For now, let's keep it as is or handle it if requested.
-        alert('Security settings available on edit page.');
-        window.location.href = window.APP_URL + '/employee/profile/edit#security';
+        Swal.fire({
+            icon: 'info',
+            title: 'Security Settings',
+            text: 'Security settings are available on the profile edit page.'
+        }).then(() => {
+            window.location.href = window.APP_URL + '/employee/profile/edit#security';
+        });
     }
 
     document.addEventListener('DOMContentLoaded', fetchMe);

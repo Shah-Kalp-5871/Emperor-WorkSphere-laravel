@@ -88,8 +88,13 @@
             form.style.display = 'block';
         } catch (e) {
             console.error('Failed to load project:', e);
-            alert('Failed to load project data. Returning to list.');
-            window.location.href = window.APP_URL + '/admin/projects';
+            Swal.fire({
+                icon: 'error',
+                title: 'Load Failed',
+                text: 'Failed to load project data. Returning to list.'
+            }).then(() => {
+                window.location.href = window.APP_URL + '/admin/projects';
+            });
         }
     }
 

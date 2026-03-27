@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ asset('css/admin/tabulator-custom.css') }}">
     <script src="{{ asset('js/admin/tabulator-init.js') }}" defer></script>
     <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@6.3.0/dist/css/tabulator.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('styles')
 </head>
 <body>
@@ -65,15 +67,26 @@
         })();
 
         async function adminLogout() {
-            if (!confirm('Are you sure you want to logout?')) return;
-            try {
-                await axios.post(window.APP_URL + '/api/logout');
-            } catch (err) {
-                // ignore logout errors
-            } finally {
-                sessionStorage.removeItem('token');
-                window.location.href = '{{ url('/admin/login') }}';
-            }
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You will be logged out of your session!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, logout!'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        await axios.post(window.APP_URL + '/api/logout');
+                    } catch (err) {
+                        // ignore logout errors
+                    } finally {
+                        sessionStorage.removeItem('token');
+                        window.location.href = '{{ url('/admin/login') }}';
+                    }
+                }
+            });
         }
         async function fetchSidebarStats() {
             try {

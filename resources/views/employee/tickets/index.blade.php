@@ -252,7 +252,11 @@ async function sendReply(ticketId) {
         await axios.post(`${window.APP_URL}/api/employee/tickets/${ticketId}/reply`, { message: msg });
         openTicket(ticketId); // Refresh
     } catch(e) {
-        alert('Failed to send reply: ' + (e.response?.data?.message || e.message));
+        Swal.fire({
+            icon: 'error',
+            title: 'Reply Failed',
+            text: 'Failed to send reply: ' + (e.response?.data?.message || e.message)
+        });
     }
 }
 

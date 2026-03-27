@@ -312,7 +312,11 @@ async function updateTicket(id) {
         loadStats();
         loadTickets(currentPage);
     } catch(e) {
-        alert('Failed to update ticket: ' + (e.response?.data?.message || e.message));
+        Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: 'Failed to update ticket: ' + (e.response?.data?.message || e.message)
+        });
         btn.disabled = false; btn.textContent = 'Update Ticket';
     }
 }
@@ -323,7 +327,13 @@ async function quickStatus(id, status) {
         openTicket(id);
         loadStats();
         loadTickets(currentPage);
-    } catch(e) { alert('Failed: ' + (e.response?.data?.message || e.message)); }
+    } catch(e) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed: ' + (e.response?.data?.message || e.message)
+        });
+    }
 }
 
 function closeModal() {

@@ -69,7 +69,7 @@ async function fetchTeam() {
                     <p class="member-email">${user.email}</p>
                     <div class="card-actions">
                         <button class="card-btn" onclick="window.location.href = window.APP_URL + '/employee/team/show?id=${m.id}'">View Profile</button>
-                        <button class="card-btn" onclick="alert('Message feature coming soon!')">Message</button>
+                        <button class="card-btn" onclick="Swal.fire({ icon: 'info', title: 'Coming Soon', text: 'Message feature coming soon!' })">Message</button>
                     </div>
                 </div>
             `;

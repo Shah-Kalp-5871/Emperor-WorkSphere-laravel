@@ -140,9 +140,19 @@ async function updateTaskStatus() {
     try {
         await axios.patch(`${window.APP_URL}/api/employee/tasks/${currentTaskId}/status`, { status });
         await fetchTaskDetails(); // Refresh view
-        alert('Task status updated successfully!');
+        Swal.fire({
+            icon: 'success',
+            title: 'Updated',
+            text: 'Task status updated successfully!',
+            timer: 2000,
+            showConfirmButton: false
+        });
     } catch (err) {
-        alert('Failed to update status: ' + (err.response?.data?.message || 'Unknown error'));
+        Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: 'Failed to update status: ' + (err.response?.data?.message || 'Unknown error')
+        });
     } finally {
         btn.innerHTML = 'Update Status';
         btn.disabled = false;

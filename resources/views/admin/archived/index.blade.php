@@ -145,13 +145,33 @@
     }
 
     async function restoreArchive(id) {
-        if (!confirm('Are you sure you want to restore this item?')) return;
-        
-        try {
-            await axios.post(`${window.APP_URL}/api/admin/${activeArchiveTab}/${id}/restore`);
-            fetchArchived();
-        } catch (err) {
-            alert('Restore failed: ' + (err.response?.data?.message || 'Error occurred'));
+        const result = await Swal.fire({
+            title: 'Restore Item?',
+            text: 'Are you sure you want to restore this item?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Restore it',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.post(`${window.APP_URL}/api/admin/${activeArchiveTab}/${id}/restore`);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Restored!',
+                    text: 'Item has been restored successfully.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                fetchArchived();
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Restore Failed',
+                    text: 'Restore failed: ' + (err.response?.data?.message || 'Error occurred')
+                });
+            }
         }
     }
 

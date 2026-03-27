@@ -110,11 +110,34 @@
     }
 
     async function restoreTask(id, title) {
-        if (!confirm(`Restore task "${title}"?`)) return;
-        try {
-            await axios.post(`${window.APP_URL}/api/admin/tasks/${id}/restore`);
-            fetchArchivedTasks(currentPage);
-        } catch (err) { alert(err.response?.data?.message || 'Failed to restore.'); }
+        const result = await Swal.fire({
+            title: 'Restore Task?',
+            text: `Are you sure you want to restore task "${title}"?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Restore it',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.post(`${window.APP_URL}/api/admin/tasks/${id}/restore`);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Restored!',
+                    text: 'Task has been restored successfully.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                fetchArchivedTasks(currentPage);
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Restore Failed',
+                    text: err.response?.data?.message || 'Failed to restore.'
+                });
+            }
+        }
     }
 
     document.getElementById('prev-page').onclick = () => { if (currentPage > 1) fetchArchivedTasks(currentPage - 1); };

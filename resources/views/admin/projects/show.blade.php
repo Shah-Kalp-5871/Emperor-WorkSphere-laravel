@@ -309,12 +309,27 @@
     }
 
     async function archiveFromDetail(id, name) {
-        if (!confirm(`Archive project "${name}"?`)) return;
-        try {
-            await axios.delete(`${window.APP_URL}/api/admin/projects/${id}`);
-            window.location.href = window.APP_URL + '/admin/projects';
-        } catch (err) {
-            alert(err.response?.data?.message || 'Failed to archive.');
+        const result = await Swal.fire({
+            title: 'Archive Project?',
+            text: `Are you sure you want to archive project "${name}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'Yes, Archive it',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`${window.APP_URL}/api/admin/projects/${id}`);
+                window.location.href = window.APP_URL + '/admin/projects';
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Archive Failed',
+                    text: err.response?.data?.message || 'Failed to archive.'
+                });
+            }
         }
     }
 

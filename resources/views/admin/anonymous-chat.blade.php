@@ -208,7 +208,11 @@
     });
 
     socket.on('error', (data) => {
-        alert(data.message); // Simple alert
+        Swal.fire({
+            icon: 'error',
+            title: 'Chat Error',
+            text: data.message
+        });
     });
 
     socket.on('disconnect', () => {

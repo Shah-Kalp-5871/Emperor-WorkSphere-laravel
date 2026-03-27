@@ -131,7 +131,11 @@
             document.getElementById('edit-address').value = currentUser.employee?.address || '';
         } catch (err) {
             console.error('Load Error:', err);
-            alert('Failed to load profile data.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Load Failed',
+                text: 'Failed to load profile data.'
+            });
         }
     }
 
@@ -150,10 +154,21 @@
                 skills: document.getElementById('edit-skills').value,
                 address: document.getElementById('edit-address').value,
             });
-            alert('Profile updated successfully!');
-            window.location.href = window.APP_URL + '/employee/profile/my-profile';
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Profile updated successfully!',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = window.APP_URL + '/employee/profile/my-profile';
+            });
         } catch (err) {
-            alert('Update failed: ' + (err.response?.data?.message || 'Error occurred'));
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: 'Update failed: ' + (err.response?.data?.message || 'Error occurred')
+            });
         } finally {
             btn.disabled = false;
             btn.textContent = 'Save Changes';
@@ -172,10 +187,20 @@
                 password: document.getElementById('password').value,
                 password_confirmation: document.getElementById('password_confirmation').value,
             });
-            alert('Password updated successfully.');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Password updated successfully.',
+                timer: 2000,
+                showConfirmButton: false
+            });
             document.getElementById('changePasswordForm').reset();
         } catch (err) {
-            alert('Password update failed: ' + (err.response?.data?.message || 'Check your fields'));
+            Swal.fire({
+                icon: 'error',
+                title: 'Security Update Failed',
+                text: 'Password update failed: ' + (err.response?.data?.message || 'Check your fields')
+            });
         } finally {
             btn.disabled = false;
             btn.textContent = 'Update Password';

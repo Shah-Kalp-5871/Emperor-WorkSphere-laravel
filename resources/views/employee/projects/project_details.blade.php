@@ -232,8 +232,13 @@ let projectMembers = [];
 
 async function fetchProjectDetails() {
     if (!projectId) {
-        alert('No project ID found');
-        window.location.href = window.APP_URL + '/employee/projects';
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No project ID found'
+        }).then(() => {
+            window.location.href = window.APP_URL + '/employee/projects';
+        });
         return;
     }
 
@@ -249,7 +254,11 @@ async function fetchProjectDetails() {
         renderProject(project);
     } catch (err) {
         console.error('Fetch project details error:', err);
-        alert(err.response?.data?.message || 'Failed to load project details.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Load Failed',
+            text: err.response?.data?.message || 'Failed to load project details.'
+        });
     }
 }
 
@@ -331,7 +340,11 @@ async function toggleTask(id, el) {
         await axios.patch(`${window.APP_URL}/api/employee/tasks/${id}/status`, { status: newStatus });
         fetchProjectDetails(); // Refresh to update progress/stats
     } catch (err) {
-        alert('Failed to update status: ' + (err.response?.data?.message || 'Unknown error'));
+        Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: 'Failed to update status: ' + (err.response?.data?.message || 'Unknown error')
+        });
     }
 }
 

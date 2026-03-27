@@ -80,7 +80,11 @@
                 btn.style.background = '';
             }, 2000);
         } catch (err) {
-            alert('Failed to copy');
+            Swal.fire({
+                icon: 'error',
+                title: 'Copy Failed',
+                text: 'Failed to copy to clipboard.'
+            });
         }
     }
 

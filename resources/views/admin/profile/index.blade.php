@@ -174,8 +174,19 @@
             });
             await fetchMe();
             closeModals();
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Profile updated successfully.',
+                timer: 1500,
+                showConfirmButton: false
+            });
         } catch (err) {
-            alert('Update failed: ' + (err.response?.data?.message || 'Error occurred'));
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: err.response?.data?.message || 'Error occurred'
+            });
         } finally {
             btn.disabled = false;
             btn.textContent = 'Save Changes';
@@ -194,10 +205,20 @@
                 password: document.getElementById('password').value,
                 password_confirmation: document.getElementById('password_confirmation').value,
             });
-            alert('Password updated successfully.');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Password updated successfully.',
+                timer: 1500,
+                showConfirmButton: false
+            });
             closeModals();
         } catch (err) {
-            alert('Password update failed: ' + (err.response?.data?.message || 'Check your fields'));
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: 'Password update failed: ' + (err.response?.data?.message || 'Check your fields')
+            });
         } finally {
             btn.disabled = false;
             btn.textContent = 'Update Password';

@@ -235,7 +235,11 @@
         btn.innerHTML = '<div class="spinner-sm" style="border-top-color:white"></div>';
 
         if (!navigator.geolocation) {
-            alert('Geolocation is not supported by your browser');
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Geolocation is not supported by your browser'
+            });
             resetPunchBtn(btn, originalContent);
             return;
         }
@@ -249,15 +253,29 @@
                 const res = await axios.post(url, { latitude, longitude });
                 
                 // Show success notification
-                alert(res.data.message || 'Action completed successfully');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: res.data.message || 'Action completed successfully',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
                 checkAttendanceStatus();
             } catch (err) {
                 const errorMsg = err.response?.data?.message || 'Action failed (Server Error or Network Connection)';
-                alert(errorMsg);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Action Failed',
+                    text: errorMsg
+                });
                 resetPunchBtn(btn, originalContent);
             }
         }, (err) => {
-            alert('Location access denied or unavailable.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Location Required',
+                text: 'Location access denied or unavailable.'
+            });
             resetPunchBtn(btn, originalContent);
         });
     }

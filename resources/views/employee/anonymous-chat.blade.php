@@ -209,7 +209,11 @@
     });
 
     socket.on('error', (data) => {
-        alert(data.message); // Simple alert for rate limiting/errors
+        Swal.fire({
+            icon: 'error',
+            title: 'Chat Error',
+            text: data.message
+        });
     });
 
     socket.on('disconnect', () => {

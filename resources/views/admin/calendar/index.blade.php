@@ -298,7 +298,11 @@
             calendar.refetchEvents();
             closeModal('event-modal');
         } catch (error) {
-            alert('Failed to save event.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to save event.'
+            });
         }
     }
 
@@ -317,13 +321,37 @@
 
     async function deleteEvent() {
         const id = document.getElementById('event-id').value;
-        if (!id || !confirm('Permanently delete this event?')) return;
-        try {
-            await axios.delete(`${window.APP_URL}/api/admin/calendar/events/${id}`);
-            calendar.refetchEvents();
-            closeModal('event-modal');
-        } catch (error) {
-            alert('Deletion failed.');
+        if (!id) return;
+        
+        const result = await Swal.fire({
+            title: 'Delete Event?',
+            text: 'Are you sure you want to permanently delete this event?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'Yes, Delete it',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`${window.APP_URL}/api/admin/calendar/events/${id}`);
+                calendar.refetchEvents();
+                closeModal('event-modal');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: 'Event has been deleted.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Delete Failed',
+                    text: 'Deletion failed.'
+                });
+            }
         }
     }
     async function updateSummaryList() {

@@ -219,11 +219,21 @@ document.getElementById('create-project-form').addEventListener('submit', async 
 
     try {
         await axios.post(window.APP_URL + '/api/employee/projects', data);
-        alert('Project created successfully!');
+        Swal.fire({
+            icon: 'success',
+            title: 'Created!',
+            text: 'Project created successfully!',
+            timer: 2000,
+            showConfirmButton: false
+        });
         closeCreateModal();
         fetchProjects();
     } catch (err) {
-        alert(err.response?.data?.message || 'Failed to create project.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Create Failed',
+            text: err.response?.data?.message || 'Failed to create project.'
+        });
     } finally {
         btn.innerHTML = 'Create Project';
         btn.disabled = false;

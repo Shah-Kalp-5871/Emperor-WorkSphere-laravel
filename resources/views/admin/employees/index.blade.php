@@ -135,15 +135,35 @@
     }
 
     async function deleteEmployee(id, name) {
-        if (!confirm(`Are you sure you want to permanently delete ${name} and all their associated data? This action cannot be undone.`)) return;
+        const result = await Swal.fire({
+            title: 'Delete Employee?',
+            text: `Are you sure you want to permanently delete ${name} and all their associated data? This action cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff4d4d',
+            confirmButtonText: 'Yes, Delete them',
+            cancelButtonText: 'Cancel'
+        });
 
-        try {
-            await axios.delete(`${window.APP_URL}/api/admin/employees/${id}`);
-            alert('Employee deleted successfully.');
-            fetchEmployees(currentPage);
-        } catch (error) {
-            console.error('Delete error:', error);
-            alert('Failed to delete employee: ' + (error.response?.data?.message || 'Unknown error'));
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`${window.APP_URL}/api/admin/employees/${id}`);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: 'Employee deleted successfully.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                fetchEmployees(currentPage);
+            } catch (error) {
+                console.error('Delete error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Delete Failed',
+                    text: 'Failed to delete employee: ' + (error.response?.data?.message || 'Unknown error')
+                });
+            }
         }
     }
 

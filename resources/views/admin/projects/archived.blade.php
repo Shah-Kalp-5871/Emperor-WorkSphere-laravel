@@ -148,12 +148,35 @@
     }
 
     async function restoreProject(id, name) {
-        if (!confirm(`Restore project "${name}"? It will become active again.`)) return;
-        try {
-            const res = await axios.post(`${window.APP_URL}/api/admin/projects/${id}/restore`);
-            if (res.data.success) fetchArchivedProjects(currentPage);
-        } catch (err) {
-            alert(err.response?.data?.message || 'Failed to restore project.');
+        const result = await Swal.fire({
+            title: 'Restore Project?',
+            text: `Are you sure you want to restore project "${name}"? It will become active again.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Restore it',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const res = await axios.post(`${window.APP_URL}/api/admin/projects/${id}/restore`);
+                if (res.data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Restored!',
+                        text: 'Project has been restored successfully.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    fetchArchivedProjects(currentPage);
+                }
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Restore Failed',
+                    text: err.response?.data?.message || 'Failed to restore project.'
+                });
+            }
         }
     }
 

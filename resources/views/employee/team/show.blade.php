@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div style="display:flex; gap:12px">
-                    <button class="greeting-btn" onclick="alert('Message feature coming soon!')">
+                    <button class="greeting-btn" onclick="Swal.fire({ icon: 'info', title: 'Coming Soon', text: 'Message feature coming soon!' })">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                         Message
                     </button>

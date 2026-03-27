@@ -123,12 +123,36 @@
 
     // ── ARCHIVE ────────────────────────────────────────────────────────────
     async function archiveProject(id, name) {
-        if (!confirm(`Archive project "${name}"? It can be restored later.`)) return;
-        try {
-            const res = await axios.delete(`${window.APP_URL}/api/admin/projects/${id}`);
-            if (res.data.success) fetchProjects(currentPage);
-        } catch (err) {
-            alert(err.response?.data?.message || 'Failed to archive project.');
+        const result = await Swal.fire({
+            title: 'Archive Project?',
+            text: `Are you sure you want to archive project "${name}"? It can be restored later.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'Yes, Archive it',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const res = await axios.delete(`${window.APP_URL}/api/admin/projects/${id}`);
+                if (res.data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Archived!',
+                        text: 'Project has been archived.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    fetchProjects(currentPage);
+                }
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Archive Failed',
+                    text: err.response?.data?.message || 'Failed to archive project.'
+                });
+            }
         }
     }
 

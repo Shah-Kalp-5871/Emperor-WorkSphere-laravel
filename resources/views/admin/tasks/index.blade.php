@@ -284,7 +284,11 @@
             document.getElementById('edit-task-priority').value = t.priority;
             document.getElementById('edit-task-due-date').value = t.due_date || '';
         } catch (e) {
-            alert('Failed to load task data.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Load Failed',
+                text: 'Failed to load task data.'
+            });
             closeModal('edit-task-modal');
         }
     }
@@ -320,17 +324,43 @@
             await axios.patch(`${window.APP_URL}/api/admin/tasks/${id}/status`, { status: newStatus });
             fetchTasks(currentPage);
         } catch (err) {
-            alert(err.response?.data?.message || 'Failed to update status.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: err.response?.data?.message || 'Failed to update status.'
+            });
         }
     }
 
     async function archiveTask(id, title) {
-        if (!confirm(`Archive task "${title}"?`)) return;
-        try {
-            await axios.delete(`${window.APP_URL}/api/admin/tasks/${id}`);
-            fetchTasks(currentPage);
-        } catch (err) {
-            alert(err.response?.data?.message || 'Failed to archive task.');
+        const result = await Swal.fire({
+            title: 'Archive Task?',
+            text: `Are you sure you want to archive task "${title}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'Yes, Archive it',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`${window.APP_URL}/api/admin/tasks/${id}`);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Archived!',
+                    text: 'Task has been archived.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                fetchTasks(currentPage);
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Archive Failed',
+                    text: err.response?.data?.message || 'Failed to archive task.'
+                });
+            }
         }
     }
 

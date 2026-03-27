@@ -129,11 +129,28 @@
     }
 
     async function archiveTask(id, title) {
-        if (!confirm(`Archive task "${title}"?`)) return;
-        try {
-            await axios.delete(`${window.APP_URL}/api/admin/tasks/${id}`);
-            window.location.href = window.APP_URL + '/admin/tasks';
-        } catch (err) { alert(err.response?.data?.message || 'Failed to archive.'); }
+        const result = await Swal.fire({
+            title: 'Archive Task?',
+            text: `Are you sure you want to archive task "${title}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'Yes, Archive it',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`${window.APP_URL}/api/admin/tasks/${id}`);
+                window.location.href = window.APP_URL + '/admin/tasks';
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Archive Failed',
+                    text: err.response?.data?.message || 'Failed to archive.'
+                });
+            }
+        }
     }
 
     document.addEventListener('DOMContentLoaded', loadTask);

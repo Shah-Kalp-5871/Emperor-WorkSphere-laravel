@@ -162,7 +162,11 @@ document.getElementById('daily-log-form').addEventListener('submit', async (e) =
         
         setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
     } catch (err) {
-        alert('Failed to submit log: ' + (err.response?.data?.message || 'Unknown error'));
+        Swal.fire({
+            icon: 'error',
+            title: 'Submission Failed',
+            text: 'Failed to submit log: ' + (err.response?.data?.message || 'Unknown error')
+        });
         btn.innerHTML = 'Submit Final Log';
         btn.disabled = false;
     }
@@ -172,7 +176,13 @@ document.getElementById('history-month').addEventListener('change', fetchLogs);
 document.addEventListener('DOMContentLoaded', fetchLogs);
 
 function saveDraft() {
-    alert('Draft saved to local storage (Simulation)');
+    Swal.fire({
+        icon: 'info',
+        title: 'Draft Saved',
+        text: 'Draft saved to local storage (Simulation)',
+        timer: 1500,
+        showConfirmButton: false
+    });
 }
 </script>
 @endpush
