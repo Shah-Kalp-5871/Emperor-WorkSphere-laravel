@@ -24,9 +24,15 @@ class AttendanceController extends Controller
         ]);
 
         try {
-            // In a real app, we'd get employee_id from auth()->user()->employee->id
-            // For now, let's assume it's passed or derived from auth
-            $employeeId = $request->user()->employee->id;
+            $user = $request->user();
+            if (!$user || !$user->employee) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Employee profile not found. Please contact administrator.'
+                ], 404);
+            }
+
+            $employeeId = $user->employee->id;
             
             $attendance = $this->attendanceService->punchIn(
                 $employeeId,
@@ -39,7 +45,7 @@ class AttendanceController extends Controller
                 'message' => 'Punched in successfully.',
                 'data' => $attendance
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -55,7 +61,15 @@ class AttendanceController extends Controller
         ]);
 
         try {
-            $employeeId = $request->user()->employee->id;
+            $user = $request->user();
+            if (!$user || !$user->employee) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Employee profile not found. Please contact administrator.'
+                ], 404);
+            }
+
+            $employeeId = $user->employee->id;
             
             $attendance = $this->attendanceService->punchOut(
                 $employeeId,
@@ -68,7 +82,7 @@ class AttendanceController extends Controller
                 'message' => 'Punched out successfully.',
                 'data' => $attendance
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -79,14 +93,22 @@ class AttendanceController extends Controller
     public function status(Request $request)
     {
         try {
-            $employeeId = $request->user()->employee->id;
+            $user = $request->user();
+            if (!$user || !$user->employee) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Employee profile not found.'
+                ], 404);
+            }
+
+            $employeeId = $user->employee->id;
             $status = $this->attendanceService->getTodayStatus($employeeId);
 
             return response()->json([
                 'status' => 'success',
                 'attendance_status' => $status
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()

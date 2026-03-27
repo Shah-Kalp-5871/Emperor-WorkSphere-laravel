@@ -243,15 +243,17 @@
         navigator.geolocation.getCurrentPosition(async (pos) => {
             try {
                 const { latitude, longitude } = pos.coords;
-                const url = type === 'in' ? '/api/employee/attendance/punch-in' : '/api/employee/attendance/punch-out';
+                const path = type === 'in' ? '/api/employee/attendance/punch-in' : '/api/employee/attendance/punch-out';
+                const url = window.APP_URL + path;
                 
                 const res = await axios.post(url, { latitude, longitude });
                 
-                // Show success notification (simplified for now)
-                alert(res.data.message);
+                // Show success notification
+                alert(res.data.message || 'Action completed successfully');
                 checkAttendanceStatus();
             } catch (err) {
-                alert(err.response?.data?.message || 'Action failed');
+                const errorMsg = err.response?.data?.message || 'Action failed (Server Error or Network Connection)';
+                alert(errorMsg);
                 resetPunchBtn(btn, originalContent);
             }
         }, (err) => {
