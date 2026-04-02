@@ -44,12 +44,30 @@
                     window.location.href = window.APP_URL + '/employee/dashboard';
                 }
 
-                // Initialize Echo
-                window.onload = () => {
+                // Initialize Echo and Update User Info
+                const updateUserInfo = () => {
                     if (typeof window.initializeEcho === 'function') {
                         window.initializeEcho();
                     }
+                    const avatarEls = document.querySelectorAll('.sidebar-user .avatar, .topbar-avatar');
+                    avatarEls.forEach(el => el.textContent = user.initials || 'U');
+                    
+                    const nameEl = document.querySelector('.sidebar-user .name');
+                    if(nameEl) nameEl.textContent = user.name || 'User';
+                    
+                    const roleEl = document.querySelector('.sidebar-user .role');
+                    if(roleEl) {
+                        roleEl.textContent = (user.employee && user.employee.designation && user.employee.designation.name) 
+                            ? user.employee.designation.name 
+                            : 'Employee';
+                    }
                 };
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', updateUserInfo);
+                } else {
+                    updateUserInfo();
+                }
             } catch (error) {
                 console.error('Session validation failed:', error);
                 sessionStorage.removeItem('token');

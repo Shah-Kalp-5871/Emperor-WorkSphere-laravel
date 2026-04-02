@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'WorkOS — Admin Panel')</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin/admin-style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin/tabulator-custom.css') }}">
     <script src="{{ asset('js/admin/tabulator-init.js') }}" defer></script>
@@ -13,6 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('styles')
 </head>
+
 <body>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
@@ -24,7 +28,7 @@
         if (_storedToken) {
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + _storedToken;
         }
-        (async function() {
+        (async function () {
             const token = sessionStorage.getItem('token');
             const isLoginPage = window.location.pathname.includes('/admin/login');
 
@@ -51,12 +55,28 @@
                     window.location.href = '{{ url('/admin/dashboard') }}';
                 }
 
-                // Initialize Echo
-                window.onload = () => {
+                // Initialize Echo and Update User Info
+                const updateUserInfo = () => {
                     if (typeof window.initializeEcho === 'function') {
                         window.initializeEcho();
                     }
+                    const avatarEls = document.querySelectorAll('.sidebar-user .user-avatar, .topbar-avatar');
+                    avatarEls.forEach(el => el.textContent = user.initials || 'A');
+
+                    const nameEl = document.querySelector('.sidebar-user .user-name');
+                    if (nameEl) nameEl.textContent = user.name || 'Admin';
+
+                    const roleEl = document.querySelector('.sidebar-user .user-role');
+                    if (roleEl) {
+                        roleEl.textContent = user.role || 'Super Admin';
+                    }
                 };
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', updateUserInfo);
+                } else {
+                    updateUserInfo();
+                }
             } catch (error) {
                 console.error('Session validation failed:', error);
                 sessionStorage.removeItem('token');
@@ -97,13 +117,13 @@
                 document.getElementById('sidebar-emp-count').innerText = data.totalEmployees || 0;
                 document.getElementById('sidebar-proj-count').innerText = data.totalProjects || 0;
                 document.getElementById('sidebar-task-count').innerText = data.totalTasks || 0;
-            } catch(e) { console.error('Error fetching sidebar stats', e); }
+            } catch (e) { console.error('Error fetching sidebar stats', e); }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-             if (sessionStorage.getItem('token') && !window.location.pathname.includes('/admin/login')) {
-                 fetchSidebarStats();
-             }
+            if (sessionStorage.getItem('token') && !window.location.pathname.includes('/admin/login')) {
+                fetchSidebarStats();
+            }
         });
     </script>
     @include('partials.admin.sidebar')
@@ -121,4 +141,5 @@
     @include('partials.admin.footer')
     @stack('scripts')
 </body>
+
 </html>
