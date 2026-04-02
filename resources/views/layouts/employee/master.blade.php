@@ -99,6 +99,23 @@
                 }
             });
         }
+        async function fetchSidebarStats() {
+            try {
+                const res = await axios.get(window.APP_URL + '/api/employee/dashboard/stats');
+                const data = res.data;
+                const taskCount = document.getElementById('sidebar-task-count');
+                if(taskCount) taskCount.innerText = data.open_tasks || 0;
+                
+                const projCount = document.getElementById('sidebar-proj-count');
+                if(projCount) projCount.innerText = data.assigned_projects || 0;
+            } catch(e) { }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+             if (sessionStorage.getItem('token') && !window.location.pathname.includes('/employee/login')) {
+                 fetchSidebarStats();
+             }
+        });
     </script>
     @stack('styles')
 

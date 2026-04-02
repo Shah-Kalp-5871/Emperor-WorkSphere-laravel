@@ -31,13 +31,13 @@
       <svg class="icon" viewBox="0 0 24 24">
         <path d="M9 11l3 3L22 4" />
         <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-      </svg>My Tasks<span class="nav-badge">4</span>
+      </svg>My Tasks<span class="nav-badge" id="sidebar-task-count">0</span>
     </a>
     <a class="nav-item {{ request()->is('employee/projects*') ? 'active' : '' }}"
       href="{{ url('/employee/projects') }}">
       <svg class="icon" viewBox="0 0 24 24">
         <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
-      </svg>Projects<span class="nav-badge warn">2</span>
+      </svg>Projects<span class="nav-badge warn" id="sidebar-proj-count">0</span>
     </a>
     <a class="nav-item {{ request()->is('employee/dailylogs*') ? 'active' : '' }}"
       href="{{ url('/employee/dailylogs') }}">

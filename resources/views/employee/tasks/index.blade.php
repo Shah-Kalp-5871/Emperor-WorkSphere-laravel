@@ -235,6 +235,7 @@ async function toggleTask(id, el) {
         await axios.patch(`${window.APP_URL}/api/employee/tasks/${id}/status`, { status: newStatus });
         // Optimistic UI or refetch
         fetchTasks();
+        if (typeof fetchSidebarStats === 'function') fetchSidebarStats();
     } catch (err) {
         Swal.fire({
             icon: 'error',
@@ -291,6 +292,7 @@ async function handleCreateEmpTask(e) {
         closeModal('create-emp-task-modal');
         document.getElementById('create-emp-task-form').reset();
         fetchTasks();
+        if (typeof fetchSidebarStats === 'function') fetchSidebarStats();
     } catch (err) {
         errorDiv.innerText = err.response?.data?.message || 'Failed to create task.';
         errorDiv.style.display = 'block';

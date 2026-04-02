@@ -88,6 +88,7 @@ Route::middleware('auth:api,admin')->group(function () {
     // Employee Routes
     Route::prefix('employee')->group(function () {
         Route::get('dashboard', [\App\Http\Controllers\Employee\DashboardController::class, 'index']);
+        Route::get('dashboard/stats', [\App\Http\Controllers\Employee\DashboardController::class, 'sidebarStats']);
         
         Route::get('tickets/stats', [\App\Http\Controllers\Employee\SupportTicketController::class, 'stats']);
         Route::get('tickets/form-data', [\App\Http\Controllers\Employee\SupportTicketController::class, 'formData']);

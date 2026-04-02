@@ -4,13 +4,13 @@
     <span class="date-chip">{{ date('l, d M Y') }}</span>
   </div>
   <div class="topbar-actions">
-    <button class="icon-btn">
+    <button class="icon-btn" onclick="Swal.fire({icon: 'info', title: 'Notifications', text: 'You have no new notifications.', confirmButtonColor: '#2D6A4F'})">
       <div class="notif-dot"></div>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
       </svg>
     </button>
-    <button class="icon-btn">
+    <button class="icon-btn" onclick="window.location.href='{{ url('/employee/profile/my-profile') }}'" title="Settings">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <circle cx="12" cy="12" r="3" />
         <path

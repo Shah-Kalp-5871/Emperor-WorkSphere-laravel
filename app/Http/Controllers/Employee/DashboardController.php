@@ -32,4 +32,24 @@ class DashboardController extends Controller
             'data' => $data
         ]);
     }
+
+    /**
+     * GET /api/employee/dashboard/stats
+     * Fast endpoint designed specifically for the sidebar to show badge counts.
+     */
+    public function sidebarStats(): JsonResponse
+    {
+        $user = auth('api')->user();
+        if (!$user || !$user->employee) {
+            return response()->json(['open_tasks' => 0, 'assigned_projects' => 0]);
+        }
+
+        $open_tasks = $user->employee->tasks()->where('status', '!=', 'completed')->count();
+        $assigned_projects = $user->employee->projects()->count();
+
+        return response()->json([
+            'open_tasks' => $open_tasks,
+            'assigned_projects' => $assigned_projects
+        ]);
+    }
 }

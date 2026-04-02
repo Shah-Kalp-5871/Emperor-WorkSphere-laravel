@@ -228,6 +228,7 @@ document.getElementById('create-project-form').addEventListener('submit', async 
         });
         closeCreateModal();
         fetchProjects();
+        if (typeof fetchSidebarStats === 'function') fetchSidebarStats();
     } catch (err) {
         Swal.fire({
             icon: 'error',
