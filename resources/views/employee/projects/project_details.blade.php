@@ -267,7 +267,7 @@ function renderProject(p) {
     const header = document.getElementById('proj-header-info');
     header.innerHTML = `
         <h1 class="proj-title-h1">${p.name}</h1>
-        <p class="proj-subtitle">${p.description || 'No description provided.'}</p>
+        <p class="proj-subtitle">${p.description || 'No description provided.'} <span style="margin-left:8px; opacity:0.6;">• Created by ${p.creator_name || 'Admin'}</span></p>
     `;
 
     // Stats
@@ -304,7 +304,6 @@ function renderProject(p) {
     // Task Table
     const tbody = document.getElementById('proj-task-list');
     document.getElementById('proj-task-count').textContent = tasks.length;
-    document.getElementById('proj-creator').textContent = p.creator_name || 'Admin';
     
     if (tasks.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3);">No tasks found for this project.</td></tr>';
