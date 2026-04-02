@@ -6,7 +6,13 @@
 <div class="page active" id="page-dashboard">
     <div class="section-header">
         <div>
-            <div class="section-title">Good morning, Admin 👋</div>
+            @php
+                $hour = date('H');
+                $timeGreeting = 'Good evening';
+                if ($hour < 12) $timeGreeting = 'Good morning';
+                elseif ($hour < 17) $timeGreeting = 'Good afternoon';
+            @endphp
+            <div class="section-title">{{ $timeGreeting }}, {{ auth('admin')->user()->name ?? 'Admin' }} 👋</div>
             <div class="section-sub">Here's what's happening today — {{ date('M d, Y') }}</div>
         </div>
         <div class="section-actions">

@@ -7,10 +7,10 @@
     <span class="brand-name">Work<span>Sphere</span></span>
   </div>
   <div class="sidebar-user" onclick="window.location.href='{{ url('/employee/profile/my-profile') }}'" style="cursor: pointer;">
-    <div class="avatar">AR</div>
+    <div class="avatar">{{ auth()->user()->initials ?? 'U' }}</div>
     <div class="user-info">
-      <div class="name">kalp Shah</div>
-      <div class="role">Intern</div>
+      <div class="name">{{ auth()->user()->name ?? 'User' }}</div>
+      <div class="role">{{ auth()->user()->employee->designation->name ?? 'Employee' }}</div>
     </div>
   </div>
   <nav class="sidebar-nav">

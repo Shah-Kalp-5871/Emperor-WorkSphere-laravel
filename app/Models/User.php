@@ -27,11 +27,27 @@ class User extends Authenticatable implements JWTSubject
         'password',
     ];
 
-    protected $appends = ['role'];
+    protected $appends = ['role', 'initials'];
 
     public function getRoleAttribute()
     {
         return $this->roles->first()?->name;
+    }
+
+    public function getInitialsAttribute()
+    {
+        $name = trim($this->name);
+        if (empty($name)) {
+            return '';
+        }
+
+        $parts = explode(' ', $name);
+        
+        if (count($parts) >= 2) {
+            return mb_strtoupper(mb_substr($parts[0], 0, 1) . mb_substr($parts[count($parts) - 1], 0, 1));
+        }
+
+        return mb_strtoupper(mb_substr($parts[0], 0, 2));
     }
 
     /**

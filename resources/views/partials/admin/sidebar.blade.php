@@ -57,10 +57,10 @@
     </a>
   </nav>
   <div class="sidebar-user" onclick="window.location.href='{{ url('/admin/profile/my-profile') }}'" style="cursor: pointer;">
-    <div class="user-avatar">A</div>
+    <div class="user-avatar">{{ auth('admin')->user()->initials ?? 'A' }}</div>
     <div class="user-info">
-      <div class="user-name">Admin</div>
-      <div class="user-role">Super Admin</div>
+      <div class="user-name">{{ auth('admin')->user()->name ?? 'Admin' }}</div>
+      <div class="user-role">{{ auth('admin')->user()->role ?? 'Super Admin' }}</div>
     </div>
   </div>
 </aside>

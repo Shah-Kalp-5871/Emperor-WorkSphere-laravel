@@ -305,7 +305,13 @@
             const data = res.data.data;
 
             // 1. Greet
-            document.getElementById('greeting-msg').innerHTML = `Good morning, <em>${data.greeting.name.split(' ')[0]}</em> 👋`;
+            const now = new Date();
+            const hour = now.getHours();
+            let timeGreeting = 'Good evening';
+            if (hour < 12) timeGreeting = 'Good morning';
+            else if (hour < 17) timeGreeting = 'Good afternoon';
+            
+            document.getElementById('greeting-msg').innerHTML = `${timeGreeting}, <em>${data.greeting.name.split(' ')[0]}</em> 👋`;
             document.getElementById('greeting-sub').textContent = `You have ${data.greeting.pending_tasks} pending tasks and ${data.greeting.log_submitted_today ? 'your daily log is submitted' : 'one daily log to complete'} today.`;
 
             // 2. Stats
